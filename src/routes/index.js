@@ -1,8 +1,9 @@
-const express = require('express');
-const router = express.Router();
-
-router.get('/', (req, res) => {
-	res.send('Hello from the main route!');
-});
-
-module.exports = router;
+const chatAi = require('./chatAi');
+const getMessages = require('./getMessages');
+const getConversations = require('./getConversations');
+const routes = {
+	chatAi: chatAi,
+	getMessages: getMessages,
+	getConversations: getConversations,
+};
+module.exports = routes;

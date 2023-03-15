@@ -1,12 +1,11 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const indexRoutes = require('./routes/index');
-const userRoutes = require('./routes/users');
-
 const app = express();
 const port = process.env.PORT || 3000;
 
+const routes = require('./routes');
+const userRoutes = require('./routes/users');
 // CORS 설정
 const allowedDomains = [
 	'http://localhost:3000',
@@ -28,11 +27,18 @@ app.use(
 		},
 	}),
 );
-
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 // 라우트 사용
-app.use('/', indexRoutes);
+// '/' 경로에 대한 라우터를 indexRoutes로 설정
+// app.use('/', indexRoutes);
+app.use('/chatAi', routes.chatAi);
+app.use('/getMessages', routes.getMessages);
+app.use('/getConversations', routes.getConversations);
 app.use('/users', userRoutes);
-
+// '/users' 경로에 대한 라우터를 userRoutes로 설정
+// app.use('/users', userRoutes);
+// app.use('/chatAi', chatA);
 // 서버 시작
 app.listen(port, () => {
 	console.log(`Server is running at http://localhost:${port}`);
