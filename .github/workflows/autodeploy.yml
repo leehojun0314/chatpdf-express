@@ -1,0 +1,33 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - master
+
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl
+          curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+          sudo apt-get install -y nodejs
+          sudo npm install -g aws-cli
+      - name: Deploy to EC2
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set default.region ap-northeast-2
+          aws ssm send-command \
+            --instance-ids i-0476feeb9ddbe66ec \
+            --document-name "AWS-RunShellScript" \
+            --document-version "1" \
+            --parameters commands="cd /var/www/html; git pull" \
+            --region ap-northeast-2 \
+            --operation-id "$(date +%s%N)"
