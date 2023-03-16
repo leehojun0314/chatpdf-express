@@ -24,7 +24,9 @@ jobs:
           aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws configure set default.region ap-northeast-2
-          aws ec2 run-command \
-            --instance-id i-0476feeb9ddbe66ec \
+          aws ssm send-command \
+            --instance-ids i-0476feeb9ddbe66ec \
             --document-name "AWS-RunShellScript" \
-            --parameters commands="cd /var/www/html; git pull"
+            --document-version "1" \
+            --parameters commands="cd /var/www/html; git pull" \
+            --region ap-northeast-2
