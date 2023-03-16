@@ -19,7 +19,9 @@ const allowedDomains = [
 app.use(
 	cors({
 		origin: function (origin, callback) {
+			console.log('origin: ', origin);
 			if (allowedDomains.indexOf(origin) !== -1 || !origin) {
+				console.log('cors true');
 				callback(null, true);
 			} else {
 				callback(new Error('Not allowed by CORS'));

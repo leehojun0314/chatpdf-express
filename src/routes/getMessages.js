@@ -13,10 +13,8 @@ router.get('/', authenticate, async (req, res) => {
 
 	try {
 		const messagesResult = await selectMessage({ conversationId });
-		console.log('messages: ', messagesResult);
 		const shiftedMessages = [...messagesResult.recordset];
 		shiftedMessages.shift();
-		console.log('shifted : ', shiftedMessages);
 		res.status(200).json(shiftedMessages);
 	} catch (error) {
 		console.log(error);
