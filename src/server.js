@@ -14,6 +14,7 @@ const allowedDomains = [
 	'http://metaschool.dtizen.com',
 	'https://dtizen.net',
 	'http://onnl.net',
+	'http://jw_lms.smartedu.center',
 ];
 
 app.use(
@@ -27,6 +28,7 @@ app.use(
 				callback(new Error('Not allowed by CORS'));
 			}
 		},
+		credentials: true,
 	}),
 );
 app.use(express.urlencoded({ extended: false }));
