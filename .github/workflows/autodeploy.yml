@@ -29,4 +29,5 @@ jobs:
             --document-name "AWS-RunShellScript" \
             --document-version "1" \
             --parameters commands="cd /var/www/html; git pull" \
-            --region ap-northeast-2
+            --region ap-northeast-2 \
+            --operation-id "$(date +%s%N)"
