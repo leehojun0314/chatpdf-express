@@ -6,13 +6,12 @@ const configuration = new Configuration({
 	organization: process.env.OPENAI_ORGANIZATION,
 });
 const openai = new OpenAIApi(configuration);
-async function sendToAi(systemMessage, newMessage) {
+async function sendToAi(recordset, newMessage) {
 	if (!configuration.apiKey) {
-		return { message: 'no apikey presented', status: false };
+		return { error: 'no apikey presented', status: false };
 	}
-	// const messages = MessageGenerator.messageSet(recordset);
-	const messages = [MessageGenerator.systemMessage(systemMessage)];
 	try {
+		const messages = MessageGenerator.messageSet(recordset);
 		messages.push(MessageGenerator.userMessage(newMessage));
 		const completion = await openai.createChatCompletion({
 			model: 'gpt-3.5-turbo',
@@ -26,7 +25,6 @@ async function sendToAi(systemMessage, newMessage) {
 			status: true,
 		};
 	} catch (error) {
-		console.log('error: ', error);
 		return { status: false, error: error };
 	}
 }
