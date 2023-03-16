@@ -4,7 +4,7 @@ const configs = require('../../configs');
 const authenticate = (req, res, next) => {
 	const authorizationHeader = req.headers.authorization;
 	const token = authorizationHeader?.split(' ')[1];
-
+	console.log('req.headers: ', req.headers);
 	if (!token) {
 		res.status(401).json({ data: 'UnAuthorized' });
 		return;
