@@ -21,20 +21,20 @@ router.post('/', authenticate, async (req, res) => {
 			message,
 			async ({ text, isEnd }) => {
 				if (isEnd) {
-					// //내가 보낸 내용 insert
-					// await insertMessage({
-					// 	message: message,
-					// 	sender: 'user',
-					// 	messageOrder: messagesResult.recordset.length,
-					// 	conversationId: conversationId,
-					// });
-					// //ai가 보낸 내용 insert
-					// await insertMessage({
-					// 	message: answer.content,
-					// 	sender: 'assistant',
-					// 	messageOrder: messagesResult.recordset.length + 1,
-					// 	conversationId: conversationId,
-					// });
+					//내가 보낸 내용 insert
+					await insertMessage({
+						message: message,
+						sender: 'user',
+						messageOrder: messagesResult.recordset.length,
+						conversationId: conversationId,
+					});
+					//ai가 보낸 내용 insert
+					await insertMessage({
+						message: text,
+						sender: 'assistant',
+						messageOrder: messagesResult.recordset.length + 1,
+						conversationId: conversationId,
+					});
 					res.end(text);
 					// res.status(200).send({ answer: text });
 				} else {
