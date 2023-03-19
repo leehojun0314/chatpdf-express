@@ -2,7 +2,7 @@ const express = require('express');
 const authenticate = require('../middleware/authenticate');
 const insertMessage = require('../model/insertMessage');
 const selectMessage = require('../model/selectMessage');
-const sendToAi = require('../utils/sendToAi');
+const sendToAi = require('../utils/sendToAi_vola');
 const router = express.Router();
 
 router.post('/', authenticate, async (req, res) => {

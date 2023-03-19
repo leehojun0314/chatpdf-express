@@ -6,7 +6,8 @@ const configuration = new Configuration({
 	organization: process.env.OPENAI_ORGANIZATION,
 });
 const openai = new OpenAIApi(configuration);
-async function sendToAi(recordset, newMessage) {
+//누적된 메세지도 함께 보내기
+async function sendToAi_acc(recordset, newMessage) {
 	if (!configuration.apiKey) {
 		return { error: 'no apikey presented', status: false };
 	}
@@ -28,4 +29,4 @@ async function sendToAi(recordset, newMessage) {
 		return { status: false, error: error };
 	}
 }
-module.exports = sendToAi;
+module.exports = sendToAi_acc;

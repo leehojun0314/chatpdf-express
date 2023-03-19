@@ -2,7 +2,7 @@ const express = require('express');
 const authenticate = require('../middleware/authenticate');
 const insertMessage = require('../model/insertMessage');
 const selectMessage = require('../model/selectMessage');
-const sendToAi = require('../utils/sendToAi_acc');
+const sendToAi_acc = require('../utils/sendToAi_acc');
 const router = express.Router();
 
 router.post('/', authenticate, async (req, res) => {
@@ -17,7 +17,7 @@ router.post('/', authenticate, async (req, res) => {
 		const messagesResult = await selectMessage({ conversationId });
 		console.log('flag 2');
 		console.log('messagesResult');
-		const { messages, answer, status, error } = await sendToAi(
+		const { messages, answer, status, error } = await sendToAi_acc(
 			messagesResult.recordset,
 			message,
 		);

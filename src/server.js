@@ -20,9 +20,7 @@ const allowedDomains = [
 app.use(
 	cors({
 		origin: function (origin, callback) {
-			console.log('origin: ', origin);
 			if (allowedDomains.indexOf(origin) !== -1 || !origin) {
-				console.log('cors true');
 				callback(null, true);
 			} else {
 				callback(new Error('Not allowed by CORS'));
@@ -38,12 +36,14 @@ app.use(express.json());
 // app.use('/', indexRoutes);
 app.use('/chatAi', routes.chatAi);
 app.use('/chatAi2', routes.chatAi2);
+app.use('/chatAi3', routes.chatAi3);
 app.use('/getMessages', routes.getMessages);
 app.use('/getConversations', routes.getConversations);
 app.use('/test', testRoutes);
 // '/users' 경로에 대한 라우터를 userRoutes로 설정
 // app.use('/users', userRoutes);
 // app.use('/chatAi', chatA);
+
 // 서버 시작
 app.listen(port, () => {
 	console.log(`Server is running at http://localhost:${port}`);

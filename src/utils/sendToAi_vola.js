@@ -6,7 +6,8 @@ const configuration = new Configuration({
 	organization: process.env.OPENAI_ORGANIZATION,
 });
 const openai = new OpenAIApi(configuration);
-async function sendToAi(systemMessage, newMessage) {
+//volatility의 약자. 휘발성 메세지. 이전 메세지 기억못함
+async function sendToAi_vola(systemMessage, newMessage) {
 	if (!configuration.apiKey) {
 		return { message: 'no apikey presented', status: false };
 	}
@@ -30,4 +31,4 @@ async function sendToAi(systemMessage, newMessage) {
 		return { status: false, error: error };
 	}
 }
-module.exports = sendToAi;
+module.exports = sendToAi_vola;
