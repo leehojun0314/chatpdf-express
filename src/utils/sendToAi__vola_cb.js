@@ -15,6 +15,7 @@ async function sendToAi_vola_cb(systemMessage, newMessage, streamCallback) {
 	const messages = [MessageGenerator.systemMessage(systemMessage)];
 	try {
 		messages.push(MessageGenerator.userMessage(newMessage));
+		let finalText = '';
 		const completion = await openai.createChatCompletion(
 			{
 				model: 'gpt-3.5-turbo',
@@ -31,14 +32,12 @@ async function sendToAi_vola_cb(systemMessage, newMessage, streamCallback) {
 				return;
 			}
 			let chunkToString = chunk.toString();
-			console.log('string chunk: ', chunkToString);
 			// 1. "data:"를 콤마로 대체합니다.
 			let parsableString = chunkToString.replace(/data\s*:/g, ',');
 			// 2. 문자열의 시작과 끝에 대괄호를 추가하여 배열로 만듭니다.
 			parsableString = '[' + parsableString + ']';
 			// 3. 문자열의 첫 번째 콤마를 제거합니다.
 			parsableString = parsableString.replace(/^\[,/, '[');
-			console.log('parsableString: ', parsableString);
 			// 이제 문자열을 JSON.parse로 파싱할 수 있습니다.
 			let json;
 
@@ -46,20 +45,23 @@ async function sendToAi_vola_cb(systemMessage, newMessage, streamCallback) {
 				json = JSON.parse(parsableString);
 			} catch (e) {
 				console.error('문자열을 JSON으로 파싱하는 데 실패했습니다:', e);
+				streamCallback({
+					isEnd: true,
+					text: '문자열을 JSON으로 파싱하는 데 실패했습니다:',
+				});
 			}
 			let text = '';
 			for (let data of json) {
-				console.log('data: ', data);
 				text += data.choices[0].delta.content || '';
 			}
-			console.log('text:', text);
+			finalText += text;
 			streamCallback({
 				text: text,
 				isEnd: false,
 			});
 		});
 		completion.data.on('end', () => {
-			streamCallback({ isEnd: true });
+			streamCallback({ isEnd: true, text: finalText });
 		});
 		// messages.push(completion.data.choices[0].message);
 		// return {

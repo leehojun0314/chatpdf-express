@@ -35,8 +35,7 @@ router.post('/', authenticate, async (req, res) => {
 						messageOrder: messagesResult.recordset.length + 1,
 						conversationId: conversationId,
 					});
-					res.end(text);
-					// res.status(200).send({ answer: text });
+					res.status(200).end('');
 				} else {
 					res.write(text);
 				}
