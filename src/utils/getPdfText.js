@@ -42,14 +42,17 @@ const s3 = new AWS.S3({
 });
 
 // 파일 URL을 받아서 PDF 파일의 텍스트를 반환하는 함수를 내보낸다.
-export default async function getPDFText(fileUrl) {
-	// Promise 객체를 생성한다.
+async function getPDFText(fileUrl) {
+	const url = new URL(fileUrl);
+	const bucket = url.hostname.split('.')[0];
+	const key = url.pathname.slice(1); //첫번째 슬래시 제거
+	const encodedKey = encodeURIComponent(key).replace(/%2F/g, '/');
 	return new Promise((resolve, reject) => {
 		// S3에서 객체를 가져온다.
 		s3.getObject(
 			{
-				Bucket: 'jemixhomefileupload',
-				Key: 'uploads/QA.pdf',
+				Bucket: bucket,
+				Key: encodedKey,
 			},
 			(err, data) => {
 				if (err) {
@@ -73,3 +76,4 @@ export default async function getPDFText(fileUrl) {
 		);
 	});
 }
+module.exports = getPDFText;

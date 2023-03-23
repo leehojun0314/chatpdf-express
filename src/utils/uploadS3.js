@@ -1,6 +1,7 @@
 const aws = require('aws-sdk');
 const formidable = require('formidable');
 const fs = require('fs');
+const { encode } = require('js-base64');
 const configs = require('../../configs');
 const S3_BUCKET_NAME = configs.s3.S3_BUCKET_NAME;
 const AWS_ACCESS_KEY_ID = configs.s3.AWS_ACCESS_KEY_ID;
@@ -24,7 +25,11 @@ module.exports = function uploadS3(req) {
 			}
 
 			const file = files['file']; //파일 객체 생성
-			const s3Key = `uploads/${file.originalFilename}`; //S3 버킷에 저장될 파일 경로 생성
+			// const encodedNames = encodeURIComponent(
+			// 	`${req.user.userName}/${file.originalFilename}`,
+			// );
+			const encodedNames = encodeURIComponent(`${file.originalFilename}`);
+			const s3Key = `uploads/${encodedNames}`; //S3 버킷에 저장될 파일 경로 생성
 			const fileStream = file ? fs.createReadStream(file.filepath) : null; //파일 스트림 생성
 			const params = {
 				//S3 업로드에 필요한 파라미터 생성
@@ -34,6 +39,7 @@ module.exports = function uploadS3(req) {
 				ContentType: 'application/pdf', //파일 타입
 				ACL: 'public-read', //파일 접근 권한
 			};
+			console.log('s3 upload params: ', params);
 			try {
 				//예외 처리
 				//파일 업로드

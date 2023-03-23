@@ -7,10 +7,25 @@ const configuration = new Configuration({
 	organization: configs.openai.organization,
 });
 const openai = new OpenAIApi(configuration);
+const { encode, decode } = require('js-base64');
 router.post('/', (req, res) => {
 	console.log('req: ', req);
 });
-router.get('/', async (req, res, next) => {});
+router.get('/', async (req, res) => {
+	const text = req.query.text;
+	if (!text) {
+		res.send('');
+		return;
+	}
+	const encoded = encode(text);
+	console.log('text: ', text);
+	console.log('encoded: ', encoded);
+	const decoded = decode(encoded);
+	console.log('decoded: ', decoded);
+
+	res.send(encode(text));
+});
+
 // router.get('/', (req, res) => {
 // 	const totalSize = 10000000; // 전체 파일 크기
 // 	const chunkSize = 1000000; // 한 번에 보낼 청크 크기

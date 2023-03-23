@@ -55,12 +55,14 @@ async function sendToAi_vola_cb(systemMessage, newMessage, streamCallback) {
 				text += data.choices[0].delta.content || '';
 			}
 			finalText += text;
+
 			streamCallback({
 				text: text,
 				isEnd: false,
 			});
 		});
 		completion.data.on('end', () => {
+			console.log('text: ', finalText);
 			streamCallback({ isEnd: true, text: finalText });
 		});
 		// messages.push(completion.data.choices[0].message);

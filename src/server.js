@@ -5,7 +5,6 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 const routes = require('./routes');
-const testRoutes = require('./routes/test');
 // CORS 설정
 const allowedDomains = [
 	'http://localhost:3000',
@@ -34,12 +33,17 @@ app.use(express.json());
 // 라우트 사용
 // '/' 경로에 대한 라우터를 indexRoutes로 설정
 // app.use('/', indexRoutes);
-app.use('/chatAi', routes.chatAi);
-app.use('/chatAi2', routes.chatAi2);
-app.use('/chatAi3', routes.chatAi3);
-app.use('/getMessages', routes.getMessages);
-app.use('/getConversations', routes.getConversations);
-app.use('/test', testRoutes);
+// app.use('/chatAi', routes.chatAi);
+// app.use('/chatAi2', routes.chatAi2);
+// app.use('/chatAi3', routes.chatAi3);
+// app.use('/getMessages', routes.getMessages);
+// app.use('/getConversations', routes.getConversations);
+// app.use('/createConversation', routes.createConversation);
+
+app.use('/conversation', routes.conversation);
+app.use('/message', routes.message);
+app.use('/test', routes.test);
+
 // '/users' 경로에 대한 라우터를 userRoutes로 설정
 // app.use('/users', userRoutes);
 // app.use('/chatAi', chatA);
