@@ -2,7 +2,7 @@ const express = require('express');
 // const authenticate = require('../middleware/authenticate');
 const insertMessage = require('../../model/insertMessage');
 const selectMessage = require('../../model/selectMessage');
-const sendToAi_vola_cb = require('../../utils/sendToAi__vola_cb');
+const sendToAi_vola_stream = require('../../utils/sendToAi__vola_stream');
 const router = express.Router();
 async function sendMessageV3(req, res) {
 	console.log('req : ', req.body);
@@ -15,7 +15,7 @@ async function sendMessageV3(req, res) {
 	}
 	try {
 		const messagesResult = await selectMessage({ conversationId });
-		await sendToAi_vola_cb(
+		await sendToAi_vola_stream(
 			messagesResult.recordset[0].message,
 			message,
 			async ({ text, isEnd }) => {

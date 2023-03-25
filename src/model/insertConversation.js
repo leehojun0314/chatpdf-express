@@ -1,5 +1,5 @@
 const getSql = require('../database/connection');
-function insertConversation(conversationName, userId) {
+function insertConversation(conversationName, userId, fileUrl) {
 	return new Promise((resolve, reject) => {
 		getSql()
 			.then((sqlPool) => {

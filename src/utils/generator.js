@@ -50,5 +50,13 @@ class MessageGenerator {
 			content: message,
 		};
 	}
+	presetQuestion(content) {
+		return {
+			role: 'user',
+			content: `아래 지문을 읽고 예상되는 질문을 작성해줘. 그리고 문장 끝이 항상 "?"로 끝나게 해줘.
+			지문: ${content}
+			 `,
+		};
+	}
 }
 module.exports = new MessageGenerator();

@@ -7,19 +7,19 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 //volatility의 약자. 휘발성 메세지. 이전 메세지 기억못함
-async function sendToAi_vola_cb(systemMessage, newMessage, streamCallback) {
+async function createQuestion(content, streamCallback) {
 	if (!configuration.apiKey) {
 		return { message: 'no apikey presented', status: false };
 	}
 	// const messages = MessageGenerator.messageSet(recordset);
-	const messages = [MessageGenerator.systemMessage(systemMessage)];
+	const prompt = MessageGenerator.presetQuestion(content);
+	console.log('prompt: ', prompt);
 	try {
-		messages.push(MessageGenerator.userMessage(newMessage));
 		let finalText = '';
 		const completion = await openai.createChatCompletion(
 			{
 				model: 'gpt-3.5-turbo',
-				messages: messages,
+				messages: [prompt],
 				stream: true,
 			},
 			{
@@ -72,8 +72,8 @@ async function sendToAi_vola_cb(systemMessage, newMessage, streamCallback) {
 		// 	status: true,
 		// };
 	} catch (error) {
-		console.log('error: ', error);
-		return { status: false, error: error };
+		console.log('error: ', error.response);
+		return { status: false, error: error.response };
 	}
 }
-module.exports = sendToAi_vola_cb;
+module.exports = createQuestion;
