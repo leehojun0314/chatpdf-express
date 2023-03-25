@@ -16,5 +16,7 @@ function deleteConversation(convId) {
 				console.log('error: ', error);
 			});
 	});
+
+	//need to delete the s3 file too
 }
 module.exports = deleteConversation;
