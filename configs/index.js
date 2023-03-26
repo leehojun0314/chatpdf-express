@@ -32,6 +32,7 @@ const configs = {
 		'https://dtizen.net',
 		'http://dtizen.net',
 		'http://onnl.net',
+		'http://jw_lms.smartedu.center',
 	],
 	authenticateUrl: 'https://dtizen-secure.vercel.app',
 };

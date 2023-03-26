@@ -5,22 +5,13 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 const routes = require('./routes');
-// CORS 설정
-const allowedDomains = [
-	'http://localhost:3000',
-	'http://localhost:3001',
-	'http://127.0.0.1:3000',
-	'http://metaschool.dtizen.com',
-	'https://dtizen.net',
-	'http://onnl.net',
-	'http://jw_lms.smartedu.center',
-];
+const configs = require('../configs');
 
 app.use(
 	cors({
 		origin: function (origin, callback) {
 			console.log('origin: ', origin);
-			if (allowedDomains.indexOf(origin) !== -1 || !origin) {
+			if (configs.allowedOrigins.indexOf(origin) !== -1 || !origin) {
 				callback(null, true);
 			} else {
 				callback(new Error('Not allowed by CORS'));
