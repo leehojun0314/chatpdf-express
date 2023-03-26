@@ -2,7 +2,7 @@ const express = require('express');
 // const authenticate = require('../middleware/authenticate');
 
 const insertUser = require('../../model/insertUser');
-const selectConversation = require('../../model/selectConversation');
+const selectConversation = require('../../model/selectConversation_all');
 const selectUser = require('../../model/selectUser');
 const router = express.Router();
 async function getConversations(req, res) {

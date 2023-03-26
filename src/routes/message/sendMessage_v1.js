@@ -2,7 +2,7 @@ const express = require('express');
 // const authenticate = require('../../middleware/authenticate');
 const insertMessage = require('../../model/insertMessage');
 const selectMessage = require('../../model/selectMessage');
-const sendToAi_acc = require('../../utils/sendToAi_acc');
+const sendToAi_acc = require('../../utils/openai/sendToAi_acc');
 const router = express.Router();
 async function sendMessageV1(req, res) {
 	console.log('req : ', req.body);

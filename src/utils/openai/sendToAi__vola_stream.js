@@ -1,5 +1,5 @@
 const { Configuration, OpenAIApi } = require('openai');
-const MessageGenerator = require('./generator');
+const MessageGenerator = require('../generator');
 require('dotenv').config();
 const configuration = new Configuration({
 	apiKey: process.env.OPENAI_API_KEY,
@@ -7,19 +7,19 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 //volatility의 약자. 휘발성 메세지. 이전 메세지 기억못함
-async function createQuestion(content, streamCallback) {
+async function sendToAi_vola_stream(systemMessage, newMessage, streamCallback) {
 	if (!configuration.apiKey) {
 		return { message: 'no apikey presented', status: false };
 	}
 	// const messages = MessageGenerator.messageSet(recordset);
-	const prompt = MessageGenerator.presetQuestion(content);
-	console.log('prompt: ', prompt);
+	const messages = [MessageGenerator.systemMessage(systemMessage)];
 	try {
+		messages.push(MessageGenerator.userMessage(newMessage));
 		let finalText = '';
 		const completion = await openai.createChatCompletion(
 			{
 				model: 'gpt-3.5-turbo',
-				messages: [prompt],
+				messages: messages,
 				stream: true,
 			},
 			{
@@ -72,8 +72,8 @@ async function createQuestion(content, streamCallback) {
 		// 	status: true,
 		// };
 	} catch (error) {
-		console.log('error: ', error.response);
-		return { status: false, error: error.response };
+		console.log('error: ', error);
+		return { status: false, error: error };
 	}
 }
-module.exports = createQuestion;
+module.exports = sendToAi_vola_stream;

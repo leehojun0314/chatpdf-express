@@ -1,5 +1,5 @@
 const getSql = require('../database/connection');
-function selectConversation({ userId }) {
+function selectConversation_all({ userId }) {
 	return new Promise((resolve, reject) => {
 		getSql()
 			.then((sqlPool) => {
@@ -18,4 +18,4 @@ function selectConversation({ userId }) {
 			});
 	});
 }
-module.exports = selectConversation;
+module.exports = selectConversation_all;

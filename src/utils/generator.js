@@ -32,8 +32,8 @@ class MessageGenerator {
 	systemMessageDB(conversationId, message) {
 		return {
 			conversationId: conversationId,
-			message: `다음 내용을 읽고 다음에 내가 물어볼때 대답해줘. 
-        ${message}`,
+			message: `당신은 다음 내용을 이해하고, 해당 내용에 대해서 질문을 받을 시 친절하게 답변해주는 챗봇입니다. 먼저 어떤 내용을 알고 있는지 간단하게 소개하고, 인사해주세요!
+			${message}`,
 			messageOrder: 0,
 			sender: 'system',
 		};
@@ -41,7 +41,8 @@ class MessageGenerator {
 	systemMessage(message) {
 		return {
 			role: 'system',
-			content: message,
+			content: `당신은 다음 내용을 이해하고, 해당 내용에 대해서 질문을 받을 시 친절하게 답변해주는 챗봇입니다. 먼저 어떤 내용을 알고 있는지 간단하게 소개하고, 인사해주세요!
+			${message}`,
 		};
 	}
 	userMessage(message) {

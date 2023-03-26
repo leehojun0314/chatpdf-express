@@ -2,7 +2,7 @@ const express = require('express');
 // const authenticate = require('../middleware/authenticate');
 const insertMessage = require('../../model/insertMessage');
 const selectMessage = require('../../model/selectMessage');
-const sendToAi_vola_stream = require('../../utils/sendToAi__vola_stream');
+const sendToAi_vola_stream = require('../../utils/openai/sendToAi__vola_stream');
 const router = express.Router();
 async function sendMessageV3(req, res) {
 	console.log('req : ', req.body);
