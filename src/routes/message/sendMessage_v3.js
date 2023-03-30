@@ -6,7 +6,6 @@ const selectUser = require('../../model/selectUser');
 const sendToAi_vola_stream = require('../../utils/openai/sendToAi__vola_stream');
 const router = express.Router();
 async function sendMessageV3(req, res) {
-	console.log('req : ', req.body);
 	res.setHeader('Content-Type', 'application/json');
 	const conversationId = req.body?.conversationId || '';
 	const user = req.user;
@@ -18,7 +17,6 @@ async function sendMessageV3(req, res) {
 	try {
 		console.log('user: ', user);
 		const userResult = await selectUser({ email: user.userEmail });
-		console.log('user result: ', userResult);
 		const userId = userResult.recordset[0].user_id;
 		const messagesResult = await selectMessage({ conversationId });
 		await sendToAi_vola_stream(

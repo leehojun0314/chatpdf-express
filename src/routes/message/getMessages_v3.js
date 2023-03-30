@@ -3,7 +3,6 @@ const selectMessage_indi = require('../../model/selectMessage_indi');
 const selectQuestion_all = require('../../model/selectQuestion_all');
 
 async function getMessages_v3(req, res) {
-	console.log('hello');
 	const conversationId = req.query.convId || '';
 	const userEmail = req.user.userEmail;
 	if (!conversationId) {
@@ -16,7 +15,6 @@ async function getMessages_v3(req, res) {
 			convId: conversationId,
 			userEmail: userEmail,
 		});
-		console.log('messages result:', messagesResult.recordset);
 		//메세지를 ai에게 보낼때 해당 convid의 0번째 메세지를 항상 조회를 하고 보냄.
 		//따라서 user_id가 없는 0번째 메세지를 거를 필요가 없다.
 		// const shiftedMessages = [...messagesResult.recordset];
@@ -27,7 +25,6 @@ async function getMessages_v3(req, res) {
 		});
 		//questions
 		const questions = await selectQuestion_all({ convId: conversationId });
-		console.log('questions: ', questions);
 		res.status(200).json({
 			messages: messagesResult.recordset,
 			conversation: conversation,

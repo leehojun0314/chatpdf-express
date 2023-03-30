@@ -27,7 +27,6 @@ async function sendToAi_vola_stream(systemMessage, newMessage, streamCallback) {
 			},
 		);
 		completion.data.on('data', (chunk) => {
-			console.log('chunk: ', chunk);
 			if (chunk?.toString().includes('[DONE]')) {
 				return;
 			}
