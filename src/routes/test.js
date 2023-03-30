@@ -12,8 +12,39 @@ const getSql = require('../database/connection');
 const createQuestion = require('../utils/openai/createQuestion');
 const createSalutation = require('../utils/openai/createSalutation');
 const generator = require('../utils/generator');
+const PdfParse = require('pdf-parse');
+const https = require('https');
+const http = require('http');
 router.post('/', (req, res) => {
 	console.log('req: ', req);
+});
+router.get('/getText', async (req, res) => {
+	const fileUrl = req.query.fileUrl;
+	console.log('file url:', fileUrl);
+	http.get(fileUrl, (fileResponse) => {
+		let data = [];
+		fileResponse.on('data', (chunk) => {
+			console.log('chunk: ', chunk);
+			data.push(chunk);
+		});
+		fileResponse.on('end', () => {
+			const buffer = Buffer.concat(data);
+			console.log('buffer: ', buffer);
+			PdfParse(buffer)
+				.then((result) => {
+					console.log('result : ', result);
+					res.send(result);
+				})
+				.catch((err) => {
+					console.log('err: ', err);
+					res.status(500).send(err);
+				});
+		});
+		fileResponse.on('error', (err) => {
+			console.log('file response error: ', err);
+			res.status(500).send(err);
+		});
+	});
 });
 router.get('/question', async (req, res) => {
 	console.log('/question');
