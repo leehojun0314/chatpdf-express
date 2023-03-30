@@ -13,6 +13,15 @@ const authenticate = (req, res, next) => {
 			.get(`${configs.authenticateUrl}/api/verify?jwt=${token}`)
 			.then((response) => {
 				req.user = response.data;
+				// user ex : {
+				// 	userEmail: '',
+				// 	userName: '',
+				// 	imgUrl: '',
+				// 	type: '',
+				// 	iat: ,
+				// 	exp: ,
+				// 	iss: ''
+				//   }
 				next();
 			})
 			.catch((err) => {

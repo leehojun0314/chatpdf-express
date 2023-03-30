@@ -1,5 +1,11 @@
 const getSql = require('../database/connection');
-function insertMessage({ message, conversationId, sender, messageOrder }) {
+function insertMessage({
+	message,
+	conversationId,
+	sender,
+	messageOrder,
+	userId,
+}) {
 	return new Promise((resolve, reject) => {
 		getSql()
 			.then((sqlPool) => {
@@ -9,9 +15,10 @@ function insertMessage({ message, conversationId, sender, messageOrder }) {
 					.input('conversation_id', conversationId)
 					.input('sender', sender)
 					.input('message_order', messageOrder)
+					.input('user_id', userId)
 					.query(
-						`INSERT INTO Message (message, conversation_id, sender, message_order)
-    VALUES (@message, @conversation_id, @sender, @message_order)`,
+						`INSERT INTO Message (message, conversation_id, sender, message_order, user_id, created_time)
+    VALUES (@message, @conversation_id, @sender, @message_order, @user_id, GETDATE())`,
 					)
 					.then((result) => {
 						resolve(result);
