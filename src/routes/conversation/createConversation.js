@@ -13,7 +13,10 @@ async function createConversation(req, res) {
 	console.log('user: ', user);
 	try {
 		//user id 가져오기 req.user에는 userid가 없음. 다른 db이기 떄문
-		const selectUserResult = await selectUser({ email: user.userEmail });
+		const selectUserResult = await selectUser({
+			email: user.userEmail,
+			name: user.userName,
+		});
 		const userId = selectUserResult.recordset[0].user_id;
 
 		//upload s3

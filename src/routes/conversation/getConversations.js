@@ -9,7 +9,10 @@ async function getConversations(req, res) {
 	console.log('req.user : ', req.user);
 	const userData = req.user;
 	try {
-		const selectedUserData = await selectUser({ email: userData.userEmail });
+		const selectedUserData = await selectUser({
+			email: userData.userEmail,
+			name: userData.userName,
+		});
 		console.log('selected user data : ', selectedUserData);
 		let userId;
 		if (selectedUserData.recordset.length === 0) {

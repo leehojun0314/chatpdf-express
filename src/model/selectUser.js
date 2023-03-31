@@ -1,5 +1,6 @@
 const getSql = require('../database/connection');
-function selectUser({ email }) {
+const insertUser = require('./insertUser');
+function selectUser({ email, name }) {
 	return new Promise((resolve, reject) => {
 		getSql()
 			.then((sqlPool) => {
@@ -7,7 +8,17 @@ function selectUser({ email }) {
 					.request()
 					.query(`SELECT * FROM UserTable WHERE user_email = '${email}'`)
 					.then((result) => {
-						resolve(result);
+						if (!result.recordset.length) {
+							insertUser({ userName: name, userEmail: email })
+								.then((insertResult) => {
+									resolve(insertResult);
+								})
+								.catch((error) => {
+									reject(error);
+								});
+						} else {
+							resolve(result);
+						}
 					})
 					.catch((err) => {
 						reject(err);
