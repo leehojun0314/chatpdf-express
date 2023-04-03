@@ -31,7 +31,10 @@ app.use(express.json());
 // app.use('/getMessages', routes.getMessages);
 // app.use('/getConversations', routes.getConversations);
 // app.use('/createConversation', routes.createConversation);
-
+app.get('/', (req, res) => {
+	console.log('hello');
+	res.send('world');
+});
 app.use('/conversation', routes.conversation);
 app.use('/message', routes.message);
 app.use('/test', routes.test);
