@@ -16,7 +16,8 @@ function getDocuText(fileUrl, extension) {
 						PdfParse(buffer)
 							.then((result) => {
 								console.log('pdf parse result : ', result);
-								resolve(result.text);
+								const optimizedStr = result.text.replace(/\n/g, '');
+								resolve(optimizedStr);
 							})
 							.catch((err) => {
 								console.log('err: ', err);
@@ -36,6 +37,7 @@ function getDocuText(fileUrl, extension) {
 					if (doc) {
 						const text = doc.convertTo(hwp.converter.plainText);
 						console.log('hwp text: ', text);
+
 						resolve(text);
 					}
 				});

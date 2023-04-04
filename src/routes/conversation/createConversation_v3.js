@@ -8,6 +8,7 @@ const getPDFText = require('../../utils/getPdfText');
 const createSalutation = require('../../utils/openai/createSalutation');
 const uploadBlob = require('../../utils/azureBlob/uploadBlob');
 const getDocuText = require('../../utils/getDocuText');
+const selectConversation_all = require('../../model/selectConversation_all');
 
 async function createConversationV3(req, res) {
 	const user = req.user;
@@ -54,8 +55,8 @@ async function createConversationV3(req, res) {
 
 		//생성된 초기 메세지 삽입
 		await insertMessage(messageDB);
-		const conversations = insertedConversationData.recordset;
-
+		const conversationsResult = await selectConversation_all({ userId });
+		const conversations = conversationsResult.recordset;
 		//예상 질문 생성 //todo
 		const questions = await createQuestion(allTexts);
 		const questionArr = questions.split('\n');
