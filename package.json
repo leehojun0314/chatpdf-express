@@ -2,10 +2,10 @@
 	"name": "chat-pdf-express",
 	"version": "1.0.0",
 	"description": "",
-	"main": "src/server.js",
+	"main": "lib/server.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"start": "node src/server.js"
+		"start": "node lib/server.js"
 	},
 	"keywords": [],
 	"author": "",
@@ -21,5 +21,10 @@
 		"mssql": "^9.1.1",
 		"openai": "^3.2.1",
 		"pdf-parse": "^1.1.1"
+	},
+	"devDependencies": {
+		"@babel/cli": "^7.21.0",
+		"@babel/core": "^7.21.4",
+		"@babel/preset-env": "^7.21.4"
 	}
 }
