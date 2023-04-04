@@ -1,12 +1,14 @@
 name: Deploy to Azure VMSS
-trigger:
-  - master
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   buildanddeploy:
     runs-on: ubuntu-latest
     
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
