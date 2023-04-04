@@ -1,0 +1,26 @@
+name: Deploy to VMSS
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+- stage: Deploy
+  jobs:
+  - deployment: Deploy
+    displayName: 'Deploy to VMSS'
+    environment:
+      name: 'production'
+      resourceType: 'VirtualMachineScaleSets'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: '재미스홈'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az vmss update-instances --instance-ids "*" --resource-group 재미스홈 --name vmss
