@@ -1,0 +1,24 @@
+name: Deploy to Azure VMSS
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Log in to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Deploy to VMSS
+      uses: azure/CLI@v1.0.0
+      with:
+        inlineScript: |
+          az vmss update-instances --instance-ids "*" --resource-group 재미스홈 --name vmss
