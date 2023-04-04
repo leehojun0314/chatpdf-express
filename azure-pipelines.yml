@@ -3,19 +3,32 @@
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
-trigger:
-- master
 
-pool:
-  vmImage: ubuntu-latest
+name: Deploy to Azure VMSS
+on:
+   push:
+      branches:
+         - master
 
-steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '18.x'
-  displayName: 'Install Node.js'
+jobs:
+   build-and-deploy:
+      runs-on: ubuntu-latest
 
-- script: |
-    npm install
-    npm run build
-  displayName: 'npm install and build'
+      steps:
+         - name: Checkout code
+           uses: actions/checkout@v2
+
+         - name: Install Azure CLI
+           run: |
+              curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+              az --version
+         - name: Log in to Azure
+           uses: azure/login@v1
+           with:
+              creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+         - name: Deploy to VMSS
+           uses: azure/CLI@v1.0.0
+           with:
+              inlineScript: |
+                 az vmss update-instances --instance-ids "*" --resource-group 재미스홈 --name vmss
