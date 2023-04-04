@@ -1,9 +1,8 @@
 name: Deploy to Azure VMSS
 tri
 
-variables:
-
-  vmImageName: 'ubuntu-latest'
+pool:
+  vmImage: 'ubuntu-latest'
 
 stages:
     steps:
