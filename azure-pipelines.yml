@@ -19,8 +19,8 @@ stages:
           steps:
           - task: AzureCLI@2
             inputs:
-              azureSubscription: '<your-subscription>'
+              azureSubscription: '재미스홈'
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
               inlineScript: |
-                az vmss update-instances --instance-ids "*" --resource-group <your-resource-group> --name <your-vmss-name>
+                az vmss update-instances --instance-ids "*" --resource-group 재미스홈 --name vmss
