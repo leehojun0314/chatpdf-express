@@ -15,6 +15,10 @@ const generator = require('../utils/generator');
 const PdfParse = require('pdf-parse');
 const https = require('https');
 const http = require('http');
+router.get('/', (req, res) => {
+	console.log('hello');
+	res.send('world');
+});
 router.post('/', (req, res) => {
 	console.log('req: ', req);
 });
