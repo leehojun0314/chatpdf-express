@@ -32,9 +32,10 @@ app.use(express.json());
 // app.use('/getConversations', routes.getConversations);
 // app.use('/createConversation', routes.createConversation);
 app.get('/', (req, res) => {
-	console.log('hello');
-	res.send('world');
+	console.log('hello2');
+	res.send('world2');
 });
+
 app.use('/conversation', routes.conversation);
 app.use('/message', routes.message);
 app.use('/test', routes.test);
