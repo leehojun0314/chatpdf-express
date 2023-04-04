@@ -5,11 +5,18 @@
 
 
 name: Deploy to Azure VMSS
-on:
-   push:
-      branches:
-         - master
+trigger:
+   branches:
+      - master
 
+- task: NodeTool@0
+  inputs:
+    versionSource: 'spec'
+    versionSpec: '9.x'
+
+- task: NodeTaskRunnerInstaller@0
+      inputs:
+        nodeVersion: '18.x'
 jobs:
    build-and-deploy:
       runs-on: ubuntu-latest
@@ -32,3 +39,18 @@ jobs:
            with:
               inlineScript: |
                  az vmss update-instances --instance-ids "*" --resource-group 재미스홈 --name vmss
+         - name : git actions
+           uses: azure/CLI@v1.0.0
+           with: 
+              inlineScript: |
+                  git pull origin master
+         - name : npm install
+           uses: azure/CLI@v1.0.0
+           with: 
+              inlineScript: |
+                  npm install
+         - name : npm start
+           uses: azure/CLI@v1.0.0
+           with: 
+              inlineScript: |
+                  sudo npm start
