@@ -6,25 +6,27 @@
 
 name: Deploy to Azure VMSS
 trigger:
-   branches:
-      - master
+   - master
 
-- task: NodeTool@0
-  inputs:
-    versionSource: 'spec'
-    versionSpec: '9.x'
-
-- task: NodeTaskRunnerInstaller@0
-      inputs:
-        nodeVersion: '18.x'
 jobs:
    build-and-deploy:
       runs-on: ubuntu-latest
 
-      steps:
+        steps:
          - name: Checkout code
            uses: actions/checkout@v2
 
+          # 언어 빌드를 위한 빌드 도구 설치
+         - name: Setup Node.js version
+            uses: actions/setup-node@v2
+            with:
+            node-version: '18.x'
+
+         - name: Install dependencies and build
+            run: |
+            npm install
+            npm run build
+            
          - name: Install Azure CLI
            run: |
               curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
@@ -39,18 +41,4 @@ jobs:
            with:
               inlineScript: |
                  az vmss update-instances --instance-ids "*" --resource-group 재미스홈 --name vmss
-         - name : git actions
-           uses: azure/CLI@v1.0.0
-           with: 
-              inlineScript: |
-                  git pull origin master
-         - name : npm install
-           uses: azure/CLI@v1.0.0
-           with: 
-              inlineScript: |
-                  npm install
-         - name : npm start
-           uses: azure/CLI@v1.0.0
-           with: 
-              inlineScript: |
-                  sudo npm start
+     
