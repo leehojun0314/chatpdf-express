@@ -2,12 +2,14 @@ name: Deploy to Azure VMSS
 trigger:
 - master
 
-
 pool:
   vmImage: 'ubuntu-latest'
 
 stages:
-  - steps:
+- stage: Build
+  jobs:
+  - job: Build
+    steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
