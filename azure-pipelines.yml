@@ -1,38 +1,38 @@
 name: Deploy to Azure VMSS
 trigger:
-   - master
+  - master
 
 jobs:
-   build-and-deploy:
-      runs-on: ubuntu-latest
+  build-and-deploy:
+    runs-on: ubuntu-latest
       
-      steps:
-         - name: Checkout code
-           uses: actions/checkout@v2
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-         # 언어 빌드를 위한 빌드 도구 설치
-         - name: Setup Node.js version
-           uses: actions/setup-node@v2
-           with:
-              node-version: '18.x'
+      # 언어 빌드를 위한 빌드 도구 설치
+    - name: Setup Node.js version
+      uses: actions/setup-node@v2
+      with:
+        node-version: '18.x'
 
-         - name: Install dependencies and build
-           run: |
-              npm install
-              npm run build
+    - name: Install dependencies and build
+      run: |
+        npm install
+        npm run build
 
-         - name: Install Azure CLI
-           run: |
-              curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-              az --version
+    - name: Install Azure CLI
+      run: |
+        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+        az --version
 
-         - name: Log in to Azure
-           uses: azure/login@v1
-           with:
-              creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Log in to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-         - name: Deploy to VMSS
-           uses: azure/CLI@v1.0.0
-           with:
-              inlineScript: |
-                 az vmss update-instances --instance-ids "*" --resource-group 재미스홈 --name vmss
+    - name: Deploy to VMSS
+      uses: azure/CLI@v1.0.0
+      with:
+        inlineScript: |
+          az vmss update-instances --instance-ids "*" --resource-group 재미스홈 --name vmss
