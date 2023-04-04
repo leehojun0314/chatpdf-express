@@ -22,6 +22,7 @@ router.get('/', (req, res) => {
 router.post('/', (req, res) => {
 	console.log('req: ', req);
 });
+router.post('/getHwpText', async (req, res) => {});
 router.get('/getText', async (req, res) => {
 	const fileUrl = req.query.fileUrl;
 	console.log('file url:', fileUrl);

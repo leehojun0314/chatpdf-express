@@ -11,6 +11,7 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"@azure/storage-blob": "^12.13.0",
 		"aws-sdk": "^2.1335.0",
 		"axios": "^1.3.4",
 		"cors": "^2.8.5",
@@ -19,6 +20,7 @@
 		"formidable": "^2.1.1",
 		"js-base64": "^3.7.5",
 		"mssql": "^9.1.1",
+		"node-hwp": "^0.1.0-alpha",
 		"openai": "^3.2.1",
 		"pdf-parse": "^1.1.1"
 	}

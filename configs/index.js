@@ -24,6 +24,11 @@ const configs = {
 		AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
 		AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
 	},
+	blob: {
+		ACCOUNT_NAME: process.env.ACCOUNT_NAME,
+		ACCOUNT_KEY: process.env.ACCOUNT_KEY,
+		CONTAINER_NAME: process.env.CONTAINER_NAME,
+	},
 	allowedOrigins: [
 		'http://localhost:3000',
 		'http://localhost:3001',

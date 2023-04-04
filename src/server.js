@@ -32,8 +32,8 @@ app.use(express.json());
 // app.use('/getConversations', routes.getConversations);
 // app.use('/createConversation', routes.createConversation);
 app.get('/', (req, res) => {
-	console.log('hello3');
-	res.send('world3');
+	console.log('hello');
+	res.send('hello world');
 });
 
 app.use('/conversation', routes.conversation);
