@@ -15,8 +15,9 @@ function getDocuText(fileUrl, extension) {
 						const buffer = Buffer.concat(data);
 						PdfParse(buffer)
 							.then((result) => {
-								console.log('pdf parse result : ', result);
+								// console.log('pdf parse result : ', result);
 								const optimizedStr = result.text.replace(/\n/g, '');
+								console.log('optimized text: ', optimizedStr);
 								resolve(optimizedStr);
 							})
 							.catch((err) => {

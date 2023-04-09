@@ -41,7 +41,11 @@ const s3 = new AWS.S3({
 	secretAccessKey: configs.s3.AWS_SECRET_ACCESS_KEY,
 });
 
-// 파일 URL을 받아서 PDF 파일의 텍스트를 반환하는 함수를 내보낸다.
+/**
+ * 파일 URL을 받아서 PDF 파일의 텍스트를 반환하는 함수.
+ * @param {string} fileUrl 텍스트로 변환시킬 pdf 파일의 url
+ * @returns {string} 변환된 텍스트 string
+ */
 async function getPDFText(fileUrl) {
 	const url = new URL(fileUrl);
 	const bucket = url.hostname.split('.')[0];
