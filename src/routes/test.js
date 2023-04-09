@@ -39,12 +39,12 @@ router.get('/ssetest', (req, res) => {
 		console.log('interval called i :', i);
 		res.write('hi');
 		i++;
-		if (i > 3) {
+		if (i > 10) {
 			console.log('end called');
 			clearInterval(interval);
 			res.end();
 		}
-	}, 1000);
+	}, 500);
 });
 router.post('/sumtest', async (req, res) => {
 	// const { fileUrl, extension } = await uploadBlob(req);
