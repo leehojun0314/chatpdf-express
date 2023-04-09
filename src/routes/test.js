@@ -28,13 +28,11 @@ router.get('/', (req, res) => {
 	res.send('world');
 });
 router.get('/ssetest', (req, res) => {
-	res.setHeader('Content-Type', 'text/event-stream');
-	res.setHeader('Cache-Control', 'no-cache');
-	res.setHeader('Connection', 'keep-alive');
-	res.setHeader('Content-Encoding', 'none');
+	// res.setHeader('Content-Type', 'text/event-stream');
+	res.setHeader('Content-Type', 'application/json');
 	// res.setHeader('Cache-Control', 'no-cache');
 	// res.setHeader('Connection', 'keep-alive');
-	// res.flushHeaders();
+	// res.setHeader('Content-Encoding', 'none');
 	let i = 0;
 	console.log('here is stream');
 	const interval = setInterval(() => {
