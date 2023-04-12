@@ -18,7 +18,7 @@ module.exports = function uploadBlob(req) {
 		form.parse(req, async (err, fields, files) => {
 			if (err) {
 				console.error(err);
-				reject(err);
+				reject({ err });
 				return;
 			}
 
@@ -46,7 +46,7 @@ module.exports = function uploadBlob(req) {
 				resolve({ fileUrl, fields, extension: file.mimetype });
 			} catch (error) {
 				console.error(error);
-				reject(error);
+				reject({ err: error });
 			}
 		});
 	});
