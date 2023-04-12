@@ -6,6 +6,7 @@ const port = process.env.PORT || 3000;
 
 const routes = require('./routes');
 const configs = require('../configs');
+const cookieParser = require('cookie-parser');
 app.use(
 	cors({
 		origin: function (origin, callback) {
@@ -18,6 +19,7 @@ app.use(
 		credentials: true,
 	}),
 );
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 // 라우트 사용
@@ -36,6 +38,8 @@ app.get('/', (req, res) => {
 
 app.use('/conversation', routes.conversation);
 app.use('/message', routes.message);
+app.use('/auth', routes.auth);
+
 app.use('/test', routes.test);
 
 // '/users' 경로에 대한 라우터를 userRoutes로 설정

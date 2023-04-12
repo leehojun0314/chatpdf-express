@@ -1,3 +1,6 @@
+require('dotenv').config('.env');
+const jsonwebtoken = require('jsonwebtoken');
+
 const fileSizes = {
 	'1gb': 1024 * 1024 * 1024,
 	'1mb': 1024 * 1024,
@@ -27,8 +30,20 @@ function checkFileSize(fileSize, limit) {
 function optimizeText(text) {
 	return text.replace(/\n/g, '');
 }
+/**
+ * JWT를 만드는 함수
+ * @param {object} params parameters to contain inside the jwt
+ * @returns {string} returns the jwt token
+ */
+function createJWT(params) {
+	const jwtToken = jsonwebtoken.sign(params, process.env.JWT_SECRET, {
+		expiresIn: '2 hours',
+	});
+	return jwtToken;
+}
 module.exports = {
 	fileSizes,
 	checkFileSize,
 	optimizeText,
+	createJWT,
 };

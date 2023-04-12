@@ -16,7 +16,8 @@ const PdfParse = require('pdf-parse');
 const https = require('https');
 const formidable = require('formidable');
 const uploadBlob = require('../utils/azureBlob/uploadBlob');
-
+const { createParser } = require('eventsource-parser');
+const { TextEncoder, TextDecoder } = require('util');
 const {
 	checkFileSize,
 	fileSizes,
@@ -27,6 +28,7 @@ router.get('/', (req, res) => {
 	console.log('hello');
 	res.send('world');
 });
+
 router.get('/ssetest', (req, res) => {
 	res.setHeader('Content-Type', 'text/event-stream');
 	// res.setHeader('Content-Type', 'application/json');

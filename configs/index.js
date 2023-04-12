@@ -39,6 +39,7 @@ const configs = {
 		'http://onnl.net',
 		'http://jw_lms.smartedu.center',
 		'https://www.talkdocu.com',
+		'https://talkdocu.vercel.app',
 	],
 	authenticateUrl: 'https://dtizen-secure.vercel.app',
 };

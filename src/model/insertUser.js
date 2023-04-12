@@ -7,7 +7,7 @@ function insertUser({ userName, userEmail }) {
 				.input('user_name', userName)
 				.input('user_email', userEmail)
 				.query(
-					'INSERT INTO UserTable (user_name, user_email) OUTPUT INSERTED.user_id VALUES (@user_name, @user_email)',
+					'INSERT INTO UserTable (user_name, user_email) OUTPUT INSERTED.* VALUES (@user_name, @user_email)',
 				)
 				.then((result) => {
 					resolve(result);

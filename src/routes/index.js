@@ -6,6 +6,7 @@
 // const createConversation = require('./conversation/createConversation');
 const conversation = require('./conversation/index');
 const message = require('./message/index');
+const auth = require('./auth');
 const test = require('./test');
 const routes = {
 	// chatAi: chatAi,
@@ -16,6 +17,7 @@ const routes = {
 	// createConversation: createConversation,
 	conversation: conversation,
 	message: message,
+	auth: auth,
 	test: test,
 };
 module.exports = routes;
