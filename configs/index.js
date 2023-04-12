@@ -40,6 +40,7 @@ const configs = {
 		'http://jw_lms.smartedu.center',
 		'https://www.talkdocu.com',
 		'https://talkdocu.vercel.app',
+		'https://jemishome-web-cdn.azureedge.net',
 	],
 	authenticateUrl: 'https://dtizen-secure.vercel.app',
 };
