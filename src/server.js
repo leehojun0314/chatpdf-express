@@ -23,7 +23,7 @@ app.use(cookieParser());
 app.get('/cookietest', (req, res) => {
 	res.cookie('test', 'testcookie', {
 		httpOnly: true,
-		secure: true,
+		secure: false,
 		maxAge: 1000 * 60 * 60 * 2,
 		sameSite: 'lax',
 	});
