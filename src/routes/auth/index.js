@@ -8,7 +8,6 @@ router.get('/', (req, res) => {
 		httpOnly: true,
 		secure: process.env.NODE_ENV === 'production',
 		maxAge: 1000 * 60 * 60 * 2, //2 hours
-		domain: 'https://talkdocu.vercel.app',
 	});
 	res.send('test cookie sent');
 });
