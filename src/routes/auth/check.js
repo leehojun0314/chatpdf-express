@@ -3,8 +3,8 @@ const selectUser = require('../../model/selectUser');
 require('dotenv').config();
 const secretKey = process.env.JWT_SECRET;
 async function checkLogin(req, res) {
-	const jwtToken = req.cookies?.jwt;
-	console.log('cookies: ', req.cookies);
+	const jwtToken = req.cookies?.get('jwt').value;
+	console.log('cookies: ', req.headers.cookie);
 	if (!jwtToken) {
 		return res.status(401).json({ isLoggedIn: false });
 	}
