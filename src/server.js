@@ -20,6 +20,15 @@ app.use(
 	}),
 );
 app.use(cookieParser());
+app.get('/cookietest', (req, res) => {
+	res.cookie('test', 'testcookie', {
+		httpOnly: true,
+		secure: true,
+		maxAge: 1000 * 60 * 60 * 2,
+		sameSite: 'lax',
+	});
+	res.send('test cookie sent');
+});
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 // 라우트 사용
