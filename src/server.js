@@ -6,7 +6,6 @@ const port = process.env.PORT || 3000;
 
 const routes = require('./routes');
 const configs = require('../configs');
-const cookieParser = require('cookie-parser');
 app.use(
 	cors({
 		origin: function (origin, callback) {
@@ -19,27 +18,12 @@ app.use(
 		credentials: true,
 	}),
 );
-app.use(cookieParser());
-app.get('/cookietest', (req, res) => {
-	res.cookie('test', 'testcookie', {
-		httpOnly: true,
-		secure: false,
-		maxAge: 1000 * 60 * 60 * 2,
-		sameSite: 'lax',
-	});
-	res.send('test cookie sent');
-});
+
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 // 라우트 사용
 // '/' 경로에 대한 라우터를 indexRoutes로 설정
-// app.use('/', indexRoutes);
-// app.use('/chatAi', routes.chatAi);
-// app.use('/chatAi2', routes.chatAi2);
-// app.use('/chatAi3', routes.chatAi3);
-// app.use('/getMessages', routes.getMessages);
-// app.use('/getConversations', routes.getConversations);
-// app.use('/createConversation', routes.createConversation);
+
 app.get('/', (req, res) => {
 	console.log('hello');
 	res.send('hello world');

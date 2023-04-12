@@ -52,12 +52,7 @@ async function googleAuth(req, res) {
 		const dbData = userResult.recordset[0];
 		const jwt = createJWT(dbData);
 		console.log('jwt: ', jwt);
-		res.cookie('jwt', jwt, {
-			httpOnly: true, //javascript접근 불가.
-			secure: true, //https를 사용할 경우 주석 해제하세요
-			maxAge: 1000 * 60 * 60 * 2, //2 hours
-			sameSite: 'lax', //같은 사이트에서 요청이 발생하거나, 다른 사이트에서 GET 방식으로 요청이 발생할 때만 쿠키가 전송
-		});
+
 		res.send({ token: jwt });
 	} catch (err) {
 		console.log(err.response.data);
