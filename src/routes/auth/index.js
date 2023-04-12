@@ -4,6 +4,11 @@ const checkLogin = require('./check');
 const router = express.Router();
 router.get('/', (req, res) => {
 	console.log('test cookie');
+	res.setHeader('Access-Control-Allow-Credentials', true);
+	res.setHeader(
+		'Access-Control-Allow-Headers',
+		'Origin, X-Requested-With, Content-Type, Accept',
+	);
 	res.cookie('test', 'testcookie', {
 		// httpOnly: true,
 		secure: process.env.NODE_ENV === 'production',
