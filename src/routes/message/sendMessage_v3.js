@@ -7,6 +7,7 @@ const sendToAi_vola_stream = require('../../utils/openai/sendToAi__vola_stream')
 const router = express.Router();
 async function sendMessageV3(req, res) {
 	res.setHeader('Content-Type', 'application/json');
+	res.setHeader('X-Accel-Buffering', 'no');
 	const conversationId = req.body?.conversationId || '';
 	const user = req.user;
 	const message = req.body?.text;
