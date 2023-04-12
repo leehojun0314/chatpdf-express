@@ -35,6 +35,7 @@ router.get('/ssetest', (req, res) => {
 	res.setHeader('Cache-Control', 'no-cache');
 	res.setHeader('Connection', 'keep-alive');
 	res.setHeader('Content-Encoding', 'none');
+	res.setHeader('X-Accel-Buffering', 'no');
 	// res.writeHead(200, {
 	// 	'Content-Type': 'application/json',
 	// });
