@@ -18,8 +18,8 @@ async function createConversationV4(req, res) {
 	try {
 		//user id 가져오기 req.user에는 userid가 없음. 다른 db이기 떄문
 		const selectUserResult = await selectUser({
-			email: user.userEmail,
-			name: user.userName,
+			email: user.user_email,
+			name: user.user_name,
 		});
 		const userId = selectUserResult.recordset[0]?.user_id;
 		if (!userId) {
@@ -29,15 +29,24 @@ async function createConversationV4(req, res) {
 		//파일 크기 체크 //todo
 		//중간중간 res.write를 통해 진행상황 전달
 		const form = formidable();
-		await new Promise((resolve, reject) => {
+		const { status } = await new Promise((resolve, reject) => {
 			form.parse(req, async (err, fields, files) => {
 				if (err) {
 					reject({ err });
 					return;
 				}
 				const file = files['file'];
+				if (checkFileSize(file.size, 1024 * 170)) {
+					resolve({ status: true });
+				} else {
+					reject({ status: false });
+				}
 			});
 		});
+		if (!status) {
+			res.status(413).send('file size is over 170KB');
+			return;
+		}
 		//upload s3
 		const { fileUrl, fields, extension, err } = await uploadBlob(req);
 		console.log('file url : ', fileUrl);

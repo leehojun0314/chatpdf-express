@@ -1,4 +1,4 @@
-const authenticate = require('../../middleware/authenticate');
+const authenticateDtizen = require('../../middleware/authenticateDtizen');
 const sendMessageV1 = require('./sendMessage_v1');
 const sendMessageV2 = require('./sendMessage_v2');
 const sendMessageV3 = require('./sendMessage_v3');
@@ -6,6 +6,7 @@ const getMessages = require('./getMessages');
 const getMessages_v2 = require('./getMessages_v2');
 const express = require('express');
 const getMessages_v3 = require('./getMessages_v3');
+const authenticate = require('../../middleware/authenticate');
 const router = express.Router();
 
 router.get('/', authenticate, getMessages);
@@ -14,4 +15,9 @@ router.get('/v3', authenticate, getMessages_v3);
 router.post('/v1', authenticate, sendMessageV1);
 router.post('/v2', authenticate, sendMessageV2);
 router.post('/v3', authenticate, sendMessageV3);
+
+router.get('/dtizen', authenticateDtizen, getMessages);
+router.get('/v3/dtizen', authenticateDtizen, getMessages_v3);
+router.post('/v3/dtizen', authenticateDtizen, sendMessageV3);
+
 module.exports = router;

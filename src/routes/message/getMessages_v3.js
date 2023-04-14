@@ -4,7 +4,7 @@ const selectQuestion_all = require('../../model/selectQuestion_all');
 
 async function getMessages_v3(req, res) {
 	const conversationId = req.query.convId || '';
-	const userEmail = req.user.userEmail;
+	const userEmail = req.user.user_email;
 	if (!conversationId) {
 		res.status(400).send('please enter a valid conversation id');
 		return;

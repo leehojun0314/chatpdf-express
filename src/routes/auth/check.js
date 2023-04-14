@@ -22,7 +22,11 @@ async function checkLogin(req, res) {
 		});
 		console.log('select user result : ', userResult);
 		if (userResult.recordset.length > 0) {
-			res.json({ isLoggedIn: true, userData: userResult.recordset[0] });
+			res.json({
+				isLoggedIn: true,
+				userData: userResult.recordset[0],
+				jwt: jwtToken,
+			});
 		} else {
 			console.log('unknown user');
 			res.json({ isLoggedIn: false });

@@ -47,13 +47,16 @@ async function googleAuth(req, res) {
 		);
 		console.log('user data: ', data);
 		//get data from database
-		const userResult = await selectUser({ email: data.email });
+		const userResult = await selectUser({
+			email: data.email,
+			name: data.name,
+		});
 		console.log('user recordset: ', userResult.recordset);
 		const dbData = userResult.recordset[0];
 		const jwt = createJWT(dbData);
 		console.log('jwt: ', jwt);
 
-		res.send({ token: jwt });
+		res.send({ jwt: jwt, userData: dbData });
 	} catch (err) {
 		console.log(err.response.data);
 	}
