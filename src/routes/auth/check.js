@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const selectUser = require('../../model/selectUser');
+const updateLastConv = require('../../model/updateLastConv');
+const selectConversation_all = require('../../model/selectConversation_all');
 require('dotenv').config();
 const secretKey = process.env.JWT_SECRET;
 async function checkLogin(req, res) {
@@ -21,12 +23,38 @@ async function checkLogin(req, res) {
 			name: decoded.user_name,
 		});
 		console.log('select user result : ', userResult);
+		const lastConv = userResult.recordset[0].last_conv;
+
 		if (userResult.recordset.length > 0) {
-			res.json({
-				isLoggedIn: true,
-				userData: userResult.recordset[0],
-				jwt: jwtToken,
-			});
+			if (!lastConv) {
+				const conversationsResult = await selectConversation_all({
+					userId: userResult.recordset[0].user_id,
+				});
+				const lastConversation =
+					conversationsResult.recordset[
+						conversationsResult.recordset.length - 1
+					];
+				console.log('lastconversation: ', lastConversation);
+				await updateLastConv({
+					userId: userResult.recordset[0].user_id,
+					convId: lastConversation.conversation_id,
+				});
+				res.json({
+					isLoggedIn: true,
+					userData: {
+						...userResult.recordset[0],
+						last_conv: lastConversation.conversation_id,
+					},
+					jwt: jwtToken,
+				});
+			} else {
+				res.json({
+					isLoggedIn: true,
+					userData: userResult.recordset[0],
+
+					jwt: jwtToken,
+				});
+			}
 		} else {
 			console.log('unknown user');
 			res.json({ isLoggedIn: false });

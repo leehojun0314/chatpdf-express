@@ -7,6 +7,7 @@ const deleteConversation = require('./deleteConversation');
 const getConversations = require('./getConversations');
 const createConversationV3 = require('./createConversation_v3');
 const authenticate = require('../../middleware/authenticate');
+const lastConversation = require('./lastConversation');
 const router = express.Router();
 
 router.get('/', authenticate, getConversations);
@@ -14,6 +15,7 @@ router.post('/', authenticate, createConversation);
 router.post('/v2', authenticate, createConversationV2);
 router.post('/v3', authenticate, createConversationV3);
 router.delete('/', authenticate, deleteConversation);
+router.patch('/last', authenticate, lastConversation);
 
 router.get('/dtizen', authenticateDtizen, getConversations);
 
