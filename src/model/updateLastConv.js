@@ -12,6 +12,7 @@ function updateLastConv({ userId, convId }) {
 					)
 					.then((result) => {
 						console.log('update result: ', result);
+						resolve(result);
 					})
 					.catch((err) => {
 						reject(err);

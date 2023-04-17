@@ -50,6 +50,7 @@ async function googleAuth(req, res) {
 		const userResult = await selectUser({
 			email: data.email,
 			name: data.name,
+			profileImg: data.picture,
 		});
 		console.log('user recordset: ', userResult.recordset);
 		const dbData = userResult.recordset[0];

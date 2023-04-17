@@ -9,6 +9,7 @@ const createSalutation = require('../../utils/openai/createSalutation');
 const uploadBlob = require('../../utils/azureBlob/uploadBlob');
 const getDocuText = require('../../utils/getDocuText');
 const selectConversation_all = require('../../model/selectConversation_all');
+const updateLastConv = require('../../model/updateLastConv');
 
 async function createConversationV3(req, res) {
 	const user = req.user;
@@ -68,6 +69,7 @@ async function createConversationV3(req, res) {
 		res.status(201).send({
 			message: 'conversation created',
 			conversations,
+			createdId: conversationId,
 		});
 	} catch (error) {
 		console.log('error: ', error);
