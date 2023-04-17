@@ -30,6 +30,13 @@ async function checkLogin(req, res) {
 				const conversationsResult = await selectConversation_all({
 					userId: userResult.recordset[0].user_id,
 				});
+				if (!conversationsResult.recordset.length) {
+					res.json({
+						isLoggedIn: true,
+						userData: userResult.recordset[0],
+					});
+					return;
+				}
 				const lastConversation =
 					conversationsResult.recordset[
 						conversationsResult.recordset.length - 1

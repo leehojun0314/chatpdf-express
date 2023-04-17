@@ -59,5 +59,12 @@ class MessageGenerator {
 			 `,
 		};
 	}
+	createSummary(content) {
+		return {
+			role: 'user',
+			content: `다음 지문을 읽고 주요 내용을 300자 내로 요약해줘. 전체적인 내용과 관련 없는 내용은 생략해도 돼. 
+			지문 : ${content}`,
+		};
+	}
 }
 module.exports = new MessageGenerator();

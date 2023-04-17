@@ -1,5 +1,4 @@
 const { Configuration, OpenAIApi } = require('openai');
-const MessageGenerator = require('../generator');
 const generator = require('../generator');
 require('dotenv').config();
 const configuration = new Configuration({
@@ -8,15 +7,15 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 //volatility의 약자. 휘발성 메세지. 이전 메세지 기억못함
-async function createSalutation(allTexts) {
+async function createSummary(text) {
 	if (!configuration.apiKey) {
 		return { message: 'no apikey presented', status: false };
 	}
+	const prompt = generator.createSummary(text);
 	try {
-		const systemMessage = generator.systemMessage(allTexts);
 		const completion = await openai.createChatCompletion({
 			model: 'gpt-3.5-turbo',
-			messages: [systemMessage],
+			messages: [prompt],
 		});
 		const answer = completion.data.choices[0].message.content;
 		return answer;
@@ -25,4 +24,4 @@ async function createSalutation(allTexts) {
 		return;
 	}
 }
-module.exports = createSalutation;
+module.exports = createSummary;

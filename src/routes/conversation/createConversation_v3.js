@@ -36,8 +36,7 @@ async function createConversationV3(req, res) {
 		const allTexts = await getDocuText(fileUrl, extension);
 
 		//salutation 생성
-		const systemMessage = generator.systemMessage(allTexts);
-		const salutation = await createSalutation(systemMessage);
+		const salutation = await createSalutation(allTexts);
 		console.log('salutation: ', salutation);
 
 		//conversation 생성
