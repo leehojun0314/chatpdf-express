@@ -26,7 +26,11 @@ async function sendMessageV3(req, res) {
 		await sendToAi_vola_stream(
 			messagesResult.recordset[0].message, //지문의 내용
 			message,
-			async ({ text, isEnd }) => {
+			async ({ text, isEnd, error }) => {
+				if (error) {
+					res.status(500).send(error);
+					return;
+				}
 				if (isEnd) {
 					//내가 보낸 내용 insert
 					await insertMessage({

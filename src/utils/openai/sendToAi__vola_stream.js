@@ -46,7 +46,8 @@ async function sendToAi_vola_stream(systemMessage, newMessage, streamCallback) {
 				console.error('문자열을 JSON으로 파싱하는 데 실패했습니다:', e);
 				streamCallback({
 					isEnd: true,
-					text: '문자열을 JSON으로 파싱하는 데 실패했습니다:',
+					text: '문자열을 JSON으로 파싱하는 데 실패했습니다',
+					error: '문자열을 JSON으로 파싱하는 데 실패했습니다',
 				});
 			}
 			let text = '';
