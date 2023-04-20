@@ -1,14 +1,16 @@
 const getSql = require('../database/connection');
 
-function deleteConversation(convId) {
+function deleteConversation({ convId }) {
 	getSql().then((sqlPool) => {
 		sqlPool
 			.request()
 			.input('conversation_id', convId)
+			.query('DELETE FROM Message WHERE conversation_id=@conversation_id')
+			.query('DELETE FROM Question WHERE conversation_id=@conversation_id')
+			.query('DELETE FROM Document WHERE conversation_id=@conversation_id')
 			.query(
 				'DELETE FROM Conversation WHERE conversation_id=@conversation_id',
 			)
-			.query('DELETE FROM Message WHERE conversation_id=@conversation_id')
 			.then((result) => {
 				console.log('result', result);
 			})

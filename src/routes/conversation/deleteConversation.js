@@ -1,11 +1,11 @@
 async function deleteConversation(req, res) {
-	const query = req.query.convId;
-	if (!query) {
+	const convId = req.query.convId;
+	if (!convId) {
 		res.status(404).send('conversation id is not given');
 		return;
 	}
 	try {
-		await deleteConversation;
+		await deleteConversation({ convId });
 		res.status(200).send('conversation deleted');
 	} catch (error) {
 		res.status(500).send(error);

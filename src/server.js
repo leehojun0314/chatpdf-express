@@ -10,6 +10,7 @@ app.use(
 	cors({
 		origin: function (origin, callback) {
 			if (configs.allowedOrigins.indexOf(origin) !== -1 || !origin) {
+				console.log('origin: ', origin);
 				callback(null, true);
 			} else {
 				callback(new Error('Not allowed by CORS'));
@@ -34,11 +35,6 @@ app.use('/message', routes.message);
 app.use('/auth', routes.auth);
 
 app.use('/test', routes.test);
-
-// '/users' 경로에 대한 라우터를 userRoutes로 설정
-// app.use('/users', userRoutes);
-// app.use('/chatAi', chatA);
-
 // 서버 시작
 app.listen(port, () => {
 	console.log(`Server is running at http://localhost:${port}`);

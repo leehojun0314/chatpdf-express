@@ -11,13 +11,9 @@ const { encode, decode } = require('js-base64');
 const getSql = require('../database/connection');
 const createQuestion = require('../utils/openai/createQuestion');
 const createSalutation = require('../utils/openai/createSalutation');
-const generator = require('../utils/generator');
 const PdfParse = require('pdf-parse');
 const https = require('https');
 const formidable = require('formidable');
-const uploadBlob = require('../utils/azureBlob/uploadBlob');
-const { createParser } = require('eventsource-parser');
-const { TextEncoder, TextDecoder } = require('util');
 const {
 	checkFileSize,
 	fileSizes,
