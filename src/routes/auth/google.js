@@ -60,6 +60,7 @@ async function googleAuth(req, res) {
 		res.send({ jwt: jwt, userData: dbData });
 	} catch (err) {
 		console.log(err.response.data);
+		res.status(500).send(err);
 	}
 }
 module.exports = googleAuth;

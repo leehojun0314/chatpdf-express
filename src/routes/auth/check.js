@@ -31,7 +31,7 @@ async function checkLogin(req, res) {
 					userId: userResult.recordset[0].user_id,
 				});
 				if (!conversationsResult.recordset.length) {
-					res.json({
+					res.send({
 						isLoggedIn: true,
 						userData: userResult.recordset[0],
 					});
@@ -46,7 +46,7 @@ async function checkLogin(req, res) {
 					userId: userResult.recordset[0].user_id,
 					convId: lastConversation.conversation_id,
 				});
-				res.json({
+				res.send({
 					isLoggedIn: true,
 					userData: {
 						...userResult.recordset[0],
@@ -55,7 +55,7 @@ async function checkLogin(req, res) {
 					jwt: jwtToken,
 				});
 			} else {
-				res.json({
+				res.send({
 					isLoggedIn: true,
 					userData: userResult.recordset[0],
 
@@ -64,11 +64,11 @@ async function checkLogin(req, res) {
 			}
 		} else {
 			console.log('unknown user');
-			res.json({ isLoggedIn: false });
+			res.send({ isLoggedIn: false });
 		}
 	} catch (error) {
 		console.log('error : ', error);
-		res.json({ isLoggedIn: false });
+		res.send({ isLoggedIn: false });
 	}
 }
 module.exports = checkLogin;
