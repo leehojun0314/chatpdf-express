@@ -10,7 +10,6 @@ app.use(
 	cors({
 		origin: function (origin, callback) {
 			if (configs.allowedOrigins.indexOf(origin) !== -1 || !origin) {
-				console.log('origin: ', origin);
 				callback(null, true);
 			} else {
 				callback(new Error('Not allowed by CORS'));
@@ -26,7 +25,6 @@ app.use(express.json());
 // '/' 경로에 대한 라우터를 indexRoutes로 설정
 
 app.get('/', (req, res) => {
-	console.log('hello');
 	res.send('hello world');
 });
 
