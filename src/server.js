@@ -36,6 +36,26 @@ app.use('/auth', routes.auth);
 
 app.use('/test', routes.test);
 // 서버 시작
-app.listen(port, () => {
-	console.log(`Server is running at http://localhost:${port}`);
-});
+// app.listen(port, () => {
+// 	console.log(`Server is running at http://localhost:${port}`);
+// });
+function startServer() {
+	const server = app.listen(port, () => {
+		console.log(`Server is running at ${port} port`);
+	});
+	process.on('uncaughtException', (error) => {
+		console.log('uncaught exception 발생 : ', error);
+		server.close(() => {
+			console.log('서버를 종료하고 재시작합니다.');
+			startServer();
+		});
+	});
+	process.on('unhandledRejection', (reason, promise) => {
+		console.log('unhandled rejection 발생 : ', reason);
+		server.close(() => {
+			console.log('서버를 종료하고 재시작합니다.');
+			startServer();
+		});
+	});
+}
+startServer();
