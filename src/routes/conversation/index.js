@@ -9,6 +9,7 @@ const createConversationV3 = require('./createConversation_v3');
 const authenticate = require('../../middleware/authenticate');
 const lastConversation = require('./lastConversation');
 const createConversationV4 = require('./createConversation_v4');
+const changeConvName = require('./changeConvName');
 const router = express.Router();
 
 router.get('/', authenticate, getConversations);
@@ -18,7 +19,7 @@ router.post('/v3', authenticate, createConversationV3);
 router.post('/v4', authenticate, createConversationV4);
 router.delete('/', authenticate, deleteConversation);
 router.patch('/last', authenticate, lastConversation);
-
+router.patch('/name', authenticate, changeConvName);
 router.get('/dtizen', authenticateDtizen, getConversations);
 
 module.exports = router;
