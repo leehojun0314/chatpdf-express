@@ -51,15 +51,25 @@ async function sendToAi_vola_stream(systemMessage, newMessage, streamCallback) {
 				});
 			}
 			let text = '';
-			for (let data of json) {
-				text += data.choices[0].delta.content || '';
-			}
-			finalText += text;
+			console.log('json : ', json);
+			if (isIterable(json)) {
+				for (let data of json) {
+					text += data.choices[0].delta.content || '';
+				}
+				finalText += text;
 
-			streamCallback({
-				text: text,
-				isEnd: false,
-			});
+				streamCallback({
+					text: text,
+					isEnd: false,
+				});
+			} else {
+				console.log('반복 가능한 json 객체가 아닙니다.');
+				streamCallback({
+					error: '반복 가능한 json 객체가 아닙니다.',
+					isEnd: true,
+					text: '반복 가능한 json 객체가 아닙니다.',
+				});
+			}
 		});
 		completion.data.on('end', () => {
 			console.log('text: ', finalText);
@@ -75,5 +85,8 @@ async function sendToAi_vola_stream(systemMessage, newMessage, streamCallback) {
 		console.log('error: ', error);
 		return { status: false, error: error };
 	}
+}
+function isIterable(obj) {
+	return obj != null && typeof obj[Symbol.iterator] === 'function';
 }
 module.exports = sendToAi_vola_stream;

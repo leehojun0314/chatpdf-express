@@ -14,6 +14,7 @@ async function googleAuth(req, res) {
 	const redirect_uri = req.query.redirect_uri;
 	console.log('code: ', code);
 	console.log('redirect _ uri : ', redirect_uri);
+	console.log('google id: ', process.env.GOOGLE_ID);
 	if (!code || !redirect_uri) {
 		res.status(400).send('bad request');
 		return;
@@ -59,7 +60,7 @@ async function googleAuth(req, res) {
 
 		res.send({ jwt: jwt, userData: dbData });
 	} catch (err) {
-		console.log(err.response.data);
+		console.log(err);
 		res.status(500).send(err);
 	}
 }
