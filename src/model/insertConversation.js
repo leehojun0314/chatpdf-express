@@ -10,8 +10,8 @@ function insertConversation({ conversationName, userId, fileUrl, salutation }) {
 					.input('fileUrl', fileUrl)
 					.input('salutation', salutation)
 					.query(
-						`INSERT INTO Conversation (conversation_name, user_id, fileUrl, salutation) 
-						OUTPUT INSERTED.conversation_id VALUES (@conversation_name, @user_id, @fileUrl, @salutation)`,
+						`INSERT INTO Conversation (conversation_name, user_id, fileUrl, salutation, created_at) 
+						OUTPUT INSERTED.conversation_id VALUES (@conversation_name, @user_id, @fileUrl, @salutation, GETDATE())`,
 					)
 					.then((result) => {
 						console.log('result: ', result);

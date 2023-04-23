@@ -9,8 +9,8 @@ function insertConversation_v2({ conversationName, userId }) {
 					.input('user_id', userId)
 
 					.query(
-						`INSERT INTO Conversation (conversation_name, user_id) 
-						OUTPUT INSERTED.conversation_id VALUES (@conversation_name, @user_id)`,
+						`INSERT INTO Conversation (conversation_name, user_id, created_at) 
+						OUTPUT INSERTED.conversation_id VALUES (@conversation_name, @user_id, GETDATE())`,
 					)
 					.then((result) => {
 						console.log('insert conversation result: ', result);
