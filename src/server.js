@@ -47,6 +47,7 @@ function startServer() {
 		// 	console.log('서버를 종료하고 재시작합니다.');
 		// 	startServer();
 		// });
+		return false;
 	});
 	process.on('unhandledRejection', (reason, promise) => {
 		console.log('unhandled rejection 발생 : ', reason);
@@ -54,6 +55,7 @@ function startServer() {
 		// 	console.log('서버를 종료하고 재시작합니다.');
 		// 	startServer();
 		// });
+		return false;
 	});
 }
 startServer();

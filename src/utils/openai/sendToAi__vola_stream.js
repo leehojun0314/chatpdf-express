@@ -31,6 +31,7 @@ async function sendToAi_vola_stream(systemMessage, newMessage, streamCallback) {
 				return;
 			}
 			let chunkToString = chunk.toString();
+			console.log('chunk to string: ', chunkToString);
 			// 1. "data:"를 콤마로 대체합니다.
 			let parsableString = chunkToString.replace(/data\s*:/g, ',');
 			// 2. 문자열의 시작과 끝에 대괄호를 추가하여 배열로 만듭니다.
