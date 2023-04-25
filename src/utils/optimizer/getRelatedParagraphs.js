@@ -31,15 +31,18 @@ async function getRelatedParagraphs(paragraphs, userQuestion) {
 	);
 
 	// 3.1 관련성 점수가 제일 높은 문단의 다음 문단도 점수를 추가해줌.
+
 	const bestParagraph = sortedParagraphs[0];
-	bestParagraph.relevanceScore += 1;
-	console.log('best paragraph : ', bestParagraph);
+	if (bestParagraph.relevanceScore === 0) {
+		return []; //전혀 관계가 없다는 뜻
+	}
 	const continuosParagraph = scoredParagraphs.find(
 		(p) => p.order_number === bestParagraph.order_number + 1,
 	);
-	console.log('continuos before : ', continuosParagraph);
-	continuosParagraph.relevanceScore += 1;
-	console.log('continuos : ', continuosParagraph);
+	if (continuosParagraph) {
+		bestParagraph.relevanceScore += 1;
+		continuosParagraph.relevanceScore += 1;
+	}
 	const againSortedParagraphs = sortedParagraphs.sort(
 		(a, b) => b.relevanceScore - a.relevanceScore,
 	);
@@ -50,6 +53,9 @@ async function getRelatedParagraphs(paragraphs, userQuestion) {
 	let totalLength = 0;
 
 	for (const paragraph of againSortedParagraphs) {
+		if (paragraph.relevanceScore === 0) {
+			break;
+		}
 		if (totalLength + paragraph.paragraph_content.length <= 3500) {
 			selectedParagraphs.push(paragraph);
 			totalLength += paragraph.paragraph_content.length;

@@ -59,7 +59,13 @@ async function sendMessageV4(req, res) {
 					});
 					//ai가 보낸 내용 insert
 					await insertMessage({
-						message: text,
+						message:
+							text +
+							(relatedParagraphs.length > 0
+								? `(참조 : ${relatedParagraphs
+										.map((p) => p.order_number)
+										.join(', ')} page) `
+								: ''),
 						sender: 'assistant',
 						messageOrder: messagesResult.recordset.length + 1,
 						conversationId: conversationId,
@@ -67,13 +73,13 @@ async function sendMessageV4(req, res) {
 					});
 					res.end('');
 				} else {
-					res.write(text);
-					// res.write(
-					// 	JSON.stringify({
-					// 		text,
-					// 		pages: relatedParagraphs.map((p) => p.order_number),
-					// 	}),
-					// );
+					// res.write(text);
+					res.write(
+						JSON.stringify({
+							text,
+							pages: relatedParagraphs.map((p) => p.order_number),
+						}) + '\n',
+					);
 				}
 			},
 		);

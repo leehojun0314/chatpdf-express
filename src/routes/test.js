@@ -23,6 +23,7 @@ const {
 const getDocuText = require('../utils/getDocuText');
 const { extractKeyPhrase } = require('../utils/azureLanguage/keyPhrase');
 const { summarization } = require('../utils/azureLanguage/summarization');
+const sendToAi_vola_stream = require('../utils/openai/sendToAi__vola_stream');
 
 function pageRender(pageData) {
 	// 텍스트 레이어를 추출합니다.
@@ -102,7 +103,27 @@ router.get('/', (req, res) => {
 	console.log('hello');
 	res.send('world');
 });
-
+router.get('/ssetest2', async (req, res) => {
+	res.setHeader('Content-Type', 'application/json');
+	res.setHeader('X-Accel-Buffering', 'no');
+	await sendToAi_vola_stream(
+		'오늘의 날씨는 좋다.', //지문의 내용
+		'안녕?',
+		async ({ text, isEnd, error }) => {
+			if (error) {
+				console.log('error : ', error);
+				res.status(500).send(error);
+				return;
+			}
+			if (isEnd) {
+				res.end('');
+			} else {
+				// res.write(text);
+				res.write(JSON.stringify({ text, arr: [1, 2, 3] }) + '\n');
+			}
+		},
+	);
+});
 router.get('/ssetest', (req, res) => {
 	res.setHeader('Content-Type', 'text/event-stream');
 	// res.setHeader('Content-Type', 'application/json');

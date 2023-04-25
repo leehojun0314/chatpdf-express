@@ -7,12 +7,16 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 //volatility의 약자. 휘발성 메세지. 이전 메세지 기억못함
-async function sendToAi_vola_stream(systemMessage, newMessage, streamCallback) {
+async function sendToAi_vola_stream(content, newMessage, streamCallback) {
 	if (!configuration.apiKey) {
 		return { message: 'no apikey presented', status: false };
 	}
 	// const messages = MessageGenerator.messageSet(recordset);
-	const messages = [MessageGenerator.systemMessage(systemMessage)];
+	const messages = [];
+	if (content) {
+		// const messages = [MessageGenerator.systemMessage(content)];
+		messages.push(MessageGenerator.systemMessage(content));
+	}
 	try {
 		messages.push(MessageGenerator.userMessage(newMessage));
 		let finalText = '';

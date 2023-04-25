@@ -1,5 +1,5 @@
 const getSql = require('../database/connection');
-function insertConversation_v2({ conversationName, userId }) {
+function insertConversation_v2({ conversationName, userId, fileUrl }) {
 	return new Promise((resolve, reject) => {
 		getSql()
 			.then((sqlPool) => {
@@ -7,10 +7,10 @@ function insertConversation_v2({ conversationName, userId }) {
 					.request()
 					.input('conversation_name', conversationName)
 					.input('user_id', userId)
-
+					.input('fileUrl', fileUrl)
 					.query(
-						`INSERT INTO Conversation (conversation_name, user_id, created_at) 
-						OUTPUT INSERTED.conversation_id VALUES (@conversation_name, @user_id, GETDATE())`,
+						`INSERT INTO Conversation (conversation_name, user_id, created_at, fileUrl) 
+						OUTPUT INSERTED.conversation_id VALUES (@conversation_name, @user_id, GETDATE(), @fileUrl)`,
 					)
 					.then((result) => {
 						console.log('insert conversation result: ', result);

@@ -57,6 +57,7 @@ async function createConversationV4(req, res) {
 		const conversationResult = await insertConversation_v2({
 			conversationName: fields.conversationName,
 			userId,
+			fileUrl,
 		});
 
 		const conversationId = conversationResult.recordset[0].conversation_id;
