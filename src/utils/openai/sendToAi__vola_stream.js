@@ -39,6 +39,7 @@ async function sendToAi_vola_stream(systemMessage, newMessage, streamCallback) {
 			// 3. 문자열의 첫 번째 콤마를 제거합니다.
 			parsableString = parsableString.replace(/^\[,/, '[');
 			// 이제 문자열을 JSON.parse로 파싱할 수 있습니다.
+			console.log('parsable string: ', parsableString);
 			let json;
 
 			try {
