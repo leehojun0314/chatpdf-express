@@ -11,7 +11,6 @@ async function insertQuestion({ conversationId, questionArr }) {
 				.query(`INSERT INTO Question (question_content, question_order, conversation_id) 
                     VALUES (@question_content, @question_order, @conversation_id)
                     `);
-			console.log('inserted question : ', questionArr);
 		}
 		return { status: true };
 	} catch (err) {

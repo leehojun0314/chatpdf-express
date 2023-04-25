@@ -51,11 +51,12 @@ async function sendToAi_vola_stream(systemMessage, newMessage, streamCallback) {
 				});
 			}
 			let text = '';
-			console.log('json : ', json);
+			// console.log('json : ', json);
 			if (isIterable(json)) {
 				for (let data of json) {
 					text += data.choices[0].delta.content || '';
 				}
+				// console.log('text: ', text);
 				finalText += text;
 
 				streamCallback({

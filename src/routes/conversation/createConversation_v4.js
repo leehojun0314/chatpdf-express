@@ -1,4 +1,3 @@
-const insertConversation = require('../../model/insertConversation');
 const insertMessage = require('../../model/insertMessage');
 const insertQuestion = require('../../model/insertQuestion');
 const selectUser = require('../../model/selectUser');
@@ -6,16 +5,37 @@ const createQuestion = require('../../utils/openai/createQuestion');
 const generator = require('../../utils/generator');
 const createSalutation = require('../../utils/openai/createSalutation');
 const uploadBlob = require('../../utils/azureBlob/uploadBlob');
-const getDocuText = require('../../utils/getDocuText');
-const selectConversation_all = require('../../model/selectConversation_all');
-const formidable = require('formidable');
-const uploadBlob_v2 = require('../../utils/azureBlob/uploadBlob_v2');
-const { optimizeText } = require('../../utils/functions');
-const createSummary = require('../../utils/openai/createSummary');
 const insertConversation_v2 = require('../../model/insertConversation_v2');
-const insertDocument = require('../../model/insertDocument');
-function checkFileSize(fileSize, maxSizeInBytes) {
-	return fileSize <= maxSizeInBytes;
+const PdfParse = require('pdf-parse');
+const { extractKeyPhrase } = require('../../utils/azureLanguage/keyPhrase');
+const insertParagraphs = require('../../model/insertParagraphs');
+const { summarization } = require('../../utils/azureLanguage/summarization');
+const updateSalutation = require('../../model/updateSalutation');
+function pageRender(pageData) {
+	// 텍스트 레이어를 추출합니다.
+	return pageData.getTextContent().then((textContent) => {
+		const mappedText = textContent.items.map((item) => item.str).join(' ');
+		console.log('mapped text: ', mappedText);
+		// return {
+		// 	pageNumber: pageData.pageNumber,
+		// 	text: textContent.items.map((item) => item.str).join(' '),
+		// };
+		return mappedText;
+	});
+}
+function escapeQuotation(str) {
+	return str.replace(/'/g, "''");
+}
+async function processArrayInBatches(arr, batchSize) {
+	const result = [];
+
+	for (let i = 0; i < arr.length; i += batchSize) {
+		const batch = arr.slice(i, i + batchSize);
+		const batchResult = await extractKeyPhrase(batch);
+		result.push(...batchResult);
+	}
+
+	return result;
 }
 async function createConversationV4(req, res) {
 	const user = req.user;
@@ -31,82 +51,62 @@ async function createConversationV4(req, res) {
 			res.status(404).send('unknown user id');
 			return;
 		}
-
-		//파일 크기 체크
-		//여러파일 //todo
-		const form = formidable();
-		const { status } = await new Promise((resolve, reject) => {
-			form.parse(req, async (err, fields, files) => {
-				console.log('files: ', files);
-				if (err) {
-					reject({ err });
-					return;
-				}
-				let isSizeOk = false;
-				for (let key in files) {
-					const file = files[key];
-					if (checkFileSize(file.size, 1024 * 180)) {
-						isSizeOk = true;
-					} else {
-						console.log('file size exceeded.');
-						console.log('file. size: ', file.size);
-						console.log('limit: ', 1024 * 170);
-						isSizeOk = false;
-					}
-				}
-				if (!isSizeOk) {
-					reject({ status: false });
-					return;
-				}
-				//conversation 생성
-				const conversationResult = await insertConversation_v2({
-					conversationName: fields.conversationName,
-					userId,
-				});
-
-				const conversationId =
-					conversationResult.recordset[0].conversation_id;
-
-				//upload
-				console.log('files : ', files);
-				try {
-					let documents = [];
-					for await (let key of Object.keys(files)) {
-						const file = files[key];
-						//upload s3
-						const { fileUrl, extension, err } = await uploadBlob_v2(file);
-						if (err) {
-							console.log('upload v2 error : ', err);
-							break;
-						}
-						//text 변환
-						const allTexts = await getDocuText(fileUrl, extension);
-						const optimized = optimizeText(allTexts);
-						const summary = await createSummary(optimized);
-						console.log('summary : ', summary);
-						const insertDocumentResult = await insertDocument({
-							content: optimized,
-							summary: summary,
-							conversationId: conversationId,
-							url: fileUrl,
-						});
-						documents.push(insertDocumentResult.recordset[0]);
-					}
-					console.log('after for loop');
-					resolve({ status: true });
-				} catch (err) {
-					console.log('err : ', err);
-					reject(err);
-				}
-			});
+		//upload blob
+		const { fileUrl, fields, extension, buffer } = await uploadBlob(req);
+		//conversation 생성
+		const conversationResult = await insertConversation_v2({
+			conversationName: fields.conversationName,
+			userId,
 		});
-		if (!status) {
-			res.status(413).send('file size is over 170KB');
-			return;
-		}
 
+		const conversationId = conversationResult.recordset[0].conversation_id;
+
+		//get pdf text && keyphrase of paragraphs
+		const document = await PdfParse(buffer, { pagerender: pageRender });
+		const textArr = document.text.split('\n');
+		const filteredArr = textArr.filter((el) => (el ? true : false));
+
+		const extracted = await processArrayInBatches(filteredArr, 25);
+		console.log('extracted: ', extracted);
+		console.log('filteredArr: ', filteredArr);
+		const paragraphs = [];
+		for (let i = 0; i < filteredArr.length; i++) {
+			paragraphs.push({
+				content: escapeQuotation(filteredArr[i]),
+				keywords: escapeQuotation(extracted[i].join(', ')),
+				order_number: i,
+			});
+		}
+		await insertParagraphs({
+			paragraphs,
+			conversationId: conversationId,
+		});
+		//summarize
+		const optimizedText = document.text.replace(/\n/g, '');
+		const summarizedText = await summarization(optimizedText);
+
+		//salutation 생성
+		const salutation = await createSalutation(summarizedText);
+		console.log('salutation: ', salutation);
+		await updateSalutation({ convId: conversationId, salutation });
+		// //초기 메세지 생성
+		// const messageDB = generator.systemMessageDB(conversationId, summarizedText);
+
+		//생성된 초기 메세지 삽입
+		// await insertMessage(messageDB);
+		// const conversationsResult = await selectConversation_all({ userId });
+		// const conversations = conversationsResult.recordset;
+		//예상 질문 생성 //todo
+		const questions = await createQuestion(summarizedText);
+		const questionArr = questions.split('\n');
+		//예상 질문 INSERT
+		await insertQuestion({
+			conversationId: conversationId,
+			questionArr: questionArr,
+		});
 		res.status(201).send({
 			message: 'conversation created',
+			createdId: conversationId,
 		});
 	} catch (error) {
 		console.log('error: ', error);

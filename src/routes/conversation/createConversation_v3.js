@@ -4,12 +4,10 @@ const insertQuestion = require('../../model/insertQuestion');
 const selectUser = require('../../model/selectUser');
 const createQuestion = require('../../utils/openai/createQuestion');
 const generator = require('../../utils/generator');
-const getPDFText = require('../../utils/getPdfText');
 const createSalutation = require('../../utils/openai/createSalutation');
 const uploadBlob = require('../../utils/azureBlob/uploadBlob');
 const getDocuText = require('../../utils/getDocuText');
 const selectConversation_all = require('../../model/selectConversation_all');
-const updateLastConv = require('../../model/updateLastConv');
 
 async function createConversationV3(req, res) {
 	const user = req.user;

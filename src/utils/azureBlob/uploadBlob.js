@@ -29,7 +29,16 @@ module.exports = function uploadBlob(req) {
 				blobServiceClient.getContainerClient(CONTAINER_NAME);
 			const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 			const fileStream = file ? fs.createReadStream(file.filepath) : null; //파일 스트림 생성
-
+			const buffer = await new Promise((bufferResolve, bufferReject) => {
+				fs.readFile(file.filepath, (err, bufferData) => {
+					if (err) {
+						console.log('buffer err: ', err);
+						bufferReject(err);
+						return;
+					}
+					bufferResolve(bufferData);
+				});
+			});
 			try {
 				await blockBlobClient.uploadStream(
 					fileStream,
@@ -43,7 +52,7 @@ module.exports = function uploadBlob(req) {
 				);
 
 				const fileUrl = `https://${ACCOUNT_NAME}.blob.core.windows.net/${CONTAINER_NAME}/${blobName}`;
-				resolve({ fileUrl, fields, extension: file.mimetype });
+				resolve({ fileUrl, fields, extension: file.mimetype, buffer });
 			} catch (error) {
 				console.error(error);
 				reject({ err: error });

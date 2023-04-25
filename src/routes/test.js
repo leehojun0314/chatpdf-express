@@ -14,12 +14,90 @@ const createSalutation = require('../utils/openai/createSalutation');
 const PdfParse = require('pdf-parse');
 const https = require('https');
 const formidable = require('formidable');
+const axios = require('axios');
 const {
 	checkFileSize,
 	fileSizes,
 	optimizeText,
 } = require('../utils/functions');
 const getDocuText = require('../utils/getDocuText');
+const { extractKeyPhrase } = require('../utils/azureLanguage/keyPhrase');
+const { summarization } = require('../utils/azureLanguage/summarization');
+
+function pageRender(pageData) {
+	// 텍스트 레이어를 추출합니다.
+	return pageData.getTextContent().then((textContent) => {
+		const mappedText = textContent.items.map((item) => item.str).join(' ');
+		console.log('mapped text: ', mappedText);
+		// return {
+		// 	pageNumber: pageData.pageNumber,
+		// 	text: textContent.items.map((item) => item.str).join(' '),
+		// };
+		return mappedText;
+	});
+}
+
+router.get('/pagination', (req, res) => {
+	console.log('pagination');
+	// const fileUrl =
+	// 'https://jemishome.blob.core.windows.net/blob/1681884269937-4cf55c4b43ce7f267ae0d290f';
+	// const fileUrl = 'https://jemishome.blob.core.windows.net/blob/testqt.pdf'; //qt 기자단
+	// const fileUrl = 'https://jemishome.blob.core.windows.net/blob/test.pdf'; //지적 재산권
+	// const fileUrl = 'https://jemishome.blob.core.windows.net/blob/QA.pdf';
+	// const fileUrl = 'https://jemishome.blob.core.windows.net/blob/pbl_edu.pdf';
+	const fileUrl =
+		'https://jemishome.blob.core.windows.net/blob/%E1%84%89%E1%85%B5%E1%86%AB%E1%84%8B%E1%85%B5%E1%86%B8%E1%84%80%E1%85%B5%E1%84%8C%E1%85%A1.pdf'; //신입 기자
+	// pdfUtil.pdfToText( //로컬만 되는듯?
+	// 	fileUrl,
+	// 	{
+	// 		from: 0,
+	// 		to: 1,
+	// 	},
+	// 	(err, data) => {
+	// 		if (err) {
+	// 			console.log('err : ', err);
+	// 			return;
+	// 		}
+	// 		console.log('data: ', data);
+	// 	},
+	// );
+	https.get(fileUrl, (parseRes) => {
+		let data = [];
+
+		parseRes.on('data', (chunk) => {
+			data.push(chunk);
+		});
+		parseRes.on('end', () => {
+			const buffer = Buffer.concat(data);
+			PdfParse(buffer, { pagerender: pageRender })
+				.then((document) => {
+					console.log('text: ', document.text);
+					const textArr = document.text.split('\n');
+					const filteredArr = textArr.filter((el) => (el ? true : false));
+					// console.log('filtered : ', filteredArr);
+					// for await(let text of filteredArr){
+					// 	extractKeyPhrase(text)
+
+					// }
+					Promise.all(
+						filteredArr.map((text) => {
+							return extractKeyPhrase(text);
+						}),
+					).then((extracted) => {
+						console.log('extracted : ', extracted);
+						res.send({
+							filteredArr,
+							extracted,
+						});
+					});
+				})
+				.catch((error) => {
+					console.error('Error while parsing PDF:', error);
+					res.send(error);
+				});
+		});
+	});
+});
 router.get('/', (req, res) => {
 	console.log('hello');
 	res.send('world');
@@ -74,26 +152,12 @@ router.get('/titletest', async (req, res) => {
 router.get('/sumtest', async (req, res) => {
 	// const { fileUrl, extension } = await uploadBlob(req);
 	const fileUrl =
-		'https://jemishome.blob.core.windows.net/blob/1680896870987-3af321008623482acd0e62700';
+		'https://jemishome.blob.core.windows.net/blob/%E1%84%89%E1%85%B5%E1%86%AB%E1%84%8B%E1%85%B5%E1%86%B8%E1%84%80%E1%85%B5%E1%84%8C%E1%85%A1.pdf';
 	console.log('file url : ', fileUrl);
 	const allTexts = await getDocuText(fileUrl, 'application/pdf');
 	const optimized = optimizeText(allTexts);
-	const completion = await openai.createChatCompletion({
-		model: 'gpt-3.5-turbo',
-		messages: [
-			{
-				role: 'user',
-				content: `
-				다음 지문을 읽고 주요 내용을 300자 내로 요약해줘. 전체적인 내용과 관련 없는 내용은 생략해도 돼.
-				${optimized}
-			`,
-			},
-		],
-	});
-	const answer = completion.data.choices[0].message;
-	console.log('usage: ', completion.data.usage);
-	console.log('answer : ', answer);
-	res.send(answer);
+	const summarized = await summarization(optimized);
+	res.send(summarized);
 });
 router.post('/uploadtest', async (req, res) => {
 	const form = formidable();
