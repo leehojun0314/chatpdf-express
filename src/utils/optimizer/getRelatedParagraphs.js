@@ -34,7 +34,7 @@ async function getRelatedParagraphs(paragraphs, userQuestion) {
 	const bestParagraph = sortedParagraphs[0];
 	bestParagraph.relevanceScore += 1;
 	console.log('best paragraph : ', bestParagraph);
-	const continuosParagraph = paragraphs.find(
+	const continuosParagraph = scoredParagraphs.find(
 		(p) => p.order_number === bestParagraph.order_number + 1,
 	);
 	console.log('continuos before : ', continuosParagraph);
