@@ -6,10 +6,10 @@ function insertParagraphs({ paragraphs, conversationId }) {
 				`(${conversationId}, N'${p.content}', N'${p.keywords}', ${p.order_number})`,
 		)
 		.join(', ');
-	console.log('values: ', values);
+	// console.log('values: ', values);
 	// 쿼리를 작성하고 실행
 	const query = `INSERT INTO Paragraph (conversation_id, paragraph_content, keywords, order_number) VALUES ${values}`;
-	console.log('query : ', query);
+	// console.log('query : ', query);
 	return new Promise((resolve, reject) => {
 		getSql()
 			.then((sqlPool) => {
