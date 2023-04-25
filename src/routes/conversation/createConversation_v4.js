@@ -104,6 +104,7 @@ async function createConversationV4(req, res) {
 			conversationId: conversationId,
 			questionArr: questionArr,
 		});
+		console.log('questions: ', questions);
 		res.status(201).send({
 			message: 'conversation created',
 			createdId: conversationId,
