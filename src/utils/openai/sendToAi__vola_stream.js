@@ -31,7 +31,6 @@ async function sendToAi_vola_stream(systemMessage, newMessage, streamCallback) {
 				return;
 			}
 			let chunkToString = chunk.toString();
-			console.log('chunk to string: ', chunkToString);
 			// 1. "data:"를 콤마로 대체합니다.
 			let parsableString = chunkToString.replace(/data\s*:/g, ',');
 			// 2. 문자열의 시작과 끝에 대괄호를 추가하여 배열로 만듭니다.
@@ -39,7 +38,6 @@ async function sendToAi_vola_stream(systemMessage, newMessage, streamCallback) {
 			// 3. 문자열의 첫 번째 콤마를 제거합니다.
 			parsableString = parsableString.replace(/^\[,/, '[');
 			// 이제 문자열을 JSON.parse로 파싱할 수 있습니다.
-			console.log('parsable string: ', parsableString);
 			let json;
 
 			try {
