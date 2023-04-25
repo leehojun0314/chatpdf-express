@@ -22,7 +22,7 @@ async function getRelatedParagraphs(paragraphs, userQuestion) {
 		console.log('intersection : ', intersection);
 		return {
 			...paragraph,
-			relevanceScore: intersection.length,
+			relevanceScore: intersection.length ? intersection.length : 0,
 		};
 	});
 	// 3. 관련성 점수를 기준으로 문단들을 내림차순으로 정렬
