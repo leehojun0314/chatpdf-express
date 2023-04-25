@@ -70,10 +70,7 @@ async function sendMessageV4(req, res) {
 						pages: relatedParagraphs.map((p) => p.order_number),
 					});
 				} else {
-					res.write({
-						text,
-						pages: relatedParagraphs.map((p) => p.order_number),
-					});
+					res.write(text);
 				}
 			},
 		);
