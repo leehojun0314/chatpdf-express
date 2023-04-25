@@ -32,17 +32,20 @@ async function getRelatedParagraphs(paragraphs, userQuestion) {
 	// 3.1 관련성 점수가 제일 높은 문단의 다음 문단도 점수를 추가해줌.
 	const bestParagraph = sortedParagraphs[0];
 	bestParagraph.relevanceScore += 1;
-	const continuosParagraph = sortedParagraphs.find(
+	const continuosParagraph = paragraphs.find(
 		(p) => p.order_number === bestParagraph.order_number + 1,
 	);
 	continuosParagraph.relevanceScore += 1;
+	const againSortedParagraphs = sortedParagraphs.sort(
+		(a, b) => b.relevanceScore - a.relevanceScore,
+	);
 	// sortedParagraphs.splice(1, 0, continuosParagraph);
-	console.log('sorted paragraphs: ', sortedParagraphs.slice(0, 3));
+	console.log('sorted paragraphs: ', againSortedParagraphs.slice(0, 3));
 	// 4. 문단 내용의 길이 합이 1000자 미만이 될 때까지 선택
 	const selectedParagraphs = [];
 	let totalLength = 0;
 
-	for (const paragraph of sortedParagraphs) {
+	for (const paragraph of againSortedParagraphs) {
 		if (totalLength + paragraph.paragraph_content.length <= 3500) {
 			selectedParagraphs.push(paragraph);
 			totalLength += paragraph.paragraph_content.length;
