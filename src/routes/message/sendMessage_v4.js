@@ -65,9 +65,15 @@ async function sendMessageV4(req, res) {
 						conversationId: conversationId,
 						userId: userId,
 					});
-					res.status(200).end('');
+					res.status(200).end({
+						text,
+						pages: relatedParagraphs.map((p) => p.order_number),
+					});
 				} else {
-					res.write(text);
+					res.write({
+						text,
+						pages: relatedParagraphs.map((p) => p.order_number),
+					});
 				}
 			},
 		);
