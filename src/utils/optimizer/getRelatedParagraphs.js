@@ -19,6 +19,7 @@ async function getRelatedParagraphs(paragraphs, userQuestion) {
 			questionKeywords.map((qk) => qk.replaceAll(' ', '')).includes(keyword),
 		);
 		console.log('paragraph keywords : ', paragraphKeywords);
+		console.log('intersection : ', intersection);
 		return {
 			...paragraph,
 			relevanceScore: intersection.length,
