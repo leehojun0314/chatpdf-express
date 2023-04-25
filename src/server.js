@@ -43,10 +43,10 @@ function startServer() {
 	});
 	process.on('uncaughtException', (error) => {
 		console.log('uncaught exception 발생 : ', error);
-		server.close(() => {
-			console.log('서버를 종료하고 재시작합니다.');
-			startServer();
-		});
+		// server.close(() => {
+		// 	console.log('서버를 종료하고 재시작합니다.');
+		// 	startServer();
+		// });
 	});
 	process.on('unhandledRejection', (reason, promise) => {
 		console.log('unhandled rejection 발생 : ', reason);

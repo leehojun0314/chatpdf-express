@@ -43,7 +43,7 @@ async function getRelatedParagraphs(paragraphs, userQuestion) {
 	let totalLength = 0;
 
 	for (const paragraph of sortedParagraphs) {
-		if (totalLength + paragraph.paragraph_content.length <= 3000) {
+		if (totalLength + paragraph.paragraph_content.length <= 5000) {
 			selectedParagraphs.push(paragraph);
 			totalLength += paragraph.paragraph_content.length;
 		} else {
