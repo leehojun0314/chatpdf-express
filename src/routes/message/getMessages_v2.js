@@ -18,6 +18,7 @@ async function getMessages_v2(req, res) {
 		//conversation 제목
 		const conversation = await selectConversation_single({
 			convId: conversationId,
+			userId: req.user.user_id,
 		});
 		console.log('conversation: ', conversation);
 

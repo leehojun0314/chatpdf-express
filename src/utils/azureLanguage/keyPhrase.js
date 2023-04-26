@@ -29,7 +29,7 @@ async function extractKeyPhrase(texts) {
 					modelVersion: 'latest',
 				},
 			];
-			const poller = await client.beginAnalyzeBatch(actions, texts, 'ko'); // for one by one
+			const poller = await client.beginAnalyzeBatch(actions, texts); // for one by one
 			const actionResults = await poller.pollUntilDone();
 			console.log('action results: ', actionResults);
 			const extractedKeyPhrases = [];

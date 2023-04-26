@@ -22,6 +22,7 @@ async function getMessages_v3(req, res) {
 		//conversation 제목
 		const conversation = await selectConversation_single({
 			convId: conversationId,
+			userId: req.user.user_id,
 		});
 		//questions
 		const questions = await selectQuestion_all({ convId: conversationId });

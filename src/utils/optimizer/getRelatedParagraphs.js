@@ -33,9 +33,9 @@ async function getRelatedParagraphs(paragraphs, userQuestion) {
 	// 3.1 관련성 점수가 제일 높은 문단의 다음 문단도 점수를 추가해줌.
 
 	const bestParagraph = sortedParagraphs[0];
-	if (bestParagraph.relevanceScore === 0) {
-		return []; //전혀 관계가 없다는 뜻
-	}
+	// if (bestParagraph.relevanceScore === 0) {
+	// 	return []; //전혀 관계가 없다는 뜻
+	// }
 	const continuosParagraph = scoredParagraphs.find(
 		(p) => p.order_number === bestParagraph.order_number + 1,
 	);

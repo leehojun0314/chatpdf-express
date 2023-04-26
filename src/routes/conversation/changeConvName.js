@@ -1,4 +1,4 @@
-const updateConversationNameModel = require('../../model/changeConvNameModel');
+const updateConversationNameModel = require('../../model/updateConvNameModel');
 
 function changeConvName(req, res) {
 	const convId = req.body.convId;

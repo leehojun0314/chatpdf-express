@@ -10,13 +10,17 @@ const authenticate = require('../../middleware/authenticate');
 const lastConversation = require('./lastConversation');
 const createConversationV4 = require('./createConversation_v4');
 const changeConvName = require('./changeConvName');
+const createConversationV5 = require('./createConversation_v5');
+const checkConversation = require('./checkConversation');
 const router = express.Router();
 
 router.get('/', authenticate, getConversations);
+router.get('/check', authenticate, checkConversation);
 router.post('/', authenticate, createConversation);
 router.post('/v2', authenticate, createConversationV2);
 router.post('/v3', authenticate, createConversationV3);
 router.post('/v4', authenticate, createConversationV4);
+router.post('/v5', authenticate, createConversationV5);
 router.delete('/', authenticate, deleteConversation);
 router.patch('/last', authenticate, lastConversation);
 router.patch('/name', authenticate, changeConvName);

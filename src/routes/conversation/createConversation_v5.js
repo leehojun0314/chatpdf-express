@@ -9,6 +9,8 @@ const { extractKeyPhrase } = require('../../utils/azureLanguage/keyPhrase');
 const insertParagraphs = require('../../model/insertParagraphs');
 const { summarization } = require('../../utils/azureLanguage/summarization');
 const updateSalutation = require('../../model/updateSalutation');
+const insertConversation_v3 = require('../../model/insertConversation_v3');
+const updateConvStatusModel = require('../../model/updateConvStatusModel');
 function pageRender(pageData) {
 	// 텍스트 레이어를 추출합니다.
 	return pageData.getTextContent().then((textContent) => {
@@ -35,9 +37,11 @@ async function processArrayInBatches(arr, batchSize) {
 
 	return result;
 }
-async function createConversationV4(req, res) {
+
+async function createConversationV5(req, res) {
 	const user = req.user;
 	console.log('user: ', user);
+	let conversationId;
 	try {
 		//user id 가져오기 req.user에는 userid가 없음. 다른 db이기 떄문
 		const selectUserResult = await selectUser({
@@ -51,14 +55,19 @@ async function createConversationV4(req, res) {
 		}
 		//upload blob
 		const { fileUrl, fields, extension, buffer } = await uploadBlob(req);
+
 		//conversation 생성
-		const conversationResult = await insertConversation_v2({
+		const conversationResult = await insertConversation_v3({
 			conversationName: fields.conversationName,
 			userId,
 			fileUrl,
 		});
 
-		const conversationId = conversationResult.recordset[0].conversation_id;
+		conversationId = conversationResult.recordset[0].conversation_id;
+		res.status(201).send({
+			message: 'conversation created',
+			createdId: conversationId,
+		});
 
 		//get pdf text && keyphrase of paragraphs
 		const document = await PdfParse(buffer, { pagerender: pageRender });
@@ -82,10 +91,10 @@ async function createConversationV4(req, res) {
 		});
 		//summarize
 		const optimizedText = document.text.replace(/\n/g, '');
-		const summarizedText = await summarization(optimizedText);
-
+		// const summarizedText = await summarization(optimizedText);
+		const joinedText = optimizedText.slice(0, 2500); //앞에 2500자 까지만 제공
 		//salutation 생성
-		const salutation = await createSalutation(summarizedText);
+		const salutation = await createSalutation(joinedText);
 		console.log('salutation: ', salutation);
 		await updateSalutation({
 			convId: conversationId,
@@ -100,7 +109,7 @@ async function createConversationV4(req, res) {
 		// const conversationsResult = await selectConversation_all({ userId });
 		// const conversations = conversationsResult.recordset;
 		//예상 질문 생성 //todo
-		const questions = await createQuestion(summarizedText);
+		const questions = await createQuestion(joinedText);
 		const questionArr = questions.split('\n');
 		//예상 질문 INSERT
 		await insertQuestion({
@@ -108,14 +117,23 @@ async function createConversationV4(req, res) {
 			questionArr: questionArr,
 		});
 		console.log('questions: ', questions);
-		res.status(201).send({
-			message: 'conversation created',
-			createdId: conversationId,
+		// res.status(201).send({
+		// 	message: 'conversation created',
+		// 	createdId: conversationId,
+		// });
+		await updateConvStatusModel({
+			convId: conversationId,
+			status: 'created',
+			userId: userId,
 		});
+		console.log('updated conv status');
 	} catch (error) {
 		console.log('error: ', error);
-		res.status(500).send(error);
+		await updateConvStatusModel({
+			convId: conversationId,
+			status: 'error',
+		});
 	}
 }
 
-module.exports = createConversationV4;
+module.exports = createConversationV5;

@@ -62,7 +62,7 @@ async function sendMessageV4(req, res) {
 						message:
 							text +
 							(relatedParagraphs.length > 0
-								? `(참조 : ${relatedParagraphs
+								? `\n(참조 : ${relatedParagraphs
 										.map((p) => p.order_number)
 										.join(', ')} page) `
 								: ''),

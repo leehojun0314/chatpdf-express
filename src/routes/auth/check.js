@@ -17,12 +17,11 @@ async function checkLogin(req, res) {
 	let decoded;
 	try {
 		decoded = jwt.verify(jwtToken, secretKey);
-		console.log('decoded: ', decoded);
+		console.log('user : ', decoded.user_name);
 		const userResult = await selectUser({
 			email: decoded.user_email,
 			name: decoded.user_name,
 		});
-		console.log('select user result : ', userResult);
 		const lastConv = userResult.recordset[0].last_conv;
 
 		if (userResult.recordset.length > 0) {
@@ -41,7 +40,6 @@ async function checkLogin(req, res) {
 					conversationsResult.recordset[
 						conversationsResult.recordset.length - 1
 					];
-				console.log('lastconversation: ', lastConversation);
 				await updateLastConv({
 					userId: userResult.recordset[0].user_id,
 					convId: lastConversation.conversation_id,

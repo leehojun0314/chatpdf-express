@@ -1,4 +1,4 @@
-const deleteConversationModel = require('../../model/deleteConversationModel');
+const updateConvStatusModel = require('../../model/updateConvStatusModel');
 
 async function deleteConversation(req, res) {
 	const convId = req.query.convId;
@@ -10,7 +10,8 @@ async function deleteConversation(req, res) {
 		return;
 	}
 	try {
-		await deleteConversationModel({ convId, userId });
+		// await deleteConversationModel({ convId, userId });
+		await updateConvStatusModel({ convId, userId, status: 'deleted' });
 		res.status(200).send('conversation deleted');
 	} catch (error) {
 		console.log('delete error : ', error);

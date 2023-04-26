@@ -5,7 +5,9 @@ function selectConversation_all({ userId }) {
 			.then((sqlPool) => {
 				sqlPool
 					.request()
-					.query(`SELECT * FROM Conversation WHERE user_id = '${userId}'`)
+					.query(
+						`SELECT * FROM Conversation WHERE user_id = '${userId}' AND status <> 'deleted'`,
+					)
 					.then((result) => {
 						resolve(result);
 					})

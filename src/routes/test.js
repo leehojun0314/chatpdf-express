@@ -24,6 +24,7 @@ const getDocuText = require('../utils/getDocuText');
 const { extractKeyPhrase } = require('../utils/azureLanguage/keyPhrase');
 const { summarization } = require('../utils/azureLanguage/summarization');
 const sendToAi_vola_stream = require('../utils/openai/sendToAi__vola_stream');
+const updateConvStatusModel = require('../model/updateConvStatusModel');
 
 function pageRender(pageData) {
 	// 텍스트 레이어를 추출합니다.
@@ -37,7 +38,18 @@ function pageRender(pageData) {
 		return mappedText;
 	});
 }
-
+router.get('/updateStatus', async (req, res) => {
+	try {
+		await updateConvStatusModel({
+			convId: 121,
+			status: 'created',
+			userId: 30,
+		});
+		res.send('ok');
+	} catch (err) {
+		res.status(500).send(err);
+	}
+});
 router.get('/pagination', (req, res) => {
 	console.log('pagination');
 	// const fileUrl =
