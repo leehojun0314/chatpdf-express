@@ -62,8 +62,8 @@ async function sendMessageV4(req, res) {
 						message:
 							text +
 							(relatedParagraphs.length > 0
-								? `\n(참조 : ${relatedParagraphs
-										.map((p) => p.order_number)
+								? `\n(ref : ${relatedParagraphs
+										.map((p) => p.order_number + 1)
 										.join(', ')} page) `
 								: ''),
 						sender: 'assistant',

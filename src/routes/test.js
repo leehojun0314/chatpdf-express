@@ -25,6 +25,7 @@ const { extractKeyPhrase } = require('../utils/azureLanguage/keyPhrase');
 const { summarization } = require('../utils/azureLanguage/summarization');
 const sendToAi_vola_stream = require('../utils/openai/sendToAi__vola_stream');
 const updateConvStatusModel = require('../model/updateConvStatusModel');
+const getKeywordGPT = require('../utils/openai/getKeywordGPT');
 
 function pageRender(pageData) {
 	// 텍스트 레이어를 추출합니다.
@@ -38,6 +39,17 @@ function pageRender(pageData) {
 		return mappedText;
 	});
 }
+router.get('/keyword', async (req, res) => {
+	try {
+		const answer = await getKeywordGPT(
+			'what right does apple reserve in the agreement?',
+		);
+		console.log('anser : ', answer);
+		res.send(answer);
+	} catch (error) {
+		res.status(500).send(error);
+	}
+});
 router.get('/updateStatus', async (req, res) => {
 	try {
 		await updateConvStatusModel({
@@ -52,28 +64,9 @@ router.get('/updateStatus', async (req, res) => {
 });
 router.get('/pagination', (req, res) => {
 	console.log('pagination');
-	// const fileUrl =
-	// 'https://jemishome.blob.core.windows.net/blob/1681884269937-4cf55c4b43ce7f267ae0d290f';
-	// const fileUrl = 'https://jemishome.blob.core.windows.net/blob/testqt.pdf'; //qt 기자단
-	// const fileUrl = 'https://jemishome.blob.core.windows.net/blob/test.pdf'; //지적 재산권
-	// const fileUrl = 'https://jemishome.blob.core.windows.net/blob/QA.pdf';
-	// const fileUrl = 'https://jemishome.blob.core.windows.net/blob/pbl_edu.pdf';
 	const fileUrl =
-		'https://jemishome.blob.core.windows.net/blob/%E1%84%89%E1%85%B5%E1%86%AB%E1%84%8B%E1%85%B5%E1%86%B8%E1%84%80%E1%85%B5%E1%84%8C%E1%85%A1.pdf'; //신입 기자
-	// pdfUtil.pdfToText( //로컬만 되는듯?
-	// 	fileUrl,
-	// 	{
-	// 		from: 0,
-	// 		to: 1,
-	// 	},
-	// 	(err, data) => {
-	// 		if (err) {
-	// 			console.log('err : ', err);
-	// 			return;
-	// 		}
-	// 		console.log('data: ', data);
-	// 	},
-	// );
+		'https://jemishome.blob.core.windows.net/blob/1682505391267-1ff5df3d40f45e995ae948301'; //apple terms
+
 	https.get(fileUrl, (parseRes) => {
 		let data = [];
 
@@ -82,27 +75,28 @@ router.get('/pagination', (req, res) => {
 		});
 		parseRes.on('end', () => {
 			const buffer = Buffer.concat(data);
-			PdfParse(buffer, { pagerender: pageRender })
+			PdfParse(buffer)
 				.then((document) => {
 					console.log('text: ', document.text);
-					const textArr = document.text.split('\n');
+					const textArr = document.text.split('\n\n');
 					const filteredArr = textArr.filter((el) => (el ? true : false));
 					// console.log('filtered : ', filteredArr);
 					// for await(let text of filteredArr){
 					// 	extractKeyPhrase(text)
 
 					// }
-					Promise.all(
-						filteredArr.map((text) => {
-							return extractKeyPhrase(text);
-						}),
-					).then((extracted) => {
-						console.log('extracted : ', extracted);
-						res.send({
-							filteredArr,
-							extracted,
-						});
-					});
+					// Promise.all(
+					// 	filteredArr.map((text) => {
+					// 		return extractKeyPhrase([text]);
+					// 	}),
+					// ).then((extracted) => {
+					// 	console.log('extracted : ', extracted);
+					// 	res.send({
+					// 		filteredArr,
+					// 		extracted,
+					// 	});
+					// });
+					res.send(filteredArr);
 				})
 				.catch((error) => {
 					console.error('Error while parsing PDF:', error);

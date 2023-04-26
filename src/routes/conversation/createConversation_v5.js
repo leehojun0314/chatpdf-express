@@ -11,6 +11,7 @@ const { summarization } = require('../../utils/azureLanguage/summarization');
 const updateSalutation = require('../../model/updateSalutation');
 const insertConversation_v3 = require('../../model/insertConversation_v3');
 const updateConvStatusModel = require('../../model/updateConvStatusModel');
+const updateLastConv = require('../../model/updateLastConv');
 function pageRender(pageData) {
 	// 텍스트 레이어를 추출합니다.
 	return pageData.getTextContent().then((textContent) => {
@@ -90,9 +91,9 @@ async function createConversationV5(req, res) {
 			conversationId: conversationId,
 		});
 		//summarize
-		const optimizedText = document.text.replace(/\n/g, '');
+		// const optimizedText = document.text.replace(/\n/g, '');
 		// const summarizedText = await summarization(optimizedText);
-		const joinedText = optimizedText.slice(0, 2500); //앞에 2500자 까지만 제공
+		const joinedText = document.text.slice(0, 2500); //앞에 2500자 까지만 제공
 		//salutation 생성
 		const salutation = await createSalutation(joinedText);
 		console.log('salutation: ', salutation);

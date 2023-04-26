@@ -1,4 +1,5 @@
 const { extractKeyPhrase } = require('../azureLanguage/keyPhrase');
+const getKeywordGPT = require('../openai/getKeywordGPT');
 /**
  * function to optimize prompt by using keywords
  * @param {array} paragraphs
@@ -7,22 +8,27 @@ const { extractKeyPhrase } = require('../azureLanguage/keyPhrase');
  */
 async function getRelatedParagraphs(paragraphs, userQuestion) {
 	// 1. 유저 질문에서 키워드 추출
-	const extractResult = await extractKeyPhrase([userQuestion]);
-	const questionKeywords = extractResult[0];
+	// const extractResult = await extractKeyPhrase([userQuestion]);
+	const questionKeywords = await getKeywordGPT(userQuestion);
 	console.log('question keywords:', questionKeywords);
 	// 2. 각 문단의 관련성 점수 계산 (문단 키워드와 질문 키워드의 교집합의 크기)
 	const scoredParagraphs = paragraphs.map((paragraph) => {
 		const paragraphKeywords = paragraph.keywords
 			.split(', ')
-			.map((keyword) => keyword.replaceAll(' ', ''));
+			.map((keyword) =>
+				keyword ? keyword.replaceAll(' ', '').toLowerCase() : '',
+			);
 		const intersection = paragraphKeywords.filter((keyword) =>
-			questionKeywords.map((qk) => qk.replaceAll(' ', '')).includes(keyword),
+			questionKeywords
+				.map((qk) => (qk ? qk.replaceAll(' ', '').toLowerCase() : ''))
+				.includes(keyword),
 		);
-		console.log('paragraph keywords : ', paragraphKeywords);
-		console.log('intersection : ', intersection);
+		// console.log('paragraph keywords : ', paragraphKeywords);
+		// console.log('intersection : ', intersection);
 		return {
 			...paragraph,
 			relevanceScore: intersection.length ? intersection.length : 0,
+			intersection,
 		};
 	});
 	// 3. 관련성 점수를 기준으로 문단들을 내림차순으로 정렬
@@ -47,23 +53,35 @@ async function getRelatedParagraphs(paragraphs, userQuestion) {
 		(a, b) => b.relevanceScore - a.relevanceScore,
 	);
 	// sortedParagraphs.splice(1, 0, continuosParagraph);
-	console.log('againSortedParagraphs: ', againSortedParagraphs.slice(0, 3));
+
 	// 4. 문단 내용의 길이 합이 1000자 미만이 될 때까지 선택
 	const selectedParagraphs = [];
 	let totalLength = 0;
+	const maxLength = 3500;
 
 	for (const paragraph of againSortedParagraphs) {
-		if (paragraph.relevanceScore === 0) {
-			break;
-		}
-		if (totalLength + paragraph.paragraph_content.length <= 3500) {
+		// if (paragraph.relevanceScore === 0) {
+		// 	break;
+		// }
+		if (totalLength + paragraph.paragraph_content.length <= maxLength) {
 			selectedParagraphs.push(paragraph);
 			totalLength += paragraph.paragraph_content.length;
 		} else {
+			// 남은 길이를 계산하고, 해당 길이만큼 잘라낸 paragraph_content를 저장합니다.
+			const remainingLength = maxLength - totalLength;
+			const truncatedContent = paragraph.paragraph_content.substring(
+				0,
+				remainingLength,
+			);
+			selectedParagraphs.push({
+				...paragraph,
+				paragraph_content: truncatedContent,
+			});
+			totalLength += truncatedContent.length;
 			break;
 		}
 	}
-
+	console.log('selectd paragraphs: ', selectedParagraphs);
 	return selectedParagraphs;
 }
 module.exports = { getRelatedParagraphs };

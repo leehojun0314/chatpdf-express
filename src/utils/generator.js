@@ -32,7 +32,7 @@ class MessageGenerator {
 	systemMessageDB(conversationId, message) {
 		return {
 			conversationId: conversationId,
-			message: `당신은 다음 내용을 이해하고, 해당 내용에 대해서 질문을 받을 시 친절하게 답변해주는 챗봇입니다. 먼저 어떤 내용을 알고 있는지 간단하게 소개하고, 인사해주세요!
+			message: `당신은 다음 내용을 이해하고, 해당 내용에 대해서 질문을 받을 시 친절하게 답변해주는 챗봇입니다. 먼저 어떤 내용을 알고 있는지 간단하게 소개하고, 인사해주세요! 언어는 지문의 언어를 따라가주세요.
 			${message}`,
 			messageOrder: 0,
 			sender: 'system',
@@ -41,7 +41,7 @@ class MessageGenerator {
 	systemMessage(message) {
 		return {
 			role: 'system',
-			content: `당신은 다음 내용을 이해하고, 해당 내용에 대해서 질문을 받을 시 친절하게 답변해주는 챗봇입니다. 먼저 어떤 내용을 알고 있는지 간단하게 소개하고, 인사해주세요!
+			content: `당신은 다음 내용을 이해하고, 해당 내용에 대해서 질문을 받을 시 친절하게 답변해주는 챗봇입니다. 먼저 어떤 내용을 알고 있는지 간단하게 소개하고, 인사해주세요! 언어는 지문의 언어를 따라가주세요.
 			${message}`,
 		};
 	}
@@ -54,7 +54,7 @@ class MessageGenerator {
 	presetQuestion(content) {
 		return {
 			role: 'user',
-			content: `아래 지문을 읽고 예상되는 질문을 작성해줘. 그리고 문장 끝이 항상 "?"로 끝나게 해줘.
+			content: `아래 지문을 읽고 예상되는 질문을 작성해줘. 그리고 문장 끝이 항상 "?"로 끝나게 해줘. 언어는 지문의 언어를 따라가줘.
 			지문: ${content}
 			 `,
 		};
