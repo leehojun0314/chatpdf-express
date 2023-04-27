@@ -1,10 +1,10 @@
 const axios = require('axios');
 const configs = require('../../configs');
+const selectUser = require('../model/selectUser');
 
 const authenticateDtizen = (req, res, next) => {
 	const authorizationHeader = req.headers.authorization;
 	const token = authorizationHeader?.split(' ')[1];
-	console.log('req.headers: ', req.headers);
 	if (!token) {
 		res.status(401).json({ data: 'UnAuthorized' });
 		return;
@@ -12,7 +12,11 @@ const authenticateDtizen = (req, res, next) => {
 		axios
 			.get(`${configs.authenticateUrl}/api/verify?jwt=${token}`)
 			.then((response) => {
-				req.user = response.data;
+				return selectUser({
+					email: response.data.user_email,
+					name: response.data.user_name,
+					profileImg: response.data.imgUrl,
+				});
 				// user ex : {
 				// 	userEmail: '',
 				// 	userName: '',
@@ -22,6 +26,10 @@ const authenticateDtizen = (req, res, next) => {
 				// 	exp: ,
 				// 	iss: ''
 				//   }
+			})
+			.then((selectUserRes) => {
+				const userData = selectUserRes.recordset[0];
+				req.user = userData;
 				next();
 			})
 			.catch((err) => {
