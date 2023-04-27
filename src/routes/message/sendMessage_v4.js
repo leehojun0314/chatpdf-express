@@ -7,8 +7,6 @@ const {
 	getRelatedParagraphs,
 } = require('../../utils/optimizer/getRelatedParagraphs');
 const selectParagraph_all = require('../../model/selectParagraph_all');
-const generator = require('../../utils/generator');
-const router = express.Router();
 async function sendMessageV4(req, res) {
 	res.setHeader('Content-Type', 'application/json');
 	res.setHeader('X-Accel-Buffering', 'no');
@@ -24,6 +22,7 @@ async function sendMessageV4(req, res) {
 		const userResult = await selectUser({
 			email: user.user_email,
 			name: user.use_name,
+			profileImg: user.imgUrl || user.picture || '',
 		});
 		console.log('user result: ', userResult);
 		const userId = userResult.recordset[0].user_id;

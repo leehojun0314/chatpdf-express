@@ -20,5 +20,6 @@ router.post('/v4', authenticate, sendMessageV4);
 router.get('/dtizen', authenticateDtizen, getMessages);
 router.get('/v3/dtizen', authenticateDtizen, getMessages_v3);
 router.post('/v3/dtizen', authenticateDtizen, sendMessageV3);
+router.post('/v4/dtizen', authenticateDtizen, sendMessageV4);
 
 module.exports = router;
