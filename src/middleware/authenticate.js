@@ -16,6 +16,7 @@ function authenticate(req, res, next) {
 		next();
 	} catch (error) {
 		console.log('error : ', error);
+		res.status(401).send('unauthorized');
 	}
 }
 module.exports = authenticate;

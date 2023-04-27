@@ -30,21 +30,28 @@ async function sendMessageV4(req, res) {
 		const selectParagraphsResult = await selectParagraph_all({
 			conversationId,
 		});
+		console.log(
+			'paragraph recordset length : ',
+			selectParagraphsResult.recordset.length,
+		);
 		const relatedParagraphs = await getRelatedParagraphs(
 			selectParagraphsResult.recordset,
 			message,
 		);
 		// const systemMessage = generator.systemMessage()
-		const messagesResult = await selectMessage({ conversationId });
+		const messagesResult = await selectMessage({
+			conversationId,
+			userId: userId,
+		});
 		const relatedParagraph = relatedParagraphs
 			.map((p) => p.paragraph_content)
-			.join('');
+			.join(' ');
 		await sendToAi_vola_stream(
 			relatedParagraph, //지문의 내용
 			message,
 			async ({ text, isEnd, error }) => {
 				if (error) {
-					console.log('error : ', error);
+					console.log('openai error : ', error);
 					res.status(500).send(error);
 					return;
 				}

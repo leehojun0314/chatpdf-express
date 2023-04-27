@@ -17,6 +17,7 @@ async function createSalutation(allTexts) {
 		const completion = await openai.createChatCompletion({
 			model: 'gpt-3.5-turbo',
 			messages: [systemMessage],
+			temperature: 1,
 		});
 		const answer = completion.data.choices[0].message.content;
 		return answer;

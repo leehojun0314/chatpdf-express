@@ -12,30 +12,53 @@ async function getRelatedParagraphs(paragraphs, userQuestion) {
 	const questionKeywords = await getKeywordGPT(userQuestion);
 	console.log('question keywords:', questionKeywords);
 	// 2. 각 문단의 관련성 점수 계산 (문단 키워드와 질문 키워드의 교집합의 크기)
+	// const scoredParagraphs = paragraphs.map((paragraph) => {
+	// 	const paragraphKeywords = paragraph.keywords
+	// 		.split(', ')
+	// 		.map((keyword) =>
+	// 			keyword ? keyword.replaceAll(' ', '').toLowerCase() : '',
+	// 		);
+	// 	const intersection = paragraphKeywords.filter((keyword) =>
+	// 		questionKeywords
+	// 			.map((qk) => (qk ? qk.replaceAll(' ', '').toLowerCase() : ''))
+	// 			.includes(keyword),
+	// 	);
+	// 	// console.log('paragraph keywords : ', paragraphKeywords);
+	// 	// console.log('intersection : ', intersection);
+	// 	return {
+	// 		...paragraph,
+	// 		relevanceScore: intersection.length ? intersection.length : 0,
+	// 		intersection,
+	// 	};
+	// });
+	const optimizedKeywords =
+		typeof questionKeywords === 'object'
+			? questionKeywords.map((keywords) =>
+					keywords.replaceAll(' ', '').toLowerCase(),
+			  )
+			: [];
+	console.log('optimized keywords: ', optimizedKeywords);
 	const scoredParagraphs = paragraphs.map((paragraph) => {
-		const paragraphKeywords = paragraph.keywords
-			.split(', ')
-			.map((keyword) =>
-				keyword ? keyword.replaceAll(' ', '').toLowerCase() : '',
-			);
-		const intersection = paragraphKeywords.filter((keyword) =>
-			questionKeywords
-				.map((qk) => (qk ? qk.replaceAll(' ', '').toLowerCase() : ''))
-				.includes(keyword),
+		const relevanceScore = calculateRelevanceScore(
+			optimizedKeywords,
+			paragraph,
 		);
-		// console.log('paragraph keywords : ', paragraphKeywords);
-		// console.log('intersection : ', intersection);
+
 		return {
 			...paragraph,
-			relevanceScore: intersection.length ? intersection.length : 0,
-			intersection,
+			relevanceScore,
 		};
 	});
 	// 3. 관련성 점수를 기준으로 문단들을 내림차순으로 정렬
 	const sortedParagraphs = scoredParagraphs.sort(
 		(a, b) => b.relevanceScore - a.relevanceScore,
 	);
-
+	// console.log(
+	// 	'sorted paras: ',
+	// 	sortedParagraphs.map((para) => {
+	// 		return { order: para.order_number, score: para.relevanceScore };
+	// 	}),
+	// );
 	// 3.1 관련성 점수가 제일 높은 문단의 다음 문단도 점수를 추가해줌.
 
 	const bestParagraph = sortedParagraphs[0];
@@ -46,8 +69,8 @@ async function getRelatedParagraphs(paragraphs, userQuestion) {
 		(p) => p.order_number === bestParagraph.order_number + 1,
 	);
 	if (continuosParagraph) {
-		bestParagraph.relevanceScore += 1;
-		continuosParagraph.relevanceScore += 1;
+		bestParagraph.relevanceScore += 2;
+		continuosParagraph.relevanceScore += 2;
 	}
 	const againSortedParagraphs = sortedParagraphs.sort(
 		(a, b) => b.relevanceScore - a.relevanceScore,
@@ -60,9 +83,9 @@ async function getRelatedParagraphs(paragraphs, userQuestion) {
 	const maxLength = 3500;
 
 	for (const paragraph of againSortedParagraphs) {
-		// if (paragraph.relevanceScore === 0) {
-		// 	break;
-		// }
+		if (paragraph.relevanceScore === 0) {
+			break;
+		}
 		if (totalLength + paragraph.paragraph_content.length <= maxLength) {
 			selectedParagraphs.push(paragraph);
 			totalLength += paragraph.paragraph_content.length;
@@ -81,7 +104,29 @@ async function getRelatedParagraphs(paragraphs, userQuestion) {
 			break;
 		}
 	}
+	console.log('total length : ', totalLength);
 	console.log('selectd paragraphs: ', selectedParagraphs);
 	return selectedParagraphs;
+}
+function calculateRelevanceScore(questionKeyPhrases, paragraph) {
+	let score = 0;
+	let uniqueMatches = 0;
+
+	for (const keyPhrase of questionKeyPhrases) {
+		if (paragraph.paragraph_content.replaceAll(' ', '').includes(keyPhrase)) {
+			score += 1;
+			uniqueMatches += 1;
+			console.log('paragraph num : ', paragraph.order_number);
+			console.log('included keyphrase : ', keyPhrase);
+		}
+	}
+
+	if (uniqueMatches === questionKeyPhrases.length) {
+		score += 100;
+	} else {
+		score += uniqueMatches * 4; // 각기 다른 문자가 포함될 때마다 5점 (기존 1점 + 추가 4점)
+	}
+
+	return score;
 }
 module.exports = { getRelatedParagraphs };

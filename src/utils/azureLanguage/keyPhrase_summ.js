@@ -16,7 +16,7 @@ require('dotenv').config();
 const endpoint = process.env['LANGUAGE_ENDPOINT'];
 const apiKey = process.env['LANGUAGE_API_KEY'];
 
-async function extractKeyPhrase(texts) {
+async function keyPhrase_summ(texts) {
 	return new Promise(async (resolve, reject) => {
 		try {
 			const client = new TextAnalysisClient(
@@ -28,15 +28,18 @@ async function extractKeyPhrase(texts) {
 					kind: 'KeyPhraseExtraction',
 					modelVersion: 'latest',
 				},
+				{
+					kind: 'ExtractiveSummarization',
+				},
 			];
 			const poller = await client.beginAnalyzeBatch(actions, texts, 'ko'); // for one by one
 			const actionResults = await poller.pollUntilDone();
 			const extractedKeyPhrases = [];
-
+			const summarizations = [];
 			for await (const actionResult of actionResults) {
 				if (actionResult.error) {
 					reject({ error: actionResult.error });
-					throw new Error(`Unexpected error`);
+					// throw new Error(`Unexpected error`);
 				}
 				switch (actionResult.kind) {
 					case 'KeyPhraseExtraction': {
@@ -46,9 +49,27 @@ async function extractKeyPhrase(texts) {
 						}
 						break;
 					}
+					case 'ExtractiveSummarization': {
+						for (const result of actionResult.results) {
+							console.log(`- Document ${result.id}`);
+							if (result.error) {
+								const { code, message } = result.error;
+								console.log('error : ', message);
+								return;
+								// throw new Error(`Unexpected error (${code}): ${message}`);
+							}
+
+							const summary = result.sentences
+								.map((sentence) => sentence.text)
+								.join('\n');
+
+							console.log('summary : ', summary);
+							summarizations.push(summary);
+						}
+					}
 				}
 			}
-			resolve(extractedKeyPhrases);
+			resolve({ extractedKeyPhrases, summarizations });
 		} catch (err) {
 			console.log('extract key phrase err : ', err);
 			reject(err);
@@ -56,4 +77,4 @@ async function extractKeyPhrase(texts) {
 	});
 }
 
-module.exports = { extractKeyPhrase };
+module.exports = { keyPhrase_summ };

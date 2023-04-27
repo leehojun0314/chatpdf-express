@@ -26,19 +26,8 @@ const { summarization } = require('../utils/azureLanguage/summarization');
 const sendToAi_vola_stream = require('../utils/openai/sendToAi__vola_stream');
 const updateConvStatusModel = require('../model/updateConvStatusModel');
 const getKeywordGPT = require('../utils/openai/getKeywordGPT');
+const { keyPhrase_summ } = require('../utils/azureLanguage/keyPhrase_summ');
 
-function pageRender(pageData) {
-	// 텍스트 레이어를 추출합니다.
-	return pageData.getTextContent().then((textContent) => {
-		const mappedText = textContent.items.map((item) => item.str).join(' ');
-		console.log('mapped text: ', mappedText);
-		// return {
-		// 	pageNumber: pageData.pageNumber,
-		// 	text: textContent.items.map((item) => item.str).join(' '),
-		// };
-		return mappedText;
-	});
-}
 router.get('/keyword', async (req, res) => {
 	try {
 		const answer = await getKeywordGPT(
@@ -62,11 +51,74 @@ router.get('/updateStatus', async (req, res) => {
 		res.status(500).send(err);
 	}
 });
+async function processArrayInBatches(arr, batchSize) {
+	const keyphrasesResult = [];
+	const summarizationsResult = [];
+	for (let i = 0; i < arr.length; i += batchSize) {
+		const batch = arr.slice(i, i + batchSize);
+		const { extractedKeyPhrases, summarizations } = await keyPhrase_summ(
+			batch,
+		);
+		keyphrasesResult.push(extractedKeyPhrases);
+		summarizationsResult.push(summarizations);
+	}
+
+	return { keyphrasesResult, summarizationsResult };
+}
+function pageRender(pageArr) {
+	return (pageData) => {
+		let renderOptions = {
+			normalizeWhitespace: true,
+		};
+
+		return pageData.getTextContent(renderOptions).then((textContent) => {
+			const mappedText = textContent.items.map((item) => item.str).join('');
+			// console.log('mapped text: ', mappedText);
+			pageArr.push(mappedText);
+			return mappedText;
+			// return {
+			// 	pageNumber: pageData.pageNumber,
+			// 	text: textContent.items.map((item) => item.str).join(' '),
+			// };
+
+			//줄바꿈 될때마다 \n을 추가하는 코드
+			// let lastY,
+			// 	text = '';
+			// for (let item of textContent.items) {
+			// 	if (lastY == item.transform[5] || !lastY) {
+			// 		text += item.str;
+			// 	} else {
+			// 		text += '\n' + item.str;
+			// 	}
+			// 	lastY = item.transform[5];
+			// }
+			// return text;
+		});
+	};
+	// 텍스트 레이어를 추출합니다.
+}
+router.get('/paragraph', async (req, res) => {
+	const convId = req.query.convId;
+	const orderNum = req.query.order;
+	try {
+		const sqlPool = await getSql();
+		const result = await sqlPool
+			.request()
+			.query(
+				`SELECT * FROM Paragraph WHERE conversation_id = ${convId} AND order_number = ${orderNum}`,
+			);
+		res.send(result.recordset);
+	} catch (error) {
+		console.log('error :', error);
+		res.status(500).send(error);
+	}
+});
 router.get('/pagination', (req, res) => {
 	console.log('pagination');
+	// const fileUrl =
+	// 	'https://jemishome.blob.core.windows.net/blob/1682579274354-ce2fbc6df38e2ac7e2812e400'; //언론관
 	const fileUrl =
-		'https://jemishome.blob.core.windows.net/blob/1682505391267-1ff5df3d40f45e995ae948301'; //apple terms
-
+		'https://jemishome.blob.core.windows.net/blob/1682580377970-3bd8a6a99452f73102b878a00';
 	https.get(fileUrl, (parseRes) => {
 		let data = [];
 
@@ -75,11 +127,13 @@ router.get('/pagination', (req, res) => {
 		});
 		parseRes.on('end', () => {
 			const buffer = Buffer.concat(data);
-			PdfParse(buffer)
+			const pages = [];
+			PdfParse(buffer, { pagerender: pageRender(pages) })
 				.then((document) => {
-					console.log('text: ', document.text);
+					console.log('document: ', document);
+					console.log('pages:', pages);
 					const textArr = document.text.split('\n\n');
-					const filteredArr = textArr.filter((el) => (el ? true : false));
+					// const filteredArr = textArr.filter((el) => (el ? true : false));
 					// console.log('filtered : ', filteredArr);
 					// for await(let text of filteredArr){
 					// 	extractKeyPhrase(text)
@@ -96,7 +150,17 @@ router.get('/pagination', (req, res) => {
 					// 		extracted,
 					// 	});
 					// });
-					res.send(filteredArr);
+					// processArrayInBatches(filteredArr, 25)
+					// 	.then((result) => {
+					// 		console.log('result :', result);
+					// 		res.send(result);
+					// 	})
+					// 	.catch((err) => {
+					// 		console.log('err :', err);
+					// 		res.status(500).send(err);
+					// 	});
+					// res.send({ textArr, text: document.text });
+					res.send({ pages, text: document.text });
 				})
 				.catch((error) => {
 					console.error('Error while parsing PDF:', error);
@@ -178,13 +242,14 @@ router.get('/titletest', async (req, res) => {
 });
 router.get('/sumtest', async (req, res) => {
 	// const { fileUrl, extension } = await uploadBlob(req);
-	const fileUrl =
-		'https://jemishome.blob.core.windows.net/blob/%E1%84%89%E1%85%B5%E1%86%AB%E1%84%8B%E1%85%B5%E1%86%B8%E1%84%80%E1%85%B5%E1%84%8C%E1%85%A1.pdf';
-	console.log('file url : ', fileUrl);
-	const allTexts = await getDocuText(fileUrl, 'application/pdf');
-	const optimized = optimizeText(allTexts);
-	const summarized = await summarization(optimized);
-	res.send(summarized);
+	// const fileUrl =
+	// 	'https://jemishome.blob.core.windows.net/blob/%E1%84%89%E1%85%B5%E1%86%AB%E1%84%8B%E1%85%B5%E1%86%B8%E1%84%80%E1%85%B5%E1%84%8C%E1%85%A1.pdf';
+	// console.log('file url : ', fileUrl);
+	// const allTexts = await getDocuText(fileUrl, 'application/pdf');
+	// const optimized = optimizeText(allTexts);
+	const text = `취재원에 대해 기본적인 예의를 갖추어라 .  취 재원과 언쟁을 벌 이거나 취 재원의 기분을 상하게 하지마라 . 그래서 손 해보는 것은 기  자이다 . 특 히 전화 취 재는 취 재원이 가장 기분 나 빠 하는 것 중 에 하나이다 . 7) 자신의 취재처에 대해서는 전문가가 되라 .  그래야만 좋 은 글이 나올 수 있다 . 그러기 위해서는 평소  자신의 생활이 취 재활동이 될   필요가 있다 . 8) 애매한 것은 확실하게 조사 , 검토해 보고 그래도 명확하지 않으면 생략하는 것이 좋다 . 9) 모든 사실은 양면성 , 이중성을 가지고 있다 .  사 실 에 관 련 된 모든 견해를 통 합 , 반영해야 한다 . 판단을 독 자에게 맡 기는 내용의 기사는  신문의 신 뢰 도를 높 인다 . (4) 취재시 기자의 자세  기자의 많 은 취 재 작업 은 신문에 어 울 리는 기 획 을 낳 고 생산적인 글을 탄 생시 킨 다 .  취 재는 보도기사 담당자만이 또 는 보도면을 담당하는 취 재부 기자만이 하는 것이 아니다 . 기자라면 누 구나 부서에 상관없이 수행해야 하는 것이다 . 그래서 흔히 기자라는 말대신 ‘ 취 재기자 ’ 라는 말을 많 이 쓴 다 .  사 실 은 취 재부기자 보다 학술부 , 문화부 , 사회부 기자에게 취 재의 중 요성은 더  크다 . 전문 적이고 광 범위한 취 재를 바 탕 으로 독 자들에게 항 상 새 로운 소 식을 조 직 화하여 알려주어야 하며 , 새 로운 생 각 을 정리하여 적당한 필자를 선 정 , 생산적인 논 의를 지면에 반영해야 하는 것이 학술부 , 문화부 , 사회부 기자들이 담당하고 있는 일의 주된 내용이기 때문이다 .  취 재를 제대로 하지 않는 기자들이 만 드 는 매체는 일상적이고 피 상적인 소 식의 나 열 과 진 부하고 상투적인 글들로 가 득찬  재미없는 신문이 되고 만다 . 이런 언론을 보고 ‘ 기자들이 아 르 바이 트 한 , 즉 여가 선 용한 언론 ’ 이라고 한다 .  이런 매체를 만 드 는 것은 독 자의 알 권 리를 올바로 충족 시 키 고 또  그들의 의사를 앞 서서 대변한다는 기자정신의 대의를 스스 로 저 버 리는 것이다 . 그리고 아 까 운 시간과 물자 , 노 력 을 헛 되이 하는 것이다 . 신문기자는 먼 저 지면의 소중 함을 뼈 저리게 느 껴 야 한다 .  취 재를 한다는 것 , 이것은 ‘ 취 재기자 ’ 가 수 많 은 뉴스 재 료  속에서 어떤 것을 뽑 아내느냐 하 는 문제로 써  가장 어 렵 고 중 요한 문제이다 . 취 재기자는 시야를 넓 혀 이제 껏  찾지`;
+	const summarized = await summarization(text);
+	res.send({ summarized, text });
 });
 router.post('/uploadtest', async (req, res) => {
 	const form = formidable();
