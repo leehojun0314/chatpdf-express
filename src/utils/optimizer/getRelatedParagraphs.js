@@ -131,10 +131,7 @@ function calculateRelevanceScore(questionKeyPhrases, paragraph) {
 	}
 
 	score += uniqueMatches * 4; // 각기 다른 문자가 포함될 때마다 5점 (기존 1점 + 추가 4점)
-	if (score > 0) {
-		console.log('paragraph order: ', paragraph.order_number);
-		console.log('score: ', score);
-	}
+
 	return score;
 }
 module.exports = { getRelatedParagraphs };
