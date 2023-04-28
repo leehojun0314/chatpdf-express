@@ -15,9 +15,13 @@ async function createQuestion(content) {
 	const prompt = MessageGenerator.presetQuestion(content);
 	try {
 		const completion = await openai.createChatCompletion({
-			model: 'gpt-3.5-turbo',
+			model: 'gpt-4',
 			messages: [prompt],
 		});
+		console.log(
+			'create question token usage: ',
+			completion.data.usage.total_tokens,
+		);
 		const answer = completion.data.choices[0].message.content;
 		return answer;
 	} catch (error) {

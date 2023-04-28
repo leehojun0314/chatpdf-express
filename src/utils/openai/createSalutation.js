@@ -15,10 +15,14 @@ async function createSalutation(allTexts) {
 	try {
 		const systemMessage = generator.systemMessage(allTexts);
 		const completion = await openai.createChatCompletion({
-			model: 'gpt-3.5-turbo',
+			model: 'gpt-4',
 			messages: [systemMessage],
 			temperature: 1,
 		});
+		console.log(
+			'create salutation token usage: ',
+			completion.data.usage.total_tokens,
+		);
 		const answer = completion.data.choices[0].message.content;
 		return answer;
 	} catch (error) {

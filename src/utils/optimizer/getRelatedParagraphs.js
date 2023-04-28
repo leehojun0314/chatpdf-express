@@ -113,20 +113,28 @@ function calculateRelevanceScore(questionKeyPhrases, paragraph) {
 	let uniqueMatches = 0;
 
 	for (const keyPhrase of questionKeyPhrases) {
-		if (paragraph.paragraph_content.replaceAll(' ', '').includes(keyPhrase)) {
-			score += 1;
+		let keyPhraseCount = 0;
+		let position = paragraph.paragraph_content.indexOf(keyPhrase);
+
+		while (position !== -1) {
+			keyPhraseCount++;
+			position = paragraph.paragraph_content.indexOf(
+				keyPhrase,
+				position + 1,
+			);
+		}
+
+		if (keyPhraseCount > 0) {
+			score += keyPhraseCount; // 중복 횟수에 따라 가산점 추가
 			uniqueMatches += 1;
-			console.log('paragraph num : ', paragraph.order_number);
-			console.log('included keyphrase : ', keyPhrase);
 		}
 	}
 
-	if (uniqueMatches === questionKeyPhrases.length) {
-		score += 100;
-	} else {
-		score += uniqueMatches * 4; // 각기 다른 문자가 포함될 때마다 5점 (기존 1점 + 추가 4점)
+	score += uniqueMatches * 4; // 각기 다른 문자가 포함될 때마다 5점 (기존 1점 + 추가 4점)
+	if (score > 0) {
+		console.log('paragraph order: ', paragraph.order_number);
+		console.log('score: ', score);
 	}
-
 	return score;
 }
 module.exports = { getRelatedParagraphs };
