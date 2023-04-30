@@ -7,17 +7,19 @@ const {
 	getRelatedParagraphs,
 } = require('../../utils/optimizer/getRelatedParagraphs');
 const selectParagraph_all = require('../../model/selectParagraph_all');
+const selectConvIntId = require('../../model/selectConvIntId');
 async function sendMessageV4(req, res) {
 	res.setHeader('Content-Type', 'application/json');
 	res.setHeader('X-Accel-Buffering', 'no');
-	const conversationId = req.body?.conversationId || '';
+	const convStringId = req.body?.conversationId || '';
 	const user = req.user;
 	const message = req.body?.text;
-	if (!conversationId) {
+	if (!convStringId) {
 		res.status(404).send('please enter a valid conversation id');
 		return;
 	}
 	try {
+		const convIntId = await selectConvIntId({ convStringId: convStringId });
 		console.log('user: ', user);
 		const userResult = await selectUser({
 			email: user.user_email,
@@ -27,7 +29,7 @@ async function sendMessageV4(req, res) {
 		console.log('user result: ', userResult);
 		const userId = userResult.recordset[0].user_id;
 		const selectParagraphsResult = await selectParagraph_all({
-			conversationId,
+			convIntId,
 		});
 		console.log(
 			'paragraph recordset length : ',
@@ -39,7 +41,7 @@ async function sendMessageV4(req, res) {
 		);
 		// const systemMessage = generator.systemMessage()
 		const messagesResult = await selectMessage({
-			conversationId,
+			convIntId,
 			userId: userId,
 		});
 		const relatedParagraph = relatedParagraphs
@@ -60,7 +62,7 @@ async function sendMessageV4(req, res) {
 						message: message,
 						sender: 'user',
 						messageOrder: messagesResult.recordset.length,
-						conversationId: conversationId,
+						convIntId: convIntId,
 						userId: userId,
 					});
 					//ai가 보낸 내용 insert
@@ -74,7 +76,7 @@ async function sendMessageV4(req, res) {
 								: ''),
 						sender: 'assistant',
 						messageOrder: messagesResult.recordset.length + 1,
-						conversationId: conversationId,
+						convIntId: convIntId,
 						userId: userId,
 					});
 					res.end('');

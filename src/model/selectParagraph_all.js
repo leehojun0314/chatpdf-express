@@ -1,12 +1,12 @@
 const getSql = require('../database/connection');
-function selectParagraph_all({ conversationId }) {
+function selectParagraph_all({ convIntId }) {
 	return new Promise((resolve, reject) => {
 		getSql()
 			.then((sqlPool) => {
 				sqlPool
 					.request()
 					.query(
-						`SELECT * FROM Paragraph WHERE conversation_id = '${conversationId}'`,
+						`SELECT * FROM Paragraph WHERE conversation_id = '${convIntId}'`,
 					)
 					.then((result) => {
 						resolve(result);

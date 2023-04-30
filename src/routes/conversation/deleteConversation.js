@@ -1,17 +1,19 @@
+const selectConvIntId = require('../../model/selectConvIntId');
 const updateConvStatusModel = require('../../model/updateConvStatusModel');
 
 async function deleteConversation(req, res) {
-	const convId = req.query.convId;
+	const convStringId = req.query.convId;
 	const userId = req.user.user_id;
 
-	console.log('delete conv id : ', convId);
-	if (!convId) {
+	console.log('delete conv id : ', convStringId);
+	if (!convStringId) {
 		res.status(404).send('conversation id is not given');
 		return;
 	}
 	try {
 		// await deleteConversationModel({ convId, userId });
-		await updateConvStatusModel({ convId, userId, status: 'deleted' });
+		const convIntId = await selectConvIntId({ convStringId });
+		await updateConvStatusModel({ convIntId, userId, status: 'deleted' });
 		res.status(200).send('conversation deleted');
 	} catch (error) {
 		console.log('delete error : ', error);

@@ -1,15 +1,16 @@
 const getSql = require('../database/connection');
-function selectMessage({ convIntId, userId }) {
+function selectConvIntId({ convStringId }) {
+	console.log('convStringId: ', convStringId);
 	return new Promise((resolve, reject) => {
 		getSql()
 			.then((sqlPool) => {
 				sqlPool
 					.request()
 					.query(
-						`SELECT * FROM Message WHERE conversation_id = '${convIntId}' AND user_id = ${userId} ORDER BY message_order ASC`,
+						`SELECT * FROM Conversation WHERE conversation_id = ${convStringId}`,
 					)
 					.then((result) => {
-						resolve(result);
+						resolve(result.recordset[0]);
 					})
 					.catch((err) => {
 						reject(err);
@@ -20,4 +21,4 @@ function selectMessage({ convIntId, userId }) {
 			});
 	});
 }
-module.exports = selectMessage;
+module.exports = selectConvIntId;

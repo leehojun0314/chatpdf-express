@@ -1,3 +1,4 @@
+const selectConvIntId = require('../../model/selectConvIntId');
 const selectConversation_single = require('../../model/selectConversation_single');
 
 async function checkConversation(req, res) {
@@ -6,7 +7,11 @@ async function checkConversation(req, res) {
 		const user = req.user;
 		const userId = user.user_id;
 		const convId = req.query.convId;
-		const selectedConv = await selectConversation_single({ convId, userId });
+		const convIntId = await selectConvIntId({ convId });
+		const selectedConv = await selectConversation_single({
+			convIntId,
+			userId,
+		});
 		console.log('selectedConv : ', selectedConv);
 		res.send(selectedConv);
 	} catch (error) {

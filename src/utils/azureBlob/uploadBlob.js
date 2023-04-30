@@ -21,7 +21,7 @@ module.exports = function uploadBlob(req) {
 				reject({ err });
 				return;
 			}
-
+			//todo check extension
 			const file = files['file'];
 			const fileName = file.newFilename;
 			const blobName = `${Date.now()}-${fileName}`;

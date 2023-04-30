@@ -27,7 +27,7 @@ function insertBatchParagraphs(batch, conversationId) {
 	});
 }
 
-async function insertParagraphs({ paragraphs, conversationId }) {
+async function insertParagraphs({ paragraphs, convIntId }) {
 	const batchSize = 500;
 	const batches = [];
 
@@ -37,7 +37,7 @@ async function insertParagraphs({ paragraphs, conversationId }) {
 
 	try {
 		for (const batch of batches) {
-			await insertBatchParagraphs(batch, conversationId);
+			await insertBatchParagraphs(batch, convIntId);
 		}
 	} catch (error) {
 		console.error('Error inserting paragraphs:', error);

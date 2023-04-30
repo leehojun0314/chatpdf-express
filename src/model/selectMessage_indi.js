@@ -1,14 +1,14 @@
 const getSql = require('../database/connection');
-function selectMessage_indi({ convId, userEmail }) {
+function selectMessage_indi({ convIntId, userEmail }) {
 	return new Promise((resolve, reject) => {
 		getSql().then((sqlPool) => {
 			sqlPool
 				.request()
 				.input('user_email', userEmail)
-				.input('conversation_id', convId)
+				.input('convIntId', convIntId)
 				.input('sender', 'system')
 				.query(
-					'SELECT m.* FROM Message m INNER JOIN UserTable u ON m.user_id = u.user_id WHERE (m.sender = @sender AND m.conversation_id = @conversation_id) OR (u.user_email = @user_email AND m.conversation_id = @conversation_id)',
+					'SELECT m.* FROM Message m INNER JOIN UserTable u ON m.user_id = u.user_id WHERE (m.sender = @sender AND m.conversation_id = @convIntId) OR (u.user_email = @user_email AND m.conversation_id = @convIntId)',
 				)
 				.then((result) => {
 					resolve(result);

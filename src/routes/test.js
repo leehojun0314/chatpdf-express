@@ -27,7 +27,17 @@ const sendToAi_vola_stream = require('../utils/openai/sendToAi__vola_stream');
 const updateConvStatusModel = require('../model/updateConvStatusModel');
 const getKeywordGPT = require('../utils/openai/getKeywordGPT');
 const { keyPhrase_summ } = require('../utils/azureLanguage/keyPhrase_summ');
-
+const { v4: uuidv4 } = require('uuid');
+function generateConvId() {
+	const currentTime = Date.now();
+	const uniqueId = uuidv4();
+	return `${uniqueId}-${currentTime}`;
+}
+router.get('/uniqueId', (req, res) => {
+	const id = generateConvId();
+	console.log('id: ', id);
+	res.send({ id });
+});
 router.get('/keyword', async (req, res) => {
 	try {
 		const answer = await getKeywordGPT(
@@ -97,6 +107,7 @@ function pageRender(pageArr) {
 	};
 	// 텍스트 레이어를 추출합니다.
 }
+
 router.get('/paragraph', async (req, res) => {
 	const convId = req.query.convId;
 	const orderNum = req.query.order;

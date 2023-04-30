@@ -1,5 +1,5 @@
 const getSql = require('../database/connection');
-async function insertQuestion({ conversationId, questionArr }) {
+async function insertQuestion({ convIntId, questionArr }) {
 	try {
 		const sqlPool = await getSql();
 		for (let i = 0; i < questionArr.length; i++) {
@@ -7,7 +7,7 @@ async function insertQuestion({ conversationId, questionArr }) {
 				.request()
 				.input('question_content', questionArr[i])
 				.input('question_order', i)
-				.input('conversation_id', conversationId)
+				.input('conversation_id', convIntId)
 				.query(`INSERT INTO Question (question_content, question_order, conversation_id) 
                     VALUES (@question_content, @question_order, @conversation_id)
                     `);
