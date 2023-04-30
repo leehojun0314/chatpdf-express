@@ -6,8 +6,9 @@ async function checkConversation(req, res) {
 		console.log('req : ', req.user);
 		const user = req.user;
 		const userId = user.user_id;
-		const convId = req.query.convId;
-		const convIntId = await selectConvIntId({ convId });
+		const convStringId = req.query.convId;
+		const convIntId = await selectConvIntId({ convStringId });
+		console.log('conv int id : ', convIntId);
 		const selectedConv = await selectConversation_single({
 			convIntId,
 			userId,

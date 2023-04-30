@@ -5,7 +5,9 @@ function selectQuestion_all({ convIntId }) {
 			.then((sqlPool) => {
 				sqlPool
 					.request()
-					.query(`SELECT * FROM Question WHERE id = '${convIntId}'`)
+					.query(
+						`SELECT * FROM Question WHERE conversation_id = '${convIntId}'`,
+					)
 					.then((result) => {
 						resolve(result.recordset);
 					})

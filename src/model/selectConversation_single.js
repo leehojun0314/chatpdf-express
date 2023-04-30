@@ -1,3 +1,5 @@
+const getSql = require('../database/connection');
+
 function selectConversation_single({ convIntId, userId }) {
 	return new Promise((resolve, reject) => {
 		getSql()
@@ -5,7 +7,7 @@ function selectConversation_single({ convIntId, userId }) {
 				sqlPool
 					.request()
 					.query(
-						`SELECT * FROM Conversation WHERE id = ${convIntId} AND (visibility = 'public' OR (visibility = 'private' AND user_id = ${userId}))`,
+						`SELECT * FROM Conversation WHERE [id] = ${convIntId} AND (visibility = 1 OR (visibility = 0 AND user_id = ${userId}))`,
 					)
 					.then((result) => {
 						resolve(result.recordset[0]);

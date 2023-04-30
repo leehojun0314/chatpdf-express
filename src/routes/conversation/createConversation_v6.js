@@ -38,6 +38,7 @@ async function createConversationV6(req, res) {
 	console.log('user: ', user);
 	let convIntId;
 	let convStringId = generateConvId();
+	console.log('conv string id : ', convStringId);
 	try {
 		//user id 가져오기 req.user에는 userid가 없음. 다른 db이기 떄문
 		const selectUserResult = await selectUser({
@@ -115,11 +116,12 @@ async function createConversationV6(req, res) {
 
 		console.log('updated conv status');
 	} catch (error) {
-		console.log('error: ', error);
+		console.log('catch error: ', error);
 		await updateConvStatusModel({
 			convIntId: convIntId,
 			status: 'error',
 		});
+		res.status(500).send(error);
 	}
 }
 

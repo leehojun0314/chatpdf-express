@@ -7,10 +7,11 @@ function selectConvIntId({ convStringId }) {
 				sqlPool
 					.request()
 					.query(
-						`SELECT * FROM Conversation WHERE conversation_id = ${convStringId}`,
+						`SELECT * FROM Conversation WHERE conversation_id = '${convStringId}'`,
 					)
 					.then((result) => {
-						resolve(result.recordset[0]);
+						const id = result.recordset[0].id;
+						resolve(id);
 					})
 					.catch((err) => {
 						reject(err);
