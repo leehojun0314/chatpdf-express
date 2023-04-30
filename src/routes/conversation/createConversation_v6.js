@@ -62,6 +62,7 @@ async function createConversationV6(req, res) {
 		});
 
 		convIntId = conversationResult.recordset[0].id;
+		console.log('inserted conv int id : ', convIntId);
 		res.status(201).send({
 			message: 'conversation created',
 			createdId: convIntId,
