@@ -19,9 +19,10 @@ router.post('/v1', authenticate, sendMessageV1);
 router.post('/v2', authenticate, sendMessageV2);
 router.post('/v3', authenticate, sendMessageV3);
 router.post('/v4', authenticate, sendMessageV4);
+
 router.get('/dtizen', authenticateDtizen, getMessages);
 router.get('/v3/dtizen', authenticateDtizen, getMessages_v3);
-router.get('/v4/ditizen', authenticateDtizen, getMessages_v4);
+router.get('/v4/dtizen', authenticateDtizen, getMessages_v4);
 router.post('/v3/dtizen', authenticateDtizen, sendMessageV3);
 router.post('/v4/dtizen', authenticateDtizen, sendMessageV4);
 
