@@ -13,7 +13,7 @@ async function createSalutation(allTexts) {
 		return { message: 'no apikey presented', status: false };
 	}
 	try {
-		const systemMessage = generator.systemMessage(allTexts);
+		const systemMessage = generator.presetSalutation(allTexts);
 		const completion = await openai.createChatCompletion({
 			model: 'gpt-4',
 			messages: [systemMessage],

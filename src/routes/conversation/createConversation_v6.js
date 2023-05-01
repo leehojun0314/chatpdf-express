@@ -39,13 +39,14 @@ async function createConversationV6(req, res) {
 	let convIntId;
 	let convStringId = generateConvId();
 	console.log('conv string id : ', convStringId);
+	let userId;
 	try {
 		//user id 가져오기 req.user에는 userid가 없음. 다른 db이기 떄문
 		const selectUserResult = await selectUser({
 			email: user.user_email,
 			name: user.user_name,
 		});
-		const userId = selectUserResult.recordset[0]?.user_id;
+		userId = selectUserResult.recordset[0]?.user_id;
 		if (!userId) {
 			res.status(404).send('unknown user id');
 			return;
@@ -63,16 +64,29 @@ async function createConversationV6(req, res) {
 
 		convIntId = conversationResult.recordset[0].id;
 		console.log('inserted conv int id : ', convIntId);
-		res.status(201).send({
-			message: 'conversation created',
-			createdId: convIntId,
-		});
+
 		//get pdf text
 		const pages = [];
 		await PdfParse(buffer, {
 			pagerender: pageRender(pages),
 		});
+		//check validated text
 
+		const replacedTexts = pages.join('').replaceAll(' ', '');
+		if (!(replacedTexts.length > 0)) {
+			console.log("couldn't extract text from the file");
+			await updateConvStatusModel({
+				convIntId: convIntId,
+				status: 'error',
+				userId: userId,
+			});
+			res.status(500).send("Couldn't extract text from the file");
+			return;
+		}
+		res.status(201).send({
+			message: 'conversation created',
+			createdId: convIntId,
+		});
 		const paragraphs = [];
 		for (let i = 0; i < pages.length; i++) {
 			paragraphs.push({
@@ -91,6 +105,7 @@ async function createConversationV6(req, res) {
 		// const summarizedText = await summarization(optimizedText);
 		const joinedText = pages.join(' ').slice(0, 5000); //앞에 2500자 까지만 제공
 		console.log('joined text for salutation :', joinedText);
+
 		//salutation 생성
 		const salutation = await createSalutation(joinedText);
 		console.log('salutation: ', salutation);
@@ -121,6 +136,7 @@ async function createConversationV6(req, res) {
 		await updateConvStatusModel({
 			convIntId: convIntId,
 			status: 'error',
+			userId: userId,
 		});
 		res.status(500).send(error);
 	}
