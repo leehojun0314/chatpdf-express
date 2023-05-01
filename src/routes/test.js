@@ -228,21 +228,18 @@ router.get('/ssetest', (req, res) => {
 		}
 	}, 500);
 });
-router.get('/titletest', async (req, res) => {
-	const fileUrl =
-		'https://jemishome.blob.core.windows.net/blob/1680896870987-3af321008623482acd0e62700';
-	console.log('file url : ', fileUrl);
-	const allTexts = await getDocuText(fileUrl, 'application/pdf');
-	const optimized = optimizeText(allTexts);
+router.get('/plugintest', async (req, res) => {
+	// const fileUrl =
+	// 	'https://jemishome.blob.core.windows.net/blob/1680896870987-3af321008623482acd0e62700';
+	// console.log('file url : ', fileUrl);
+	// const allTexts = await getDocuText(fileUrl, 'application/pdf');
+	// const optimized = optimizeText(allTexts);
 	const completion = await openai.createChatCompletion({
 		model: 'gpt-3.5-turbo',
 		messages: [
 			{
 				role: 'user',
-				content: `
-				다음 지문을 읽고 해당 내용에 대한 제목을 지어줘.
-				${optimized}
-			`,
+				content: `https://www.chat4doc.com/test 엔드포인트에서 얻을 수 있는 정보를 알려줘.`,
 			},
 		],
 	});
