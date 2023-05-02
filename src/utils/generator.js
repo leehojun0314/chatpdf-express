@@ -46,8 +46,10 @@ class MessageGenerator {
 			// First, briefly introduce what you know to the user, and say hi!
 			// Please make the language used when greeting the same as the language of the following text.
 			// text : ${message}`,
-			content: `다음 지문을 읽고, 챗봇으로써 어떤 내용을 알고있는지 간단하게 소개하고 사용자에게 인사해줘. 인사할 때 언어는 지문의 언어와 동일하게 해줘.
-			지문 : ${message}`,
+			//다음 지문을 읽고, 챗봇으로써 어떤 내용을 알고있는지 간단하게 소개하고 사용자에게 인사해줘. 인사할 때 언어는 지문의 언어와 동일하게 해줘.
+			content: `
+			Read the text below, as a chat bot, tell the user what do you know about it shortly and say hello to them! The language you use should follow the text used. ex) if the text is english, you use english. if the text is korean, you use koean.
+			text : ${message}`,
 		};
 	}
 	systemMessage(message) {
@@ -66,7 +68,7 @@ class MessageGenerator {
 	presetQuestion(content) {
 		return {
 			role: 'user',
-			content: `아래 지문을 읽고 예상되는 질문을 작성해줘. 그리고 문장 끝이 항상 "?"로 끝나게 해줘. 언어는 지문의 언어를 따라가줘. 질문의 앞에 번호를 매겨줘. 질문마다 '\n'을 사이에 넣어서 분리해줘.
+			content: `아래 지문을 읽고 예상되는 질문(해당 지문에 답이 있는)을 5개만 작성해줘. 그리고 문장 끝이 항상 "?"로 끝나게 해줘. 언어는 지문의 언어를 따라가줘. 질문의 앞에 번호를 매겨줘. 질문마다 '\n'을 사이에 넣어서 분리해줘.
 			지문: ${content}
 			 `,
 		};

@@ -15,6 +15,7 @@
 		"@azure/storage-blob": "^12.13.0",
 		"aws-sdk": "^2.1335.0",
 		"axios": "^1.3.4",
+		"cheerio": "^1.0.0-rc.12",
 		"cors": "^2.8.5",
 		"dotenv": "^16.0.3",
 		"eventsource-parser": "^1.0.0",
@@ -23,10 +24,13 @@
 		"google-auth-library": "^8.7.0",
 		"js-base64": "^3.7.5",
 		"jsonwebtoken": "^9.0.0",
+		"langchain": "^0.0.67",
 		"mssql": "^9.1.1",
+		"natural": "^6.3.0",
 		"node-hwp": "^0.1.0-alpha",
 		"openai": "^3.2.1",
 		"pdf-parse": "^1.1.1",
-		"uuid": "^9.0.0"
+		"uuid": "^9.0.0",
+		"weaviate-ts-client": "^1.1.0"
 	}
 }

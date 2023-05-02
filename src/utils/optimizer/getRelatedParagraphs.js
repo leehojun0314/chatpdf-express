@@ -1,4 +1,5 @@
 const { extractKeyPhrase } = require('../azureLanguage/keyPhrase');
+require('dotenv').config();
 const getKeywordGPT = require('../openai/getKeywordGPT');
 /**
  * function to optimize prompt by using keywords
@@ -7,37 +8,16 @@ const getKeywordGPT = require('../openai/getKeywordGPT');
  * @returns optimized prompt
  */
 async function getRelatedParagraphs(paragraphs, userQuestion) {
-	// 1. 유저 질문에서 키워드 추출
-	// const extractResult = await extractKeyPhrase([userQuestion]);
+	// 1. 유저 질문에서 키워드 추출. (gpt 활용)
 	const questionKeywords = await getKeywordGPT(userQuestion);
-	console.log('question keywords:', questionKeywords);
-	// 2. 각 문단의 관련성 점수 계산 (문단 키워드와 질문 키워드의 교집합의 크기)
-	// const scoredParagraphs = paragraphs.map((paragraph) => {
-	// 	const paragraphKeywords = paragraph.keywords
-	// 		.split(', ')
-	// 		.map((keyword) =>
-	// 			keyword ? keyword.replaceAll(' ', '').toLowerCase() : '',
-	// 		);
-	// 	const intersection = paragraphKeywords.filter((keyword) =>
-	// 		questionKeywords
-	// 			.map((qk) => (qk ? qk.replaceAll(' ', '').toLowerCase() : ''))
-	// 			.includes(keyword),
-	// 	);
-	// 	// console.log('paragraph keywords : ', paragraphKeywords);
-	// 	// console.log('intersection : ', intersection);
-	// 	return {
-	// 		...paragraph,
-	// 		relevanceScore: intersection.length ? intersection.length : 0,
-	// 		intersection,
-	// 	};
-	// });
 	const optimizedKeywords =
 		typeof questionKeywords === 'object'
-			? questionKeywords.map((keywords) =>
-					keywords.replaceAll(' ', '').toLowerCase(),
+			? questionKeywords.map(
+					(keywords) =>
+						// keywords.replaceAll(' ', '').toLowerCase(),
+						keywords.trim().toLowerCase(), //optimize를 하면 영어에서 오류가남.
 			  )
 			: [];
-	console.log('optimized keywords: ', optimizedKeywords);
 	const scoredParagraphs = paragraphs.map((paragraph) => {
 		const relevanceScore = calculateRelevanceScore(
 			optimizedKeywords,
@@ -53,18 +33,9 @@ async function getRelatedParagraphs(paragraphs, userQuestion) {
 	const sortedParagraphs = scoredParagraphs.sort(
 		(a, b) => b.relevanceScore - a.relevanceScore,
 	);
-	// console.log(
-	// 	'sorted paras: ',
-	// 	sortedParagraphs.map((para) => {
-	// 		return { order: para.order_number, score: para.relevanceScore };
-	// 	}),
-	// );
-	// 3.1 관련성 점수가 제일 높은 문단의 다음 문단도 점수를 추가해줌.
 
+	// 3.1 관련성 점수가 제일 높은 문단의 다음 문단도 점수를 추가해줌.
 	const bestParagraph = sortedParagraphs[0];
-	// if (bestParagraph.relevanceScore === 0) {
-	// 	return []; //전혀 관계가 없다는 뜻
-	// }
 	const continuosParagraph = scoredParagraphs.find(
 		(p) => p.order_number === bestParagraph.order_number + 1,
 	);
@@ -75,12 +46,10 @@ async function getRelatedParagraphs(paragraphs, userQuestion) {
 	const againSortedParagraphs = sortedParagraphs.sort(
 		(a, b) => b.relevanceScore - a.relevanceScore,
 	);
-	// sortedParagraphs.splice(1, 0, continuosParagraph);
-
-	// 4. 문단 내용의 길이 합이 1000자 미만이 될 때까지 선택
+	// 4. 문단 내용의 길이 합이 설정값 미만이 될 때까지 선택. (token관리)
 	const selectedParagraphs = [];
 	let totalLength = 0;
-	const maxLength = 3500;
+	const maxLength = process.env.RELATED_PARAGRAPH_LENGTH;
 
 	for (const paragraph of againSortedParagraphs) {
 		if (paragraph.relevanceScore === 0) {
@@ -109,29 +78,36 @@ async function getRelatedParagraphs(paragraphs, userQuestion) {
 	return selectedParagraphs;
 }
 function calculateRelevanceScore(questionKeyPhrases, paragraph) {
-	let score = 0;
-	let uniqueMatches = 0;
-
+	let score = 0; // 점수 초기화
+	let uniqueMatches = 0; // 중복되지 않는 매치 수 초기화
+	paragraph.intersection = [];
 	for (const keyPhrase of questionKeyPhrases) {
-		let keyPhraseCount = 0;
-		let position = paragraph.paragraph_content.indexOf(keyPhrase);
+		// 질문의 키워드들을 하나씩 반복
+		let keyPhraseCount = 0; // 키워드 출현 횟수 초기화
+		let optimizedContent = paragraph.paragraph_content.toLowerCase();
+		// .replaceAll(' ', '')
+		let position = optimizedContent.indexOf(keyPhrase); // 키워드가 처음 출현한 위치 찾기
 
 		while (position !== -1) {
-			keyPhraseCount++;
-			position = paragraph.paragraph_content.indexOf(
-				keyPhrase,
-				position + 1,
-			);
+			// 키워드가 더 이상 없을 때까지 반복
+			keyPhraseCount++; // 출현 횟수 증가
+			position = optimizedContent.indexOf(keyPhrase, position + 1); // 다음 출현 위치 찾기
 		}
 
 		if (keyPhraseCount > 0) {
+			// 키워드가 출현한 경우
+			// paragraph.intersection.push({ keyPhrase, count: keyPhraseCount });
+			paragraph.intersection.push(
+				`keyPhrase : ${keyPhrase}, count: ${keyPhraseCount}`,
+			);
+
 			score += keyPhraseCount; // 중복 횟수에 따라 가산점 추가
-			uniqueMatches += 1;
+			uniqueMatches += 1; // 중복되지 않는 매치 수 증가
 		}
 	}
 
-	score += uniqueMatches * 4; // 각기 다른 문자가 포함될 때마다 5점 (기존 1점 + 추가 4점)
+	score += uniqueMatches * 19; // 각기 다른 문자가 포함될 때마다 20점 (기존 1점 + 추가 19점)
 
-	return score;
+	return score; // 최종 점수 반환
 }
 module.exports = { getRelatedParagraphs };

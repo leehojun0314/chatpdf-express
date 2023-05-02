@@ -11,6 +11,7 @@ const insertConversation_v3 = require('../../model/insertConversation_v3');
 const updateConvStatusModel = require('../../model/updateConvStatusModel');
 const { v4: uuidv4 } = require('uuid');
 const insertConv_v4 = require('../../model/insertConv_v4');
+const deleteBlob = require('../../utils/azureBlob/deleteBlob');
 function generateConvId() {
 	const currentTime = Date.now();
 	const uniqueId = uuidv4();
@@ -31,6 +32,20 @@ function pageRender(pageArr) {
 }
 function escapeQuotation(str) {
 	return str.replace(/'/g, "''");
+}
+function getMiddleElements(arr) {
+	const length = arr.length;
+	let startIndex;
+
+	if (length < 3) {
+		return arr;
+	} else if (length % 2 === 0) {
+		startIndex = length / 2 - 1;
+	} else {
+		startIndex = Math.floor(length / 2) - 1;
+	}
+
+	return arr.slice(startIndex, startIndex + (length % 2 === 0 ? 2 : 3));
 }
 
 async function createConversationV6(req, res) {
@@ -75,12 +90,13 @@ async function createConversationV6(req, res) {
 		const replacedTexts = pages.join('').replaceAll(' ', '');
 		if (!(replacedTexts.length > 0)) {
 			console.log("couldn't extract text from the file");
+			res.status(500).send("Couldn't extract text from the file");
 			await updateConvStatusModel({
 				convIntId: convIntId,
 				status: 'error',
 				userId: userId,
 			});
-			res.status(500).send("Couldn't extract text from the file");
+			await deleteBlob(fileUrl);
 			return;
 		}
 		res.status(201).send({
@@ -116,7 +132,10 @@ async function createConversationV6(req, res) {
 		});
 
 		//예상 질문 생성
-		const questions = await createQuestion(joinedText);
+		//제목과 부가적인 요소가 없는 중간 지점에서 질문 생성
+		console.log('middle pages: ', getMiddleElements(pages));
+		const joinedText2 = getMiddleElements(pages).join(' ').slice(0, 5000);
+		const questions = await createQuestion(joinedText2);
 		const questionArr = questions.split('\n');
 		//예상 질문 INSERT
 		await insertQuestion({
