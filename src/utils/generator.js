@@ -46,8 +46,19 @@ class MessageGenerator {
 			// First, briefly introduce what you know to the user, and say hi!
 			// Please make the language used when greeting the same as the language of the following text.
 			// text : ${message}`,
-			content: `다음 지문을 읽고, 챗봇으로써 어떤 내용을 알고있는지 간단하게 소개하고 사용자에게 인사해줘. 인사할 때 언어는 지문의 언어와 동일하게 해줘.
-			지문 : ${message}`,
+			// content: `다음 지문을 읽고, 챗봇으로써 어떤 내용을 알고있는지 간단하게 소개하는 소개글을 써줘. 언어는 지문의 언어를 따라갈 것.
+			// 지문 : This article is about something important.
+			// 답 : Greetings! I believe that this article is about something important. How may I help you?
+			// 지문 : 이 기사는 중요한 것에 관한 것입니다.
+			// 답 : 안녕하세요! 제가 알기로 이 문서는 중요한 내용을 포함하고 있는거 같습니다. 어떻게 도와드릴까요?
+			// 지문 : ${message}
+			// 답 : `,
+			content: `Read the following context and write a brief introduction about what you know as a chatbot. Language should follow the language of context.
+			context : This article is about something important.
+			answer : Greetings! I believe that this article is about something important. How may I help you?
+			context : ${message}
+			answer : 
+			`,
 		};
 	}
 	systemMessage(message) {

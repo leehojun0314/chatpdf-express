@@ -43,5 +43,7 @@ const configs = {
 		'https://jemishome-web-cdn.azureedge.net',
 	],
 	authenticateUrl: 'https://dtizen-secure.vercel.app',
+	relatedParagraphLength: 3000,
+	createSalutationPLength: 3000,
 };
 module.exports = configs;

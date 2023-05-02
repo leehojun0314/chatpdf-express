@@ -12,7 +12,7 @@ function updateSalutation({ convIntId, userId, salutation }) {
 						'UPDATE Conversation SET salutation = @salutation WHERE id = @convIntId AND user_id = @user_id',
 					)
 					.then((result) => {
-						console.log('update result: ', result);
+						console.log('update salutation result: ', result);
 						resolve(result);
 					})
 					.catch((err) => {

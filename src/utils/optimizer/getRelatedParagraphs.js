@@ -1,5 +1,7 @@
+const configs = require('../../../configs');
 const { extractKeyPhrase } = require('../azureLanguage/keyPhrase');
 const getKeywordGPT = require('../openai/getKeywordGPT');
+
 /**
  * function to optimize prompt by using keywords
  * @param {array} paragraphs
@@ -11,26 +13,6 @@ async function getRelatedParagraphs(paragraphs, userQuestion) {
 	// const extractResult = await extractKeyPhrase([userQuestion]);
 	const questionKeywords = await getKeywordGPT(userQuestion);
 	console.log('question keywords:', questionKeywords);
-	// 2. 각 문단의 관련성 점수 계산 (문단 키워드와 질문 키워드의 교집합의 크기)
-	// const scoredParagraphs = paragraphs.map((paragraph) => {
-	// 	const paragraphKeywords = paragraph.keywords
-	// 		.split(', ')
-	// 		.map((keyword) =>
-	// 			keyword ? keyword.replaceAll(' ', '').toLowerCase() : '',
-	// 		);
-	// 	const intersection = paragraphKeywords.filter((keyword) =>
-	// 		questionKeywords
-	// 			.map((qk) => (qk ? qk.replaceAll(' ', '').toLowerCase() : ''))
-	// 			.includes(keyword),
-	// 	);
-	// 	// console.log('paragraph keywords : ', paragraphKeywords);
-	// 	// console.log('intersection : ', intersection);
-	// 	return {
-	// 		...paragraph,
-	// 		relevanceScore: intersection.length ? intersection.length : 0,
-	// 		intersection,
-	// 	};
-	// });
 	const optimizedKeywords =
 		typeof questionKeywords === 'object'
 			? questionKeywords.map((keywords) =>
@@ -80,7 +62,7 @@ async function getRelatedParagraphs(paragraphs, userQuestion) {
 	// 4. 문단 내용의 길이 합이 1000자 미만이 될 때까지 선택
 	const selectedParagraphs = [];
 	let totalLength = 0;
-	const maxLength = 3500;
+	const maxLength = configs.relatedParagraphLength;
 
 	for (const paragraph of againSortedParagraphs) {
 		if (paragraph.relevanceScore === 0) {
@@ -127,6 +109,19 @@ function calculateRelevanceScore(questionKeyPhrases, paragraph) {
 		if (keyPhraseCount > 0) {
 			score += keyPhraseCount; // 중복 횟수에 따라 가산점 추가
 			uniqueMatches += 1;
+		}
+	}
+	//page가 키워드에 들어가 있을 경우
+	if (questionKeyPhrases.includes('page')) {
+		const pageKeywordIndex = questionKeyPhrases.indexOf('page');
+		const frontEl = questionKeyPhrases[pageKeywordIndex - 1];
+		const isFrontNumber = !isNaN(frontEl);
+		const backEl = questionKeyPhrases[pageKeywordIndex + 1];
+		const isBackNumber = !isNaN(backEl);
+		if (isFrontNumber && frontEl == paragraph.order_number + 1) {
+			score += 100;
+		} else if (isBackNumber && backEl == paragraph.order_number + 1) {
+			score += 100;
 		}
 	}
 

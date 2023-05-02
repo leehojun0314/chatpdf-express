@@ -18,9 +18,16 @@ async function getKeywordGPT(text) {
 			messages: [
 				{
 					role: 'user',
-					content: `다음 문장에서 키워드를 추출해줘 : What does Seller mean in the agreement?
+					content: `제시되는 문장에서 키워드를 추출해줘. 키워드에 '페이지' 단어가 포함되어 있으면 영어인 'page'로 바꿔줘.
+							문장 : What does Seller mean in the agreement?
                             답 : seller, mean, agreement
-                            다음 문장에서 키워드를 추출해줘 : ${text} 
+							문장 : 10 페이지에 무슨 내용이 있어?
+							답 : 10, page
+							문장 : 4. GPT-3은 어떤 NLP 데이터셋에서 몇 가지 예시 사항이 있는지?
+							답 : GPT-3, NLP, 데이터셋, 예시
+							문장 : What does it mean when it says, "Time is of the essence" in the context of the delivery of Goods in this Agreement?
+							답 : mean, time, essence, delivery, goods, agreement
+                            문장 : ${text} 
                             답 :`,
 				},
 			],

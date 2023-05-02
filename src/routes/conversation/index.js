@@ -13,6 +13,7 @@ const changeConvName = require('./changeConvName');
 const createConversationV5 = require('./createConversation_v5');
 const checkConversation = require('./checkConversation');
 const createConversationV6 = require('./createConversation_v6');
+const createConversationV7 = require('./createConversation_v7');
 const router = express.Router();
 
 router.get('/', authenticate, getConversations);
@@ -23,6 +24,7 @@ router.get('/check', authenticate, checkConversation);
 // router.post('/v4', authenticate, createConversationV4);
 // router.post('/v5', authenticate, createConversationV5);
 router.post('/v6', authenticate, createConversationV6);
+router.post('/v7', authenticate, createConversationV7);
 router.delete('/', authenticate, deleteConversation);
 router.patch('/last', authenticate, lastConversation);
 router.patch('/name', authenticate, changeConvName);
