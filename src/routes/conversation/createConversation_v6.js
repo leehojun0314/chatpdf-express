@@ -23,7 +23,7 @@ function pageRender(pageArr) {
 		};
 
 		return pageData.getTextContent(renderOptions).then((textContent) => {
-			const mappedText = textContent.items.map((item) => item.str).join(' ');
+			const mappedText = textContent.items.map((item) => item.str).join('');
 			pageArr.push(mappedText);
 			return mappedText;
 		});
