@@ -103,7 +103,7 @@ async function createConversationV6(req, res) {
 		//summarize
 		// const optimizedText = document.text.replace(/\n/g, '');
 		// const summarizedText = await summarization(optimizedText);
-		const joinedText = pages.join(' ').slice(0, 5000); //앞에 2500자 까지만 제공
+		const joinedText = pages.join(' ').slice(0, 3000); //앞에 3000자 까지만 제공
 		console.log('joined text for salutation :', joinedText);
 
 		//salutation 생성
