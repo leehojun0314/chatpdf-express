@@ -13,6 +13,7 @@
 	"dependencies": {
 		"@azure/ai-language-text": "^1.1.0-beta.1",
 		"@azure/storage-blob": "^12.13.0",
+		"@pinecone-database/pinecone": "^0.0.14",
 		"aws-sdk": "^2.1335.0",
 		"axios": "^1.3.4",
 		"cheerio": "^1.0.0-rc.12",

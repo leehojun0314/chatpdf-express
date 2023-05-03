@@ -11,6 +11,7 @@ const sendMessageV4 = require('./sendMessage_v4');
 const getMessages_v4 = require('./getMessages_v4');
 const getSalutation = require('./getSalutation');
 const getQuestions = require('./getQuestion');
+const sendMessageV5 = require('./sendMessage_v5');
 const router = express.Router();
 
 router.get('/', authenticate, getMessages);
@@ -21,6 +22,7 @@ router.post('/v1', authenticate, sendMessageV1);
 router.post('/v2', authenticate, sendMessageV2);
 router.post('/v3', authenticate, sendMessageV3);
 router.post('/v4', authenticate, sendMessageV4);
+router.post('/v5', authenticate, sendMessageV5);
 router.get('/salutation', authenticate, getSalutation);
 router.get('/questions', authenticate, getQuestions);
 router.get('/dtizen', authenticateDtizen, getMessages);

@@ -53,7 +53,7 @@ class MessageGenerator {
 			// 답 : 안녕하세요! 제가 알기로 이 문서는 중요한 내용을 포함하고 있는거 같습니다. 어떻게 도와드릴까요?
 			// 지문 : ${message}
 			// 답 : `,
-			content: `Read the following context and write a brief introduction about what you know as a chatbot. Language should follow the language of context.
+			content: `As a chatbot, read the following context and write a brief introduction about what you know. Language should follow the language of context.
 			context : This article is about something important.
 			answer : Greetings! I believe that this article is about something important. How may I help you?
 			context : ${message}

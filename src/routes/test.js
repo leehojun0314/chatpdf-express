@@ -4,13 +4,108 @@ const https = require('https');
 const formidable = require('formidable');
 const sendToAi_vola_stream = require('../utils/openai/sendToAi__vola_stream');
 const { v4: uuidv4 } = require('uuid');
-const { PDFLoader } = require('langchain/document_loaders/fs/pdf');
 const PdfParse = require('pdf-parse');
+const { PDFLoader } = require('langchain/document_loaders/fs/pdf');
 const { WeaviateStore } = require('langchain/vectorstores/weaviate');
+const { PineconeStore } = require('langchain/vectorstores/pinecone');
 const { OpenAIEmbeddings } = require('langchain/embeddings/openai');
+const { Document } = require('langchain/document');
+const { OpenAI } = require('langchain/llms/openai');
+const { VectorDBQAChain } = require('langchain/chains');
+const { PineconeClient } = require('@pinecone-database/pinecone');
+require('dotenv').config();
+const pineconeClient = new PineconeClient();
+router.get('/createPinecone', async (req, res) => {
+	console.log('apikey: ', process.env.PINECONE_API_KEY);
+	console.log('environment:', process.env.PINECONE_ENVIRONMENT);
+	try {
+		const initResult = await pineconeClient.init({
+			apiKey: process.env.PINECONE_API_KEY,
+			environment: process.env.PINECONE_ENVIRONMENT,
+		});
+		console.log('init result : ', initResult);
+		const pineconeIndex = pineconeClient.Index(process.env.PINECONE_INDEX);
+		console.log('pinecone index: ', pineconeIndex);
+		const indexesList = await pineconeClient.listIndexes();
+		console.log('indexes list: ', indexesList);
+		const docs = [
+			new Document({
+				metadata: { foo: 'bar' },
+				pageContent: 'pinecone is a vector db',
+			}),
+			new Document({
+				metadata: { foo: 'bar' },
+				pageContent: 'the quick brown fox jumped over the lazy dog',
+			}),
+			new Document({
+				metadata: { baz: 'qux' },
+				pageContent: 'lorem ipsum dolor sit amet',
+			}),
+			new Document({
+				metadata: { baz: 'qux' },
+				pageContent:
+					'pinecones are the woody fruiting body and of a pine tree',
+			}),
+		];
+		const result = await PineconeStore.fromDocuments(
+			docs,
+			new OpenAIEmbeddings(),
+			{
+				pineconeIndex,
+			},
+		);
+		console.log('create result : ', result);
+		res.send('created docs index');
+	} catch (error) {
+		console.log('error: ', error);
+		res.status(500).send(error);
+	}
+});
+
+router.get('/queryPinecone', async (req, res) => {
+	try {
+		await pineconeClient.init({
+			apiKey: process.env.PINECONE_API_KEY,
+			environment: process.env.PINECONE_ENVIRONMENT,
+		});
+		const pineconeIndex = pineconeClient.Index(process.env.PINECONE_INDEX);
+
+		const vectorStore = await PineconeStore.fromExistingIndex(
+			new OpenAIEmbeddings(),
+			{ pineconeIndex },
+		);
+		/* Search the vector DB independently with meta filters */
+		const results = await vectorStore.similaritySearch('파인콘', 1, {
+			foo: 'bar',
+		});
+		console.log(results);
+		/*
+		  [
+			Document {
+			  pageContent: 'pinecone is a vector db',
+			  metadata: { foo: 'bar' }
+			}
+		  ]
+		  */
+
+		/* Use as part of a chain (currently no metadata filters) */
+		const model = new OpenAI();
+		const chain = VectorDBQAChain.fromLLM(model, vectorStore, {
+			k: 1,
+			returnSourceDocuments: true,
+		});
+		const response = await chain.call({ query: '파인콘이 뭐야?' });
+		console.log(response);
+		res.send(response);
+	} catch (err) {
+		console.log('err: ', err);
+		res.status(500).send(err);
+	}
+});
+
 const weaviate = require('weaviate-ts-client');
 
-const client = weaviate.client({
+const weaviateClient = weaviate.client({
 	scheme: process.env.WEAVIATE_SCHEME || 'https',
 	host: process.env.WEAVIATE_HOST || 'localhost',
 	apiKey: new weaviate.ApiKey(process.env.WEAVIATE_API_KEY || 'default'),
@@ -62,7 +157,7 @@ router.get('/uploadWeaviate', async (req, res) => {
 						pages,
 						new OpenAIEmbeddings(),
 						{
-							client,
+							client: weaviateClient,
 							indexName: 'DocTest4',
 							textKey: 'content',
 							metadataKeys: ['pageInfo', 'pageIndex', 'convId'],
@@ -80,7 +175,7 @@ router.get('/uploadWeaviate', async (req, res) => {
 });
 router.get('/schema', (req, res) => {
 	try {
-		client.schema
+		weaviateClient.schema
 			.getter()
 			.do()
 			.then((schemaRes) => {
@@ -167,6 +262,10 @@ router.get('/docuinfo2', async (req, res) => {
 		console.log('error: ', error);
 		res.status(500).send(error);
 	}
+});
+router.get('/docuinfo', async (req, res) => {
+	try {
+	} catch (error) {}
 });
 function generateConvId() {
 	const currentTime = Date.now();
