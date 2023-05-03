@@ -2,7 +2,12 @@ const getSql = require('../database/connection');
 
 function insertBatchParagraphs(batch, conversationId) {
 	const values = batch
-		.map((p) => `(${conversationId}, N'${p.content}', ${p.pageNumber})`)
+		.map(
+			(p) =>
+				`(${conversationId}, N'${p.content}', ${
+					p.pageNumber || p.order_number
+				})`,
+		)
 		.join(', ');
 
 	const query = `INSERT INTO Paragraph (conversation_id, paragraph_content, order_number) VALUES ${values}`;
