@@ -15,7 +15,7 @@ async function createQuestion(content) {
 	const prompt = MessageGenerator.presetQuestion(content);
 	try {
 		const completion = await openai.createChatCompletion({
-			model: 'gpt-4',
+			model: 'gpt-3.5-turbo',
 			messages: [prompt],
 		});
 		console.log(
