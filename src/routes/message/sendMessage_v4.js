@@ -8,6 +8,9 @@ const {
 } = require('../../utils/optimizer/getRelatedParagraphs');
 const selectParagraph_all = require('../../model/selectParagraph_all');
 const selectConvIntId = require('../../model/selectConvIntId');
+const {
+	getRelatedParagraphs_v2,
+} = require('../../utils/optimizer/getRelatedParagraphs_v2');
 async function sendMessageV4(req, res) {
 	res.setHeader('Content-Type', 'application/json');
 	res.setHeader('X-Accel-Buffering', 'no');
@@ -35,7 +38,7 @@ async function sendMessageV4(req, res) {
 			'paragraph recordset length : ',
 			selectParagraphsResult.recordset.length,
 		);
-		const relatedParagraphs = await getRelatedParagraphs(
+		const relatedParagraphs = await getRelatedParagraphs_v2(
 			selectParagraphsResult.recordset,
 			message,
 		);
@@ -45,8 +48,8 @@ async function sendMessageV4(req, res) {
 			userId: userId,
 		});
 		const relatedParagraph = relatedParagraphs
-			.map((p) => p.paragraph_content)
-			.join(' ');
+			.map((p) => `(Page : ${p.order_number + 1}) ${p.paragraph_content}`)
+			.join('\n');
 		await sendToAi_vola_stream(
 			relatedParagraph, //지문의 내용
 			message,
