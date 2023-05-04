@@ -55,22 +55,44 @@ async function sendMessageV5(req, res) {
 		console.log('message vector: ', messageVector);
 		const vectorStoreResult =
 			await vectorStore.similaritySearchVectorWithScore(messageVector, 10, {
-				convIntId,
+				convIntId: Number(convIntId),
 			});
 		const relatedParagraphs = vectorStoreResult.map((storeResult) => {
 			return storeResult[0];
 		});
 		console.log('relatedParagraphs : ', relatedParagraphs);
-		const relatedParagraph = relatedParagraphs
-			.map((p) => `(Page : ${p.metadata.pageNumber}) ${p.pageContent}`)
-			.join('\n')
-			.slice(0, configs.relatedParagraphLength);
+		const selectedParagraphs = [];
+		let totalLength = 0;
+		const maxLength = configs.relatedParagraphLength;
+		for (const paragraph of relatedParagraphs) {
+			if (totalLength + paragraph.pageContent.length <= maxLength) {
+				selectedParagraphs.push(paragraph);
+				totalLength += paragraph.pageContent.length;
+			} else {
+				// 남은 길이를 계산하고, 해당 길이만큼 잘라낸 paragraph_content를 저장합니다.
+				const remainingLength = maxLength - totalLength;
+				const truncatedContent = paragraph.pageContent.substring(
+					0,
+					remainingLength,
+				);
+				selectedParagraphs.push({
+					...paragraph,
+					pageContent: truncatedContent,
+				});
+				totalLength += truncatedContent.length;
+				break;
+			}
+		}
+		const relatedContent = selectedParagraphs
+			.map((p) => p.pageContent)
+			.join('\n');
+		console.log('related Content : ', relatedContent);
 		const messagesResult = await selectMessage({
 			convIntId,
 			userId: userId,
 		});
 		await sendToAi_vola_stream(
-			relatedParagraph, //지문의 내용
+			relatedContent, //지문의 내용
 			message,
 			async ({ text, isEnd, error }) => {
 				if (error) {
@@ -92,8 +114,8 @@ async function sendMessageV5(req, res) {
 					await insertMessage({
 						message:
 							text +
-							(relatedParagraphs.length > 0
-								? `\n(ref : ${relatedParagraphs
+							(selectedParagraphs.length > 0
+								? `\n(ref : ${selectedParagraphs
 										.map((p) => p.metadata.pageNumber)
 										.join(', ')} page) `
 								: ''),
@@ -108,7 +130,9 @@ async function sendMessageV5(req, res) {
 					res.write(
 						JSON.stringify({
 							text,
-							pages: relatedParagraphs.map((p) => p.metadata.pageNumber),
+							pages: selectedParagraphs.map(
+								(p) => p.metadata.pageNumber,
+							),
 						}) + '\n',
 					);
 				}

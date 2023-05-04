@@ -61,8 +61,69 @@ router.get('/createPinecone', async (req, res) => {
 		res.status(500).send(error);
 	}
 });
+router.get('/queryIndex', async (req, res) => {
+	const convIntId = req.query.convIntId;
+	const pageNumber = req.query.pageNumber;
+	console.log('conv id : ', convIntId);
+	try {
+		await pineconeClient.init({
+			apiKey: process.env.PINECONE_API_KEY,
+			environment: process.env.PINECONE_ENVIRONMENT,
+		});
+		const pineconeIndex = pineconeClient.Index(process.env.PINECONE_INDEX);
+
+		const vectorStore = await PineconeStore.fromExistingIndex(
+			new OpenAIEmbeddings(),
+			{ pineconeIndex },
+		);
+		const results = await vectorStore.similaritySearch('', 100, {
+			convIntId: Number(convIntId),
+		});
+
+		console.log(results);
+		// const queryResponse = await pineconeIndex.query({ queryRequest });
+		console.log('query res: ', results);
+		res.send(results);
+	} catch (error) {
+		console.log('error: ', error);
+		res.status(500).send(error);
+	}
+});
+router.get('/queryEmbeddings', async (req, res) => {
+	const convIntId = req.query.convIntId;
+	const message = req.query.message;
+	console.log('conv id : ', convIntId);
+	try {
+		await pineconeClient.init({
+			apiKey: process.env.PINECONE_API_KEY,
+			environment: process.env.PINECONE_ENVIRONMENT,
+		});
+		const pineconeIndex = pineconeClient.Index(process.env.PINECONE_INDEX);
+
+		const vectorStore = await PineconeStore.fromExistingIndex(
+			new OpenAIEmbeddings(),
+			{ pineconeIndex },
+		);
+		const embeddings = new OpenAIEmbeddings();
+		const queryVector = await embeddings.embedQuery(message);
+		const results = await vectorStore.similaritySearch(message, 100, {
+			convIntId: Number(convIntId),
+		});
+
+		console.log(results);
+		// const queryResponse = await pineconeIndex.query({ queryRequest });
+		console.log('query res: ', results);
+		res.send(results);
+	} catch (error) {
+		console.log('error: ', error);
+		res.status(500).send(error);
+	}
+});
 
 router.get('/queryPinecone', async (req, res) => {
+	const message = req.query.message;
+	const convIntId = req.query.convIntId;
+	console.log('message:', message);
 	try {
 		await pineconeClient.init({
 			apiKey: process.env.PINECONE_API_KEY,
@@ -75,10 +136,10 @@ router.get('/queryPinecone', async (req, res) => {
 			{ pineconeIndex },
 		);
 		/* Search the vector DB independently with meta filters */
-		const results = await vectorStore.similaritySearch('파인콘', 1, {
-			foo: 'bar',
-		});
-		console.log(results);
+		// const results = await vectorStore.similaritySearch('', 1, {
+		// 	convIntId: 330,
+		// });
+		// console.log(results);
 		/*
 		  [
 			Document {
@@ -89,12 +150,19 @@ router.get('/queryPinecone', async (req, res) => {
 		  */
 
 		/* Use as part of a chain (currently no metadata filters) */
-		const model = new OpenAI();
+		const model = new OpenAI({
+			temperature: 1.5,
+		});
 		const chain = VectorDBQAChain.fromLLM(model, vectorStore, {
 			k: 1,
 			returnSourceDocuments: true,
 		});
-		const response = await chain.call({ query: '파인콘이 뭐야?' });
+		const response = await chain.call({
+			query: message,
+			filter: {
+				convIntId: Number(convIntId),
+			},
+		});
 		console.log(response);
 		res.send(response);
 	} catch (err) {

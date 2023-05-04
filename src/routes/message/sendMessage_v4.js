@@ -88,7 +88,7 @@ async function sendMessageV4(req, res) {
 					res.write(
 						JSON.stringify({
 							text,
-							pages: relatedParagraphs.map((p) => p.order_number),
+							pages: relatedParagraphs.map((p) => p.order_number + 1),
 						}) + '\n',
 					);
 				}
