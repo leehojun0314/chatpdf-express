@@ -55,10 +55,7 @@ app.get('/.well-known/openapi.yaml', (req, res) => {
 	});
 });
 app.use('/test', routes.test);
-// 서버 시작
-// app.listen(port, () => {
-// 	console.log(`Server is running at http://localhost:${port}`);
-// });
+
 function startServer() {
 	const server = app.listen(port, () => {
 		console.log(`Server is running at ${port} port`);

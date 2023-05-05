@@ -106,9 +106,13 @@ router.get('/queryEmbeddings', async (req, res) => {
 		);
 		const embeddings = new OpenAIEmbeddings();
 		const queryVector = await embeddings.embedQuery(message);
-		const results = await vectorStore.similaritySearch(message, 100, {
-			convIntId: Number(convIntId),
-		});
+		const results = await vectorStore.similaritySearchVectorWithScore(
+			queryVector,
+			100,
+			{
+				convIntId: Number(convIntId),
+			},
+		);
 
 		console.log(results);
 		// const queryResponse = await pineconeIndex.query({ queryRequest });

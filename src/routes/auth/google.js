@@ -12,9 +12,6 @@ async function googleAuth(req, res) {
 	// const code = `4%2F0AVHEtk6z3-ZdiXu9dm6Y34uPvybOdOv5xQWJ2DBJgGQrfbewD2XVXa8hiiUfZmBWiGVDyg`;
 	const code = req.query.code;
 	const redirect_uri = req.query.redirect_uri;
-	console.log('code: ', code);
-	console.log('redirect _ uri : ', redirect_uri);
-	console.log('google id: ', process.env.GOOGLE_ID);
 	if (!code || !redirect_uri) {
 		res.status(400).send('bad request');
 		return;
@@ -37,7 +34,6 @@ async function googleAuth(req, res) {
 		);
 
 		const { access_token } = code_response.data;
-		console.log('access token: ', access_token);
 		const { data } = await axios.get(
 			'https://www.googleapis.com/oauth2/v1/userinfo',
 			{
@@ -53,10 +49,8 @@ async function googleAuth(req, res) {
 			name: data.name,
 			profileImg: data.picture,
 		});
-		console.log('user recordset: ', userResult.recordset);
 		const dbData = userResult.recordset[0];
 		const jwt = createJWT(dbData);
-		console.log('jwt: ', jwt);
 
 		res.send({ jwt: jwt, userData: dbData });
 	} catch (err) {
