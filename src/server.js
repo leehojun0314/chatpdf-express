@@ -13,6 +13,7 @@ app.use(
 			if (configs.allowedOrigins.indexOf(origin) !== -1 || !origin) {
 				callback(null, true);
 			} else {
+				console.log('not allowed origin : ', origin);
 				callback(new Error('Not allowed by CORS'));
 			}
 		},
