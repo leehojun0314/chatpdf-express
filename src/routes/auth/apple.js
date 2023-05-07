@@ -20,7 +20,7 @@ async function appleAuth(req, res) {
 	// const client_secret = process.env.APPLE_CLIENT_SECRET;
 	const code = req.body.code;
 	const state = req.body.state;
-	// const redirect_uri = req.body.redirect_uri;
+	const redirect_uri = process.env.APPLE_REDIRECT;
 	console.log('code: ', code);
 	console.log('state: ', state);
 	// console.log('redirect_uri: ', redirect_uri);
