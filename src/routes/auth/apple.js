@@ -18,9 +18,9 @@ const getSignWithAppleSecret = () => {
 async function appleAuth(req, res) {
 	const client_id = process.env.APPLE_CLIENT_ID;
 	// const client_secret = process.env.APPLE_CLIENT_SECRET;
-	const code = req.body.code;
+	const code = req.query.code;
 	const state = req.body.state;
-	const redirect_uri = process.env.APPLE_REDIRECT;
+	const redirect_uri = req.query.redirect_uri;
 	console.log('code: ', code);
 	console.log('state: ', state);
 	// console.log('redirect_uri: ', redirect_uri);
@@ -38,12 +38,10 @@ async function appleAuth(req, res) {
 			{
 				code: code,
 				redirect_uri: redirect_uri,
-				client_id: client_id,
 				client_secret: secret,
 				grant_type: 'authorization_code',
-
 				client_id: process.env.APPLE_APP_ID,
-				redirect_uri: 'https://talkdocu.vercel.app/callback/apple',
+				redirect_uri: redirect_uri,
 			},
 			{
 				headers: {
@@ -59,20 +57,20 @@ async function appleAuth(req, res) {
 		const decoded = jwt.decode(id_token, { complete: true });
 		const { sub: appleId, email, name } = decoded.payload;
 		console.log('user data: ', { appleId, email, name });
-
+		res.send('good');
 		//get data from database
-		const userResult = await selectUser({
-			appleId: appleId,
-			email: email,
-			name: name,
-		});
+		// const userResult = await selectUser({
+		// 	appleId: appleId,
+		// 	email: email,
+		// 	name: name,
+		// });
 
-		console.log('user recordset: ', userResult.recordset);
-		const dbData = userResult.recordset[0];
-		const appJWT = createJWT(dbData);
-		console.log('jwt: ', appJWT);
+		// console.log('user recordset: ', userResult.recordset);
+		// const dbData = userResult.recordset[0];
+		// const appJWT = createJWT(dbData);
+		// console.log('jwt: ', appJWT);
 
-		res.send({ jwt: appJWT, userData: dbData, ok: true });
+		// res.send({ jwt: appJWT, userData: dbData, ok: true });
 	} catch (err) {
 		console.log(err);
 		res.status(500).send(err);
