@@ -21,8 +21,8 @@ async function checkLogin(req, res) {
 		const userResult = await selectUser({
 			email: decoded.user_email,
 			name: decoded.user_name,
-			authId: decoded.authId,
-			authType: decoded.authType,
+			authId: decoded.auth_id,
+			authType: decoded.auth_type,
 		});
 		const lastConv = userResult.recordset[0].last_conv;
 
