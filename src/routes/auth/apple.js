@@ -47,16 +47,17 @@ async function appleAuth(req, res) {
 		const decoded = jwt.decode(id_token, { complete: true });
 		const { sub: appleId, email, name } = decoded.payload;
 		console.log('user data: ', { appleId, email, name });
-		if (!name) {
+		let tempname = name;
+		if (!tempname) {
 			// 만약 사용자 이름이 없다면, 기본값을 설정하거나 데이터베이스에서 가져올 수 있습니다.
 			// 예를 들어, 기본값으로 "Apple User"를 사용할 수 있습니다.
-			name = 'Apple User';
+			tempname = 'Apple User';
 		}
 		// get data from database
 		const userResult = await selectUser({
 			authId: appleId,
 			email: email,
-			name: name,
+			name: tempname,
 			profileImg: '',
 			authType: 'apple',
 		});
