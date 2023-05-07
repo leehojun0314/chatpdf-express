@@ -40,7 +40,7 @@ async function appleAuth(req, res) {
 				redirect_uri: redirect_uri,
 				client_secret: secret,
 				grant_type: 'authorization_code',
-				client_id: process.env.APPLE_APP_ID,
+				client_id: client_id,
 				redirect_uri: redirect_uri,
 			},
 			{
