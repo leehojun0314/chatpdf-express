@@ -19,10 +19,8 @@ async function appleAuth(req, res) {
 	const client_id = process.env.APPLE_CLIENT_ID;
 	// const client_secret = process.env.APPLE_CLIENT_SECRET;
 	const code = req.query.code;
-	const state = req.body.state;
 	const redirect_uri = req.query.redirect_uri;
 	console.log('code: ', code);
-	console.log('state: ', state);
 	// console.log('redirect_uri: ', redirect_uri);
 	console.log('apple client id: ', client_id);
 	const secret = getSignWithAppleSecret();
