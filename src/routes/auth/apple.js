@@ -72,7 +72,7 @@ async function appleAuth(req, res) {
 		const appJWT = createJWT(dbData);
 		console.log('jwt: ', appJWT);
 
-		res.send({ jwt: appJWT, userData: dbData });
+		res.send({ jwt: appJWT, userData: dbData, ok: true });
 	} catch (err) {
 		console.log(err);
 		res.status(500).send(err);
