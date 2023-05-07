@@ -48,6 +48,8 @@ async function googleAuth(req, res) {
 			email: data.email,
 			name: data.name,
 			profileImg: data.picture,
+			authId: data.id,
+			authType: 'google',
 		});
 		const dbData = userResult.recordset[0];
 		const jwt = createJWT(dbData);

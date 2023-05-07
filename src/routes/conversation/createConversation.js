@@ -1,6 +1,5 @@
 const insertConversation = require('../../model/insertConversation');
 const insertMessage = require('../../model/insertMessage');
-const selectUser = require('../../model/selectUser');
 const generator = require('../../utils/generator');
 const getPDFText = require('../../utils/getPdfText');
 const uploadS3 = require('../../utils/uploadS3');
@@ -9,12 +8,7 @@ async function createConversation(req, res) {
 	const user = req.user;
 	console.log('user: ', user);
 	try {
-		//user id 가져오기 req.user에는 userid가 없음. 다른 db이기 떄문
-		const selectUserResult = await selectUser({
-			email: user.user_email,
-			name: user.user_name,
-		});
-		const userId = selectUserResult.recordset[0].user_id;
+		const userId = user.user_id;
 
 		//upload s3
 		const { fileUrl, fields } = await uploadS3(req);

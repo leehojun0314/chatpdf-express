@@ -17,10 +17,12 @@ async function checkLogin(req, res) {
 	let decoded;
 	try {
 		decoded = jwt.verify(jwtToken, secretKey);
-		console.log('user : ', decoded.user_name);
+		console.log('user : ', decoded);
 		const userResult = await selectUser({
 			email: decoded.user_email,
 			name: decoded.user_name,
+			authId: decoded.authId,
+			authType: decoded.authType,
 		});
 		const lastConv = userResult.recordset[0].last_conv;
 

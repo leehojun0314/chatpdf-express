@@ -48,11 +48,12 @@ async function naverAuth(req, res) {
 			email: data.response.email,
 			name: data.response.name,
 			profileImg: data.response.profile_image,
+			authType: 'naver',
+			authId: data.response.id,
 		});
 		console.log('user recordset: ', userResult.recordset);
 		const dbData = userResult.recordset[0];
 		const jwt = createJWT(dbData);
-		console.log('jwt: ', jwt);
 
 		res.send({ jwt: jwt, userData: dbData });
 	} catch (err) {

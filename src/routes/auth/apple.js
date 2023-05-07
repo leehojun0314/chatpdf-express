@@ -17,14 +17,9 @@ const getSignWithAppleSecret = () => {
 };
 async function appleAuth(req, res) {
 	const client_id = process.env.APPLE_CLIENT_ID;
-	// const client_secret = process.env.APPLE_CLIENT_SECRET;
 	const code = req.query.code;
 	const redirect_uri = req.query.redirect_uri;
-	console.log('code: ', code);
-	// console.log('redirect_uri: ', redirect_uri);
-	console.log('apple client id: ', client_id);
 	const secret = getSignWithAppleSecret();
-	console.log('secret: ', secret);
 	if (!code || !redirect_uri) {
 		res.status(400).send('bad request');
 		return;
@@ -47,28 +42,31 @@ async function appleAuth(req, res) {
 				},
 			},
 		);
-		console.log('code response: ', code_response);
 		const { id_token } = code_response.data;
-		console.log('id token: ', id_token);
-
 		// Decode and verify the ID token
 		const decoded = jwt.decode(id_token, { complete: true });
 		const { sub: appleId, email, name } = decoded.payload;
 		console.log('user data: ', { appleId, email, name });
-		res.send('good');
-		//get data from database
-		// const userResult = await selectUser({
-		// 	appleId: appleId,
-		// 	email: email,
-		// 	name: name,
-		// });
+		if (!name) {
+			// 만약 사용자 이름이 없다면, 기본값을 설정하거나 데이터베이스에서 가져올 수 있습니다.
+			// 예를 들어, 기본값으로 "Apple User"를 사용할 수 있습니다.
+			name = 'Apple User';
+		}
+		// get data from database
+		const userResult = await selectUser({
+			authId: appleId,
+			email: email,
+			name: name,
+			profileImg: '',
+			authType: 'apple',
+		});
 
-		// console.log('user recordset: ', userResult.recordset);
-		// const dbData = userResult.recordset[0];
-		// const appJWT = createJWT(dbData);
-		// console.log('jwt: ', appJWT);
+		console.log('user recordset: ', userResult.recordset);
+		const dbData = userResult.recordset[0];
+		const appJWT = createJWT(dbData);
+		console.log('jwt: ', appJWT);
 
-		// res.send({ jwt: appJWT, userData: dbData, ok: true });
+		res.send({ jwt: appJWT, userData: dbData, ok: true });
 	} catch (err) {
 		console.log(err);
 		res.status(500).send(err);

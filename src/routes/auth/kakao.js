@@ -33,11 +33,14 @@ async function kakaoAuth(req, res) {
 				Authorization: `Bearer ${access_token}`,
 			},
 		});
+		console.log('user data:', data);
 		//get data from database
 		const userResult = await selectUser({
 			email: data.kakao_account.email,
 			name: data.properties.nickname,
 			profileImg: data.properties.profile_image,
+			authId: data.id,
+			authType: 'kakao',
 		});
 		console.log('user recordset: ', userResult.recordset);
 		const dbData = userResult.recordset[0];

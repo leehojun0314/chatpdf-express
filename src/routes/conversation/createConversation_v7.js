@@ -1,13 +1,6 @@
-const insertQuestion = require('../../model/insertQuestion');
-const selectUser = require('../../model/selectUser');
-const createQuestion = require('../../utils/openai/createQuestion');
-const createSalutation = require('../../utils/openai/createSalutation');
 const uploadBlob = require('../../utils/azureBlob/uploadBlob');
 const PdfParse = require('pdf-parse');
-const { extractKeyPhrase } = require('../../utils/azureLanguage/keyPhrase');
 const insertParagraphs = require('../../model/insertParagraphs');
-const updateSalutation = require('../../model/updateSalutation');
-const insertConversation_v3 = require('../../model/insertConversation_v3');
 const updateConvStatusModel = require('../../model/updateConvStatusModel');
 const { v4: uuidv4 } = require('uuid');
 const insertConv_v4 = require('../../model/insertConv_v4');
@@ -39,18 +32,8 @@ async function createConversationV7(req, res) {
 	let convIntId;
 	let convStringId = generateConvId();
 	console.log('conv string id : ', convStringId);
-	let userId;
+	let userId = user.user_id;
 	try {
-		//user id 가져오기 req.user에는 userid가 없음. 다른 db이기 떄문
-		const selectUserResult = await selectUser({
-			email: user.user_email,
-			name: user.user_name,
-		});
-		userId = selectUserResult.recordset[0]?.user_id;
-		if (!userId) {
-			res.status(404).send('unknown user id');
-			return;
-		}
 		//upload blob
 		const { fileUrl, fields, buffer } = await uploadBlob(req);
 

@@ -16,6 +16,8 @@ const authenticateDtizen = (req, res, next) => {
 					email: response.data.user_email,
 					name: response.data.user_name,
 					profileImg: response.data.imgUrl,
+					authType: response.data.authType,
+					authId: 'dtizenlogin',
 				});
 				// user ex : {
 				// 	userEmail: '',

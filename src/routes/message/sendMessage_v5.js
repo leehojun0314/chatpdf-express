@@ -1,17 +1,9 @@
 const insertMessage = require('../../model/insertMessage');
 const selectMessage = require('../../model/selectMessage');
-const selectUser = require('../../model/selectUser');
 const sendToAi_vola_stream = require('../../utils/openai/sendToAi__vola_stream');
-const selectParagraph_all = require('../../model/selectParagraph_all');
 const selectConvIntId = require('../../model/selectConvIntId');
-const {
-	getRelatedParagraphs_v2,
-} = require('../../utils/optimizer/getRelatedParagraphs_v2');
 const { PineconeStore } = require('langchain/vectorstores/pinecone');
 const { OpenAIEmbeddings } = require('langchain/embeddings/openai');
-const { Document } = require('langchain/document');
-const { OpenAI } = require('langchain/llms/openai');
-const { VectorDBQAChain } = require('langchain/chains');
 const { PineconeClient } = require('@pinecone-database/pinecone');
 const configs = require('../../../configs');
 require('dotenv').config();
@@ -30,14 +22,7 @@ async function sendMessageV5(req, res) {
 	try {
 		const convIntId = await selectConvIntId({ convStringId: convStringId });
 		console.log('user: ', user);
-		const userResult = await selectUser({
-			email: user.user_email,
-			name: user.use_name,
-			profileImg: user.imgUrl || user.picture || '',
-		});
-		console.log('user result: ', userResult);
-		const userId = userResult.recordset[0].user_id;
-
+		const userId = user.user_id;
 		//get related paragraph from pinecone
 		await pineconeClient.init({
 			apiKey: process.env.PINECONE_API_KEY,

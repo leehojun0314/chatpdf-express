@@ -1,5 +1,5 @@
 const getSql = require('../database/connection');
-function insertUser({ userName, userEmail, profileImg }) {
+function insertUser({ userName, userEmail, profileImg, authId, authType }) {
 	return new Promise((resolve, reject) => {
 		getSql().then((sqlPool) => {
 			sqlPool
@@ -7,8 +7,10 @@ function insertUser({ userName, userEmail, profileImg }) {
 				.input('user_name', userName)
 				.input('user_email', userEmail)
 				.input('profile_img', profileImg)
+				.input('authType', authType)
+				.input('authId', authId ? authId : '')
 				.query(
-					'INSERT INTO UserTable (user_name, user_email, profile_img) OUTPUT INSERTED.* VALUES (@user_name, @user_email, @profile_img)',
+					'INSERT INTO UserTable (user_name, user_email, profile_img, authId, authType) OUTPUT INSERTED.* VALUES (@user_name, @user_email, @profile_img, @authId, @authType)',
 				)
 				.then((result) => {
 					resolve(result);

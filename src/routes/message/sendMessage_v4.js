@@ -1,11 +1,6 @@
-const express = require('express');
 const insertMessage = require('../../model/insertMessage');
 const selectMessage = require('../../model/selectMessage');
-const selectUser = require('../../model/selectUser');
 const sendToAi_vola_stream = require('../../utils/openai/sendToAi__vola_stream');
-const {
-	getRelatedParagraphs,
-} = require('../../utils/optimizer/getRelatedParagraphs');
 const selectParagraph_all = require('../../model/selectParagraph_all');
 const selectConvIntId = require('../../model/selectConvIntId');
 const {
@@ -24,13 +19,8 @@ async function sendMessageV4(req, res) {
 	try {
 		const convIntId = await selectConvIntId({ convStringId: convStringId });
 		console.log('user: ', user);
-		const userResult = await selectUser({
-			email: user.user_email,
-			name: user.use_name,
-			profileImg: user.imgUrl || user.picture || '',
-		});
-		console.log('user result: ', userResult);
-		const userId = userResult.recordset[0].user_id;
+
+		const userId = user.user_id;
 		const selectParagraphsResult = await selectParagraph_all({
 			convIntId,
 		});

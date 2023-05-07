@@ -8,7 +8,10 @@ async function getMessages(req, res) {
 	}
 
 	try {
-		const messagesResult = await selectMessage({ conversationId });
+		const messagesResult = await selectMessage({
+			conversationId,
+			userId: req.user.user_id,
+		});
 		const shiftedMessages = [...messagesResult.recordset];
 		shiftedMessages.shift();
 		res.status(200).json(shiftedMessages);

@@ -1,7 +1,6 @@
 const configs = require('../../../configs');
 const selectConvIntId = require('../../model/selectConvIntId');
 const selectParagraph_all = require('../../model/selectParagraph_all');
-const selectUser = require('../../model/selectUser');
 const updateSalutation = require('../../model/updateSalutation');
 const createSalutation_stream = require('../../utils/openai/createSalutation_stream');
 
@@ -11,13 +10,7 @@ async function getSalutation(req, res) {
 	let user = req.user;
 	const convStringId = req.query.convStringId;
 	try {
-		const userResult = await selectUser({
-			email: user.user_email,
-			name: user.use_name,
-			profileImg: user.imgUrl || user.picture || '',
-		});
-		console.log('user result: ', userResult);
-		const userId = userResult.recordset[0].user_id;
+		const userId = user.user_id;
 		const convIntId = await selectConvIntId({ convStringId: convStringId });
 		const selectParagraphsResult = await selectParagraph_all({
 			convIntId,
