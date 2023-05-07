@@ -4,7 +4,7 @@ const { createJWT } = require('../../utils/functions');
 const selectUser = require('../../model/selectUser');
 require('dotenv').config('.env');
 const signWithApplePrivateKey = process.env.APPLE_PRIVATE_KEY;
-export const getSignWithAppleSecret = () => {
+const getSignWithAppleSecret = () => {
 	const token = jwt.sign({}, signWithApplePrivateKey, {
 		algorithm: 'ES256',
 		expiresIn: '10h',
@@ -17,7 +17,7 @@ export const getSignWithAppleSecret = () => {
 };
 async function appleAuth(req, res) {
 	const client_id = process.env.APPLE_CLIENT_ID;
-	const client_secret = process.env.APPLE_CLIENT_SECRET;
+	// const client_secret = process.env.APPLE_CLIENT_SECRET;
 	const code = req.body.code;
 	const state = req.body.state;
 	// const redirect_uri = req.body.redirect_uri;
