@@ -17,8 +17,8 @@ function authenticate(req, res, next) {
 		selectUser({
 			email: user.user_email,
 			name: user.user_name,
-			authType: user.authType,
-			authId: user.authId,
+			authType: user.auth_type,
+			authId: user.auth_id,
 		})
 			.then((selectResult) => {
 				console.log('authenticate selectResult: ', selectResult);

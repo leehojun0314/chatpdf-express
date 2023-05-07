@@ -9,6 +9,7 @@ function updateAuthInfo(sqlPool, email, authId, authType) {
 		);
 }
 function selectUser({ email, name, profileImg, authId, authType }) {
+	console.log('select user params : ', { email, name, authId, authType });
 	return new Promise((resolve, reject) => {
 		getSql()
 			.then((sqlPool) => {
