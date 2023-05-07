@@ -1,11 +1,11 @@
 const getSql = require('../database/connection');
 const insertUser = require('./insertUser');
 const updateLastLogin = require('./updateLastLogin');
-function updateAuthInfo(sqlPool, email, authId, authType) {
+function updateAuthInfo({ sqlPool, userId, authId, authType }) {
 	return sqlPool
 		.request()
 		.query(
-			`UPDATE UserTable SET auth_id = '${authId}', auth_type = '${authType}' WHERE user_email = '${email}'`,
+			`UPDATE UserTable SET auth_id = '${authId}', auth_type = '${authType}' WHERE user_id = ${userId}`,
 		);
 }
 function selectUser({ email, name, profileImg, authId, authType }) {
@@ -42,12 +42,17 @@ function selectUser({ email, name, profileImg, authId, authType }) {
 							const userData = result.recordset[0];
 
 							if (!userData.authId || !userData.authType) {
-								updateAuthInfo(sqlPool, email, authId, authType)
+								updateAuthInfo({
+									sqlPool,
+									userId: userData.user_id,
+									authId,
+									authType,
+								})
 									.then((updateResult) => {
 										console.log('update result: ', updateResult);
 										// Update the userData object with the new authId and authType
-										userData.authId = authId;
-										userData.authType = authType;
+										userData.auth_id = authId;
+										userData.auth_type = authType;
 										resolve({ recordset: [userData] });
 										updateLastLogin({
 											userEmail: email,
