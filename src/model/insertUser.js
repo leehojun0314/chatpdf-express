@@ -10,7 +10,7 @@ function insertUser({ userName, userEmail, profileImg, authId, authType }) {
 				.input('authType', authType)
 				.input('authId', authId ? authId : '')
 				.query(
-					'INSERT INTO UserTable (user_name, user_email, profile_img, authId, authType) OUTPUT INSERTED.* VALUES (@user_name, @user_email, @profile_img, @authId, @authType)',
+					'INSERT INTO UserTable (user_name, user_email, profile_img, auth_id, auth_type) OUTPUT INSERTED.* VALUES (@user_name, @user_email, @profile_img, @authId, @authType)',
 				)
 				.then((result) => {
 					resolve(result);
