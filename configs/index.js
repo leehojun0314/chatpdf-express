@@ -41,6 +41,7 @@ const configs = {
 		'https://www.talkdocu.com',
 		'https://talkdocu.vercel.app',
 		'https://jemishome-web-cdn.azureedge.net',
+		'https://appleid.apple.com',
 	],
 	authenticateUrl: 'https://dtizen-secure.vercel.app',
 	relatedParagraphLength: 3000,
