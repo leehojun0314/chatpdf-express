@@ -10,7 +10,7 @@ const getSignWithAppleSecret = () => {
 		expiresIn: '10h',
 		audience: 'https://appleid.apple.com',
 		issuer: process.env.APPLE_TEAM_ID, // TEAM_ID
-		subject: process.env.APPLE_APP_ID,
+		subject: process.env.APPLE_CLIENT_ID,
 		keyid: process.env.APPLE_KEY_ID, // KEY_ID
 	});
 	return token;
