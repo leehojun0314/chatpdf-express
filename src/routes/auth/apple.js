@@ -3,16 +3,30 @@ const jwt = require('jsonwebtoken');
 const { createJWT } = require('../../utils/functions');
 const selectUser = require('../../model/selectUser');
 require('dotenv').config('.env');
-
+const signWithApplePrivateKey = process.env.APPLE_PRIVATE_KEY;
+export const getSignWithAppleSecret = () => {
+	const token = jwt.sign({}, signWithApplePrivateKey, {
+		algorithm: 'ES256',
+		expiresIn: '10h',
+		audience: 'https://appleid.apple.com',
+		issuer: process.env.APPLE_TEAM_ID, // TEAM_ID
+		subject: process.env.APPLE_APP_ID,
+		keyid: process.env.APPLE_KEY_ID, // KEY_ID
+	});
+	return token;
+};
 async function appleAuth(req, res) {
 	const client_id = process.env.APPLE_CLIENT_ID;
 	const client_secret = process.env.APPLE_CLIENT_SECRET;
-	const code = req.query.code;
-	const redirect_uri = req.query.redirect_uri;
+	const code = req.body.code;
+	const state = req.body.state;
+	// const redirect_uri = req.body.redirect_uri;
 	console.log('code: ', code);
-	console.log('redirect_uri: ', redirect_uri);
+	console.log('state: ', state);
+	// console.log('redirect_uri: ', redirect_uri);
 	console.log('apple client id: ', client_id);
-
+	const secret = getSignWithAppleSecret();
+	console.log('secret: ', secret);
 	if (!code || !redirect_uri) {
 		res.status(400).send('bad request');
 		return;
@@ -25,8 +39,11 @@ async function appleAuth(req, res) {
 				code: code,
 				redirect_uri: redirect_uri,
 				client_id: client_id,
-				client_secret: client_secret,
+				client_secret: secret,
 				grant_type: 'authorization_code',
+
+				client_id: process.env.APPLE_APP_ID,
+				redirect_uri: 'https://talkdocu.vercel.app/callback/apple',
 			},
 			{
 				headers: {
@@ -34,7 +51,7 @@ async function appleAuth(req, res) {
 				},
 			},
 		);
-
+		console.log('code response: ', code_response);
 		const { id_token } = code_response.data;
 		console.log('id token: ', id_token);
 
