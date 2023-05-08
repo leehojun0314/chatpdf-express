@@ -19,7 +19,7 @@ function selectUser({ email, name, profileImg, authId, authType }) {
 						`SELECT * FROM UserTable WHERE user_email = '${email}' AND auth_type = '${authType}'`,
 					)
 					.then((result) => {
-						console.log('select user result: ', result);
+						// console.log('select user result: ', result);
 						if (!result.recordset.length) {
 							insertUser({
 								userName: name,
@@ -49,7 +49,7 @@ function selectUser({ email, name, profileImg, authId, authType }) {
 									authType,
 								})
 									.then((updateResult) => {
-										console.log('update result: ', updateResult);
+										// console.log('update result: ', updateResult);
 										// Update the userData object with the new authId and authType
 										userData.auth_id = authId;
 										userData.auth_type = authType;
