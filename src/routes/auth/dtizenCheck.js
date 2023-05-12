@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const selectUser = require('../../model/selectUser');
 const { default: axios } = require('axios');
 const configs = require('../../../configs');
+const { createJWT } = require('../../utils/functions');
 // const updateLastConv = require('../../model/updateLastConv');
 // const selectConversation_all = require('../../model/selectConversation_all');
 require('dotenv').config();
@@ -15,6 +16,7 @@ async function dtizenCheckLogin(req, res) {
 		.get(`${configs.authenticateUrl}/api/verify?jwt=${jwtToken}`)
 		.then((response) => {
 			const data = response.data;
+			console.log('data from dtizen secure: ', data);
 			return selectUser({
 				email: data.user_email,
 				name: data.user_name,
@@ -25,7 +27,9 @@ async function dtizenCheckLogin(req, res) {
 		})
 		.then((selectUserRes) => {
 			const userData = selectUserRes.recordset[0];
-			res.send({ isLoggedIn: true });
+			console.log('userData: ', userData);
+			const newJwt = createJWT(userData);
+			res.send({ isLoggedIn: true, jwt: newJwt, userData });
 		})
 		.catch((err) => {
 			console.log('dtizen login check error: ', err);
