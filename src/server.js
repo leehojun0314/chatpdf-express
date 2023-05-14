@@ -14,7 +14,8 @@ app.use(
 				callback(null, true);
 			} else {
 				console.log('not allowed origin : ', origin);
-				callback(new Error('Not allowed by CORS'));
+				// callback(new Error('Not allowed by CORS'));
+				return false;
 			}
 		},
 		credentials: true,
