@@ -10,6 +10,7 @@ const configs = require('../configs');
 app.use(
 	cors({
 		origin: function (origin, callback) {
+			console.log('origin : ', origin);
 			if (configs.allowedOrigins.indexOf(origin) !== -1 || !origin) {
 				callback(null, true);
 			} else {
