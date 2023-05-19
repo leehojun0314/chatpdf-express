@@ -29,6 +29,7 @@ app.use(express.json());
 // '/' 경로에 대한 라우터를 indexRoutes로 설정
 
 app.get('/', (req, res) => {
+	console.log('/ ; hello world');
 	res.send('hello world');
 });
 
