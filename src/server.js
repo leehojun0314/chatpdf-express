@@ -10,7 +10,6 @@ const configs = require('../configs');
 app.use(
 	cors({
 		origin: function (origin, callback) {
-			console.log('origin : ', origin);
 			if (configs.allowedOrigins.indexOf(origin) !== -1 || !origin) {
 				callback(null, true);
 			} else {
@@ -29,7 +28,6 @@ app.use(express.json());
 // '/' 경로에 대한 라우터를 indexRoutes로 설정
 
 app.get('/', (req, res) => {
-	console.log('/ ; hello world');
 	res.send('hello world');
 });
 
