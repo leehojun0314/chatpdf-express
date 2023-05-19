@@ -4,7 +4,7 @@ const insertParagraphs = require('../../model/insertParagraphs');
 const updateConvStatusModel = require('../../model/updateConvStatusModel');
 const { v4: uuidv4 } = require('uuid');
 const insertConv_v4 = require('../../model/insertConv_v4');
-const upsertParagraph_pinecone = require('../../model/upsertParagraph_pinecone');
+const upsertParagraph_pinecone = require('../../utils/pinecone/upsertParagraph_pinecone');
 function generateConvId() {
 	const currentTime = Date.now();
 	const uniqueId = uuidv4();
