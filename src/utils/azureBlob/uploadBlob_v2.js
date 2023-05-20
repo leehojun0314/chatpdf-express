@@ -18,7 +18,7 @@ module.exports = async function uploadBlob_v2(files) {
 		console.log('file key: ', fileKey);
 		const file = files[fileKey];
 		const fileName = file.newFilename;
-		const blobName = `test/${Date.now()}-${fileName}`;
+		const blobName = `${Date.now()}-${fileName}`;
 		const containerClient =
 			blobServiceClient.getContainerClient(CONTAINER_NAME);
 		const blockBlobClient = containerClient.getBlockBlobClient(blobName);
