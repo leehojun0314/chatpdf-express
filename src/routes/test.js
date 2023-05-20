@@ -72,18 +72,23 @@ router.get('/queryIndex', async (req, res) => {
 		});
 		const pineconeIndex = pineconeClient.Index(process.env.PINECONE_INDEX);
 
-		const vectorStore = await PineconeStore.fromExistingIndex(
-			new OpenAIEmbeddings(),
-			{ pineconeIndex },
-		);
-		const results = await vectorStore.similaritySearch('', 100, {
-			convIntId: Number(convIntId),
+		// const vectorStore = await PineconeStore.fromExistingIndex(
+		// 	new OpenAIEmbeddings(),
+		// 	{ pineconeIndex },
+		// );
+		// const results = await vectorStore.similaritySearch('', 100, {
+		// 	convIntId: Number(convIntId),
+		// });
+		const queryResult = await pineconeIndex.query({
+			vector: [0.1, 0.2, 0.3, 0.4],
+			topK: 10,
+			includeValues: true,
+			includeMetadata: true,
 		});
 
-		console.log(results);
 		// const queryResponse = await pineconeIndex.query({ queryRequest });
-		console.log('query res: ', results);
-		res.send(results);
+		console.log('query res: ', queryResult);
+		res.send(queryResult);
 	} catch (error) {
 		console.log('error: ', error);
 		res.status(500).send(error);
@@ -91,7 +96,7 @@ router.get('/queryIndex', async (req, res) => {
 });
 router.get('/queryEmbeddings', async (req, res) => {
 	const convIntId = req.query.convIntId;
-	const message = req.query.message;
+	const message = req.query.message || '';
 	console.log('conv id : ', convIntId);
 	try {
 		await pineconeClient.init({
@@ -109,9 +114,9 @@ router.get('/queryEmbeddings', async (req, res) => {
 		const results = await vectorStore.similaritySearchVectorWithScore(
 			queryVector,
 			100,
-			{
-				convIntId: Number(convIntId),
-			},
+			// {
+			// 	convIntId: Number(convIntId),
+			// },
 		);
 
 		console.log(results);
@@ -123,7 +128,22 @@ router.get('/queryEmbeddings', async (req, res) => {
 		res.status(500).send(error);
 	}
 });
-
+router.get('/deleteVector', async (req, res) => {
+	try {
+		await pineconeClient.init({
+			apiKey: process.env.PINECONE_API_KEY,
+			environment: process.env.PINECONE_ENVIRONMENT,
+		});
+		const pineconeIndex = pineconeClient.Index(process.env.PINECONE_INDEX);
+		const vectorStore = await PineconeStore.fromExistingIndex(
+			new OpenAIEmbeddings(),
+			{ pineconeIndex },
+		);
+		pineconeIndex.delete1({
+			ids: [],
+		});
+	} catch (error) {}
+});
 router.get('/queryPinecone', async (req, res) => {
 	const message = req.query.message;
 	const convIntId = req.query.convIntId;
@@ -201,50 +221,7 @@ function pageRender(pageArr, convId) {
 	};
 	// 텍스트 레이어를 추출합니다.
 }
-router.get('/uploadWeaviate', async (req, res) => {
-	// const fileUrl =
-	// 	'https://jemishome.blob.core.windows.net/blob/1682954154499-d7662624684e5c04c36c41701';
-	// const fileUrl = `https://jemishome.blob.core.windows.net/blob/testqt.pdf`;
-	const fileUrl = `https://jemishome.blob.core.windows.net/blob/A%20Sub-mW%202.4-GHz%20Active-Mixer-Adopted.pdf`;
-	https.get(fileUrl, (parseRes) => {
-		let data = [];
 
-		parseRes.on('data', (chunk) => {
-			data.push(chunk);
-		});
-		parseRes.on('end', () => {
-			const buffer = Buffer.concat(data);
-			const pages = [];
-			const convId = 'testConvId';
-			PdfParse(buffer, {
-				pagerender: pageRender(pages, convId),
-			})
-				.then(async (document) => {
-					// console.log('document: ', document);
-					// console.log('pages:', pages);
-					console.log('pages:', pages);
-					document.pages = pages;
-					// Process the documents and save them to Weaviate
-					const createStoreResult = await WeaviateStore.fromDocuments(
-						pages,
-						new OpenAIEmbeddings(),
-						{
-							client: weaviateClient,
-							indexName: 'DocTest4',
-							textKey: 'content',
-							metadataKeys: ['pageInfo', 'pageIndex', 'convId'],
-						},
-					);
-					console.log('create Store result : ', createStoreResult);
-					res.send('upload complete');
-				})
-				.catch((error) => {
-					console.error('Error while parsing PDF:', error);
-					res.send(error);
-				});
-		});
-	});
-});
 router.get('/schema', (req, res) => {
 	try {
 		weaviateClient.schema
@@ -389,48 +366,5 @@ router.get('/', (req, res) => {
 	console.log('hello');
 	res.send('world');
 });
-router.get('/ssetest2', async (req, res) => {
-	res.setHeader('Content-Type', 'application/json');
-	res.setHeader('X-Accel-Buffering', 'no');
-	await sendToAi_vola_stream(
-		'오늘의 날씨는 좋다.', //지문의 내용
-		'안녕?',
-		async ({ text, isEnd, error }) => {
-			if (error) {
-				console.log('error : ', error);
-				res.status(500).send(error);
-				return;
-			}
-			if (isEnd) {
-				res.end('');
-			} else {
-				// res.write(text);
-				res.write(JSON.stringify({ text, arr: [1, 2, 3] }) + '\n');
-			}
-		},
-	);
-});
-router.get('/ssetest', (req, res) => {
-	res.setHeader('Content-Type', 'text/event-stream');
-	// res.setHeader('Content-Type', 'application/json');
-	res.setHeader('Cache-Control', 'no-cache');
-	res.setHeader('Connection', 'keep-alive');
-	res.setHeader('Content-Encoding', 'none');
-	res.setHeader('X-Accel-Buffering', 'no');
-	// res.writeHead(200, {
-	// 	'Content-Type': 'application/json',
-	// });
-	let i = 0;
-	console.log('here is stream');
-	const interval = setInterval(() => {
-		console.log('interval called i :', i);
-		res.write('hi');
-		i++;
-		if (i > 10) {
-			console.log('end called');
-			clearInterval(interval);
-			res.end();
-		}
-	}, 500);
-});
+
 module.exports = router;

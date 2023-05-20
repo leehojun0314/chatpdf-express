@@ -111,7 +111,6 @@ async function sendMessageV5(req, res) {
 					await insertMessage({
 						message: message,
 						sender: 'user',
-						messageOrder: messagesResult.recordset.length,
 						convIntId: convIntId,
 						userId: userId,
 					});
@@ -129,7 +128,6 @@ async function sendMessageV5(req, res) {
 								? '\n' + referenceDocsToString(referenceDocs)
 								: ''),
 						sender: 'assistant',
-						messageOrder: messagesResult.recordset.length + 1,
 						convIntId: convIntId,
 						userId: userId,
 					});

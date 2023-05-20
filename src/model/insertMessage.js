@@ -1,5 +1,5 @@
 const getSql = require('../database/connection');
-function insertMessage({ message, convIntId, sender, messageOrder, userId }) {
+function insertMessage({ message, convIntId, sender, userId }) {
 	return new Promise((resolve, reject) => {
 		getSql()
 			.then((sqlPool) => {
