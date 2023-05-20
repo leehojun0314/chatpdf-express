@@ -46,5 +46,6 @@ const configs = {
 	authenticateUrl: 'https://dtizen-secure.vercel.app',
 	relatedParagraphLength: 3000,
 	createSalutationPLength: 3000,
+	salutationPrefixMessage: 'Hello! How can i help you?',
 };
 module.exports = configs;
