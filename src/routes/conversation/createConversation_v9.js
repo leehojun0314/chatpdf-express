@@ -60,12 +60,13 @@ async function createConversationV9(req, res) {
 		//upload blob
 		const uploadResults = await uploadBlob_v2(files);
 		console.log('upload complete');
+		console.log('upload results: ', uploadResults);
 
 		//conversation 생성
 		const conversationResult = await insertConv_v5({
 			conversationName: fields.conversationName,
 			userId,
-			convStringId: convStringId,
+			convStringId,
 		});
 
 		convIntId = conversationResult.recordset[0].id;

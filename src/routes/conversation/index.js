@@ -10,10 +10,12 @@ const checkConversation = require('./checkConversation');
 const createConversationV7 = require('./createConversation_v7');
 const createConversationV8 = require('./createConversation_v8');
 const createConversationV9 = require('./createConversation_v9');
+const checkConversationV2 = require('./checkConversation_v2');
 const router = express.Router();
 
 router.get('/', authenticate, getConversations);
 router.get('/check', authenticate, checkConversation);
+router.get('/check/v2', authenticate, checkConversationV2);
 // router.post('/', authenticate, createConversation);
 // router.post('/v2', authenticate, createConversationV2);
 // router.post('/v3', authenticate, createConversationV3);
