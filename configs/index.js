@@ -42,6 +42,8 @@ const configs = {
 		'https://talkdocu.vercel.app',
 		'https://jemishome-web-cdn.azureedge.net',
 		'https://appleid.apple.com',
+		'http://20.200.224.181:80',
+		'http://www.smartedu.center',
 	],
 	authenticateUrl: 'https://dtizen-secure.vercel.app',
 	relatedParagraphLength: 3000,
