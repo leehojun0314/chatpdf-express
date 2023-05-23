@@ -98,7 +98,7 @@ async function createConversationV9(req, res) {
 					status: 'error',
 					userId: userId,
 				});
-				res.status(500).send("Couldn't extract text from the file");
+				// res.status(500).send("Couldn't extract text from the file");
 				return;
 			}
 
