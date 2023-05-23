@@ -55,12 +55,9 @@ async function createConversationV9(req, res) {
 	let userId = user.user_id;
 	try {
 		const { fields, files } = await useFormidable(req);
-		console.log('fields: ', fields);
-		console.log('files: ', files);
 		//upload blob
 		const uploadResults = await uploadBlob_v2(files);
 		console.log('upload complete');
-		console.log('upload results: ', uploadResults);
 
 		//conversation 생성
 		const conversationResult = await insertConv_v5({
@@ -70,7 +67,10 @@ async function createConversationV9(req, res) {
 		});
 
 		convIntId = conversationResult.recordset[0].id;
-
+		res.status(201).send({
+			message: 'conversation created',
+			createdId: convIntId,
+		});
 		for await (let uploadResult of uploadResults) {
 			const { fileUrl, buffer, originalFilename, fileSize } = uploadResult;
 			//insert document in mssql
@@ -87,18 +87,6 @@ async function createConversationV9(req, res) {
 				pagerender: pageRender(pages),
 			});
 
-			const replacedTexts = pages.join('').replaceAll(' ', '');
-			if (!(replacedTexts.length > 0)) {
-				console.log("couldn't extract text from the file");
-				// await updateConvStatusModel({
-				// 	convIntId: convIntId,
-				// 	status: 'error',
-				// 	userId: userId,
-				// });
-				// res.status(500).send("Couldn't extract text from the file");
-				throw new Error("Couldn't extract text from the file");
-			}
-
 			const paragraphs = [];
 			for (let i = 0; i < pages.length; i++) {
 				paragraphs.push({
@@ -113,18 +101,7 @@ async function createConversationV9(req, res) {
 					docuName: originalFilename,
 				});
 			}
-			console.log(
-				'paragraphs: ',
-				paragraphs.map((p) => {
-					return {
-						pageNumber: p.pageNumber,
-						convIntId: p.convIntId,
-						docuId: p.docuId,
-						docuInfo: p.docuInfo,
-						docuName: p.docuName,
-					};
-				}),
-			);
+
 			await upsertParagraph_v2({
 				paragraphs,
 				convIntId,
@@ -139,19 +116,20 @@ async function createConversationV9(req, res) {
 			status: 'created',
 			userId: userId,
 		});
-		res.status(201).send({
-			message: 'conversation created',
-			createdId: convIntId,
-		});
+
 		console.log('updated conv status');
 	} catch (error) {
 		console.log('catch error: ', error);
-		await updateConvStatusModel({
-			convIntId: convIntId,
-			status: 'error',
-			userId: userId,
-		});
-		res.status(500).send(error);
+		console.log(error.message);
+		if (convIntId) {
+			await updateConvStatusModel({
+				convIntId: convIntId,
+				status: 'error',
+				userId: userId,
+			});
+		}
+
+		res.status(500).send(error.message);
 	}
 }
 
