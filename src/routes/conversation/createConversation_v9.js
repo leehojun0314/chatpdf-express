@@ -70,10 +70,7 @@ async function createConversationV9(req, res) {
 		});
 
 		convIntId = conversationResult.recordset[0].id;
-		res.status(201).send({
-			message: 'conversation created',
-			createdId: convIntId,
-		});
+
 		for await (let uploadResult of uploadResults) {
 			const { fileUrl, buffer, originalFilename, fileSize } = uploadResult;
 			//insert document in mssql
@@ -93,13 +90,13 @@ async function createConversationV9(req, res) {
 			const replacedTexts = pages.join('').replaceAll(' ', '');
 			if (!(replacedTexts.length > 0)) {
 				console.log("couldn't extract text from the file");
-				await updateConvStatusModel({
-					convIntId: convIntId,
-					status: 'error',
-					userId: userId,
-				});
+				// await updateConvStatusModel({
+				// 	convIntId: convIntId,
+				// 	status: 'error',
+				// 	userId: userId,
+				// });
 				// res.status(500).send("Couldn't extract text from the file");
-				return;
+				throw new Error("Couldn't extract text from the file");
 			}
 
 			const paragraphs = [];
@@ -141,6 +138,10 @@ async function createConversationV9(req, res) {
 			convIntId: convIntId,
 			status: 'created',
 			userId: userId,
+		});
+		res.status(201).send({
+			message: 'conversation created',
+			createdId: convIntId,
 		});
 		console.log('updated conv status');
 	} catch (error) {
