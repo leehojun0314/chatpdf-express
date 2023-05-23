@@ -1,6 +1,6 @@
 const getSql = require('../database/connection');
 
-async function deleteConversationModel({ convId, userId }) {
+async function deleteConversationModel({ convIntId, userId }) {
 	try {
 		const sqlPool = await getSql();
 		const transaction = sqlPool.transaction();
@@ -10,7 +10,7 @@ async function deleteConversationModel({ convId, userId }) {
 		const conversationIds = await transaction
 			.request()
 			.input('user_id', userId)
-			.input('conversation_id', convId).query(`SELECT conversation_id
+			.input('conversation_id', convIntId).query(`SELECT conversation_id
 					FROM Conversation
 					WHERE user_id = @user_id AND conversation_id != @conversation_id`);
 
@@ -36,7 +36,7 @@ async function deleteConversationModel({ convId, userId }) {
 			);
 		console.log('last_conv updated');
 		// Delete Conversation
-		await transaction.request().input('conversation_id', convId)
+		await transaction.request().input('conversation_id', convIntId)
 			.query(`DELETE FROM Message WHERE conversation_id=@conversation_id;
 			DELETE FROM Question WHERE conversation_id=@conversation_id;
 			DELETE FROM Document WHERE conversation_id=@conversation_id;

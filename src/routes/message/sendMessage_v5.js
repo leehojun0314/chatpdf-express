@@ -57,11 +57,12 @@ async function sendMessageV5(req, res) {
 		const embeddings = new OpenAIEmbeddings();
 
 		const messageVector = await embeddings.embedQuery(message);
-		console.log('message vector: ', messageVector);
+		// console.log('message vector: ', messageVector);
 		const vectorStoreResult =
 			await vectorStore.similaritySearchVectorWithScore(messageVector, 10, {
 				convIntId: Number(convIntId),
 			});
+		console.log('similarity search result: ', vectorStoreResult);
 		const relatedParagraphs = vectorStoreResult.map((storeResult) => {
 			return storeResult[0];
 		});

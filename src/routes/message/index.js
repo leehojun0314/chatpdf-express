@@ -27,10 +27,12 @@ router.post('/v5', authenticate, sendMessageV5);
 router.get('/salutation', authenticate, getSalutation);
 router.get('/questions', authenticate, getQuestions);
 router.get('/questions/v2', authenticate, getQuestionsV2);
+
 router.get('/dtizen', authenticateDtizen, getMessages);
 // router.get('/v3/dtizen', authenticateDtizen, getMessages_v3);
 router.get('/v4/dtizen', authenticateDtizen, getMessages_v4);
+
 // router.post('/v3/dtizen', authenticateDtizen, sendMessageV3);
 router.post('/v4/dtizen', authenticateDtizen, sendMessageV4);
-
+router.post('/v5/dtizen', authenticateDtizen, sendMessageV5);
 module.exports = router;

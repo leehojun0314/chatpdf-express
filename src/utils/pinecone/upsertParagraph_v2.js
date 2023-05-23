@@ -52,7 +52,7 @@ async function upsertBatchParagraphs({ paragraphs, convIntId, docuId }) {
 		const result = await PineconeStore.fromDocuments(
 			docs,
 			new OpenAIEmbeddings(),
-			{ pineconeIndex, namespace: docuId },
+			{ pineconeIndex },
 		);
 		return result;
 	} catch (error) {

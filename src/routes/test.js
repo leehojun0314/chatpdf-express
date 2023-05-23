@@ -135,14 +135,20 @@ router.get('/deleteVector', async (req, res) => {
 			environment: process.env.PINECONE_ENVIRONMENT,
 		});
 		const pineconeIndex = pineconeClient.Index(process.env.PINECONE_INDEX);
-		const vectorStore = await PineconeStore.fromExistingIndex(
-			new OpenAIEmbeddings(),
-			{ pineconeIndex },
-		);
-		pineconeIndex.delete1({
-			ids: [],
+		console.log('pinecone index: ', pineconeIndex);
+		const deleteRes = await pineconeIndex._delete({
+			deleteRequest: {
+				filter: {
+					docuId: { $eq: 34 },
+				},
+			},
 		});
-	} catch (error) {}
+		console.log('delete res: ', deleteRes);
+		res.send('ok');
+	} catch (error) {
+		console.log('delete error: ', error);
+		res.status(500).send(error);
+	}
 });
 router.get('/queryPinecone', async (req, res) => {
 	const message = req.query.message;

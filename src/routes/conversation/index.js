@@ -28,6 +28,7 @@ router.post('/v9', authenticate, createConversationV9);
 router.delete('/', authenticate, deleteConversation);
 router.patch('/last', authenticate, lastConversation);
 router.patch('/name', authenticate, changeConvName);
-router.get('/dtizen', authenticateDtizen, getConversations);
 
+router.get('/dtizen', authenticateDtizen, getConversations);
+router.get('/dtizen/check/v2', authenticateDtizen, checkConversationV2);
 module.exports = router;
