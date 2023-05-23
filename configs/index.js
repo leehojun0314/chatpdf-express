@@ -32,6 +32,7 @@ const configs = {
 	allowedOrigins: [
 		'http://localhost:3000',
 		'http://localhost:3001',
+		'http://localhost:3002',
 		'http://127.0.0.1:3000',
 		'http://metaschool.dtizen.com',
 		'https://dtizen.net',
@@ -48,5 +49,6 @@ const configs = {
 	authenticateUrl: 'https://dtizen-secure.vercel.app',
 	relatedParagraphLength: 3000,
 	createSalutationPLength: 3000,
+	salutationPrefixMessage: 'Hello! How can i help you?',
 };
 module.exports = configs;

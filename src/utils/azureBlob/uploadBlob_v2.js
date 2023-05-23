@@ -11,26 +11,62 @@ const blobServiceClient = BlobServiceClient.fromConnectionString(
 	`DefaultEndpointsProtocol=https;AccountName=${ACCOUNT_NAME};AccountKey=${ACCOUNT_KEY};EndpointSuffix=core.windows.net`,
 );
 
-module.exports = function uploadBlob_v2(file) {
-	return new Promise((resolve, reject) => {
+module.exports = async function uploadBlob_v2(files) {
+	//todo check extension
+	const promises = [];
+	for (let fileKey in files) {
+		console.log('file key: ', fileKey);
+		const file = files[fileKey];
 		const fileName = file.newFilename;
 		const blobName = `${Date.now()}-${fileName}`;
 		const containerClient =
 			blobServiceClient.getContainerClient(CONTAINER_NAME);
 		const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-		const fileStream = file ? fs.createReadStream(file.filepath) : null; //파일 스트림 생성
-		blockBlobClient
-			.uploadStream(fileStream, undefined, undefined, {
-				blobHTTPHeaders: {
-					blobContentType: file.mimetype,
-				},
-			})
-			.then((response) => {
-				const fileUrl = `https://${ACCOUNT_NAME}.blob.core.windows.net/${CONTAINER_NAME}/${blobName}`;
-				resolve({ fileUrl, extension: file.mimetype });
-			})
-			.catch((err) => {
-				reject({ err: err });
-			});
-	});
+		const fileStream = file ? fs.createReadStream(file.filepath) : null;
+
+		promises.push(
+			new Promise((bufferResolve, bufferReject) => {
+				fs.readFile(file.filepath, async (err, bufferData) => {
+					if (err) {
+						console.log('buffer err: ', err);
+						bufferReject(err);
+						return;
+					}
+
+					try {
+						await blockBlobClient.uploadStream(
+							fileStream,
+							undefined,
+							undefined,
+							{
+								blobHTTPHeaders: {
+									blobContentType: file.mimetype,
+								},
+							},
+						);
+
+						const fileUrl = `https://${ACCOUNT_NAME}.blob.core.windows.net/${CONTAINER_NAME}/${blobName}`;
+						bufferResolve({
+							fileUrl,
+							extension: file.mimetype,
+							buffer: bufferData,
+							originalFilename: file.originalFilename,
+							fileSize: file.size,
+						});
+					} catch (error) {
+						console.error(error);
+						bufferReject({ err: error });
+					}
+				});
+			}),
+		);
+	}
+
+	try {
+		const results = await Promise.all(promises);
+		return results;
+	} catch (error) {
+		console.log('error: ', error);
+		return;
+	}
 };

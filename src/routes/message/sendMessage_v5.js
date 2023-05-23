@@ -8,6 +8,26 @@ const { PineconeClient } = require('@pinecone-database/pinecone');
 const configs = require('../../../configs');
 require('dotenv').config();
 const pineconeClient = new PineconeClient();
+function referenceDocsToString(docs) {
+	let result = 'Refered : ';
+
+	// group by documentName
+	const grouped = docs.reduce((groupedDocs, doc) => {
+		if (!groupedDocs[doc.documentName]) {
+			groupedDocs[doc.documentName] = [];
+		}
+		groupedDocs[doc.documentName].push(doc.page);
+		return groupedDocs;
+	}, {});
+
+	// convert to string
+	for (const [docName, pages] of Object.entries(grouped)) {
+		const sortedPages = pages.sort((a, b) => a - b);
+		result += `\n ${docName} (${sortedPages.join(', ')} page)`;
+	}
+
+	return result;
+}
 async function sendMessageV5(req, res) {
 	res.setHeader('Content-Type', 'application/json');
 	res.setHeader('X-Accel-Buffering', 'no');
@@ -37,11 +57,12 @@ async function sendMessageV5(req, res) {
 		const embeddings = new OpenAIEmbeddings();
 
 		const messageVector = await embeddings.embedQuery(message);
-		console.log('message vector: ', messageVector);
+		// console.log('message vector: ', messageVector);
 		const vectorStoreResult =
 			await vectorStore.similaritySearchVectorWithScore(messageVector, 10, {
 				convIntId: Number(convIntId),
 			});
+		console.log('similarity search result: ', vectorStoreResult);
 		const relatedParagraphs = vectorStoreResult.map((storeResult) => {
 			return storeResult[0];
 		});
@@ -91,21 +112,23 @@ async function sendMessageV5(req, res) {
 					await insertMessage({
 						message: message,
 						sender: 'user',
-						messageOrder: messagesResult.recordset.length,
 						convIntId: convIntId,
 						userId: userId,
 					});
 					//ai가 보낸 내용 insert
+					const referenceDocs = selectedParagraphs.map((p) => {
+						return {
+							page: p.metadata.pageNumber,
+							documentName: p.metadata.docuName,
+						};
+					});
 					await insertMessage({
 						message:
 							text +
 							(selectedParagraphs.length > 0
-								? `\n(ref : ${selectedParagraphs
-										.map((p) => p.metadata.pageNumber)
-										.join(', ')} page) `
+								? '\n' + referenceDocsToString(referenceDocs)
 								: ''),
 						sender: 'assistant',
-						messageOrder: messagesResult.recordset.length + 1,
 						convIntId: convIntId,
 						userId: userId,
 					});
@@ -115,9 +138,12 @@ async function sendMessageV5(req, res) {
 					res.write(
 						JSON.stringify({
 							text,
-							pages: selectedParagraphs.map(
-								(p) => p.metadata.pageNumber,
-							),
+							referenceDocs: selectedParagraphs.map((p) => {
+								return {
+									page: p.metadata.pageNumber,
+									documentName: p.metadata.docuName,
+								};
+							}),
 						}) + '\n',
 					);
 				}
