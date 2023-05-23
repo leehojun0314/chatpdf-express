@@ -1,51 +1,14 @@
-const uploadBlob = require('../../utils/azureBlob/uploadBlob');
 const PdfParse = require('pdf-parse');
-const insertParagraphs = require('../../model/insertParagraphs');
 const updateConvStatusModel = require('../../model/updateConvStatusModel');
 const { v4: uuidv4 } = require('uuid');
-const insertConv_v4 = require('../../model/insertConv_v4');
-const upsertParagraph_pinecone = require('../../utils/pinecone/upsertParagraph_pinecone');
 const uploadBlob_v2 = require('../../utils/azureBlob/uploadBlob_v2');
 const insertConv_v5 = require('../../model/insertConv_v5');
 const insertDocument = require('../../model/insertDocument');
 const upsertParagraph_v2 = require('../../utils/pinecone/upsertParagraph_v2');
 const insertParagraphs_v2 = require('../../model/insertParagraph_v2');
 const formidable = require('formidable');
-function generateConvId() {
-	const currentTime = Date.now();
-	const uniqueId = uuidv4();
-	return `${uniqueId}-${currentTime}`;
-}
-function pageRender(pageArr) {
-	return (pageData) => {
-		let renderOptions = {
-			normalizeWhitespace: true,
-		};
+const fs = require('fs');
 
-		return pageData.getTextContent(renderOptions).then((textContent) => {
-			const mappedText = textContent.items.map((item) => item.str).join(' ');
-			pageArr.push(mappedText);
-			return mappedText;
-		});
-	};
-}
-function escapeQuotation(str) {
-	return str.replace(/'/g, "''");
-}
-function useFormidable(req) {
-	const form = formidable();
-
-	return new Promise((resolve, reject) => {
-		form.parse(req, (err, fields, files) => {
-			if (err) {
-				console.log('get field err: ', err);
-				reject(err);
-			} else {
-				resolve({ fields, files });
-			}
-		});
-	});
-}
 async function createConversationV9(req, res) {
 	const user = req.user;
 	console.log('user: ', user);
@@ -55,6 +18,17 @@ async function createConversationV9(req, res) {
 	let userId = user.user_id;
 	try {
 		const { fields, files } = await useFormidable(req);
+		//check file extraction
+		let isError = { status: false, message: '' };
+		for (let file of Object.values(files)) {
+			isError = await processFile(file);
+			if (isError.status) break;
+		}
+
+		if (isError.status) {
+			throw new Error(isError.message);
+		}
+
 		//upload blob
 		const uploadResults = await uploadBlob_v2(files);
 		console.log('upload complete');
@@ -132,5 +106,56 @@ async function createConversationV9(req, res) {
 		res.status(500).send(error.message);
 	}
 }
+function generateConvId() {
+	const currentTime = Date.now();
+	const uniqueId = uuidv4();
+	return `${uniqueId}-${currentTime}`;
+}
+const processFile = async (file) => {
+	try {
+		const bufferData = await fs.promises.readFile(file.filepath);
+		const pages = [];
+		await PdfParse(bufferData, { pagerender: pageRender(pages) });
+		const replacedTexts = pages.join('').replaceAll(' ', '');
+		if (!replacedTexts.length) {
+			throw new Error(
+				`Couldn't extract text from the file ${file.originalFilename}`,
+			);
+		}
+	} catch (err) {
+		return { status: true, message: err.message };
+	}
 
+	return { status: false, message: '' };
+};
+function pageRender(pageArr) {
+	return (pageData) => {
+		let renderOptions = {
+			normalizeWhitespace: true,
+		};
+
+		return pageData.getTextContent(renderOptions).then((textContent) => {
+			const mappedText = textContent.items.map((item) => item.str).join(' ');
+			pageArr.push(mappedText);
+			return mappedText;
+		});
+	};
+}
+function escapeQuotation(str) {
+	return str.replace(/'/g, "''");
+}
+function useFormidable(req) {
+	const form = formidable();
+
+	return new Promise((resolve, reject) => {
+		form.parse(req, (err, fields, files) => {
+			if (err) {
+				console.log('get field err: ', err);
+				reject(err);
+			} else {
+				resolve({ fields, files });
+			}
+		});
+	});
+}
 module.exports = createConversationV9;
