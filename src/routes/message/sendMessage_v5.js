@@ -63,10 +63,13 @@ async function sendMessageV5(req, res) {
 				convIntId: Number(convIntId),
 			});
 		console.log('similarity search result: ', vectorStoreResult);
-		const relatedParagraphs = vectorStoreResult.map((storeResult) => {
+		const filteredStoreResult = vectorStoreResult.filter(
+			(storeResult) => storeResult[1] > configs.vectorResultSimilarityScore,
+		);
+		const relatedParagraphs = filteredStoreResult.map((storeResult) => {
 			return storeResult[0];
 		});
-		console.log('relatedParagraphs : ', relatedParagraphs);
+		// console.log('relatedParagraphs : ', relatedParagraphs);
 		const selectedParagraphs = [];
 		let totalLength = 0;
 		const maxLength = configs.relatedParagraphLength;

@@ -27,11 +27,11 @@ async function getMessages_v4(req, res) {
 			userId: req.user.user_id,
 		});
 		//questions
-		const questions = await selectQuestion_all({ convIntId: convIntId });
+		// const questions = await selectQuestion_all({ convIntId: convIntId });
 		res.status(200).json({
 			messages: messagesResult.recordset,
 			conversation: conversation,
-			questions: questions,
+			// questions: questions,
 		});
 	} catch (error) {
 		console.log('error: ', error);

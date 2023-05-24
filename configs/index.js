@@ -50,5 +50,6 @@ const configs = {
 	relatedParagraphLength: 3000,
 	createSalutationPLength: 3000,
 	salutationPrefixMessage: 'Hello! How can i help you?',
+	vectorResultSimilarityScore: 0.85,
 };
 module.exports = configs;

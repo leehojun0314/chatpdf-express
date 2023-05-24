@@ -1,15 +1,14 @@
 const configs = require('../../../configs');
-const insertQuestion = require('../../model/insertQuestion');
 const insertQuestionV2 = require('../../model/insertQuestion_v2');
 const selectConvIntId = require('../../model/selectConvIntId');
 const selectDocument = require('../../model/selectDocument');
 const selectParagraph_docu = require('../../model/selectParagraph_docu');
-const selectQuestion_all = require('../../model/selectQuestion_all');
 const createQuestion = require('../../utils/openai/createQuestion');
 
 async function getQuestionsV2(req, res) {
 	const convStringId = req.query.convStringId;
 	const docuId = req.query.docuId;
+	console.log('get question v2');
 	console.log('docu id : ', docuId);
 	const userId = req.user.user_id;
 	try {

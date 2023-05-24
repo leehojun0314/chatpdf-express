@@ -7,7 +7,7 @@ async function insertQuestionV2({
 }) {
 	try {
 		const sqlPool = await getSql();
-		await sqlPool
+		const result = await sqlPool
 			.request()
 			.input('message', questionsStr)
 			.input('conversation_id', convIntId)
@@ -16,6 +16,7 @@ async function insertQuestionV2({
 			.query(`INSERT INTO Message (message, conversation_id, user_id, is_question, sender, created_time, question_doc_name) 
                     VALUES (@message, @conversation_id, @user_id, 1, 'assistant', GETDATE(), @document_name)
                     `);
+		console.log('insert question result : ', result);
 		return { status: true };
 	} catch (err) {
 		console.log('err: ', err);
