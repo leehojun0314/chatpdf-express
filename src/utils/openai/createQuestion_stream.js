@@ -6,24 +6,23 @@ const configuration = new Configuration({
 	organization: process.env.OPENAI_ORGANIZATION,
 });
 const openai = new OpenAIApi(configuration);
+function isIterable(obj) {
+	return obj != null && typeof obj[Symbol.iterator] === 'function';
+}
 //volatility의 약자. 휘발성 메세지. 이전 메세지 기억못함
-async function sendToAi_vola_stream(content, newMessage, streamCallback) {
+async function createQuestionStream(content, streamCallback) {
 	if (!configuration.apiKey) {
 		return { message: 'no apikey presented', status: false };
 	}
 	// const messages = MessageGenerator.messageSet(recordset);
-	const messages = [];
-	if (content) {
-		// const messages = [MessageGenerator.systemMessage(content)];
-		messages.push(MessageGenerator.systemMessage(content));
-	}
+	const prompt = MessageGenerator.presetQuestion(content);
 	try {
-		messages.push(MessageGenerator.userMessage(newMessage));
 		let finalText = '';
+
 		const completion = await openai.createChatCompletion(
 			{
 				model: 'gpt-3.5-turbo',
-				messages: messages,
+				messages: [prompt],
 				stream: true,
 			},
 			{
@@ -80,19 +79,11 @@ async function sendToAi_vola_stream(content, newMessage, streamCallback) {
 			console.log('text: ', finalText);
 			streamCallback({ isEnd: true, text: finalText });
 		});
-		// messages.push(completion.data.choices[0].message);
-		// return {
-		// 	messages: messages,
-		// 	answer: completion.data.choices[0].message,
-		// 	status: true,
-		// };
+		// const answer = completion.data.choices[0].message.content;
+		// return answer;
 	} catch (error) {
-		console.log('error: ', error);
-		throw new Error(error.message);
-		// return { status: false, error: error.message };
+		console.log('error: ', error.response);
+		return;
 	}
 }
-function isIterable(obj) {
-	return obj != null && typeof obj[Symbol.iterator] === 'function';
-}
-module.exports = sendToAi_vola_stream;
+module.exports = createQuestionStream;

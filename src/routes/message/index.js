@@ -13,6 +13,7 @@ const getSalutation = require('./getSalutation');
 const getQuestions = require('./getQuestion');
 const sendMessageV5 = require('./sendMessage_v5');
 const getQuestionsV2 = require('./getQuestion_v2');
+const getQuestionsV3 = require('./getQuestion_v3');
 const router = express.Router();
 
 // router.get('/', authenticate, getMessages);
@@ -27,6 +28,7 @@ router.post('/v5', authenticate, sendMessageV5);
 router.get('/salutation', authenticate, getSalutation);
 router.get('/questions', authenticate, getQuestions);
 router.get('/questions/v2', authenticate, getQuestionsV2);
+router.post('/questions/v3', authenticate, getQuestionsV3);
 
 router.get('/dtizen', authenticateDtizen, getMessages);
 // router.get('/v3/dtizen', authenticateDtizen, getMessages_v3);

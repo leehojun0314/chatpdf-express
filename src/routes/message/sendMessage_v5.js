@@ -147,7 +147,7 @@ async function sendMessageV5(req, res) {
 									documentName: p.metadata.docuName,
 								};
 							}),
-						}) + '\n',
+						}) + '#',
 					);
 				}
 			},
