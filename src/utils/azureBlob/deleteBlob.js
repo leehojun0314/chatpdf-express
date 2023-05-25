@@ -16,22 +16,16 @@ const blobServiceClient = BlobServiceClient.fromConnectionString(
 	`DefaultEndpointsProtocol=https;AccountName=${ACCOUNT_NAME};AccountKey=${ACCOUNT_KEY};EndpointSuffix=core.windows.net`,
 );
 
-module.exports = function deleteBlob(fileUrl) {
-	return new Promise((resolve, reject) => {
+module.exports = async function deleteBlob(fileUrl) {
+	try {
 		const containerClient =
 			blobServiceClient.getContainerClient(CONTAINER_NAME);
 		const fileName = path.basename(fileUrl);
 		console.log('fileName : ', fileName);
 		const blockBlobClient = containerClient.getBlockBlobClient(fileName);
-		blockBlobClient
-			.delete()
-			.then((res) => {
-				console.log('delete res: ', res);
-				resolve();
-			})
-			.catch((err) => {
-				console.log('delete err : ', err);
-				reject();
-			});
-	});
+		await blockBlobClient.delete();
+	} catch (error) {
+		console.log('delete error: ', error);
+		throw error;
+	}
 };
