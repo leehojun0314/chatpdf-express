@@ -45,6 +45,21 @@ async function createConversationV9(req, res) {
 			message: 'conversation created',
 			createdId: convIntId,
 		});
+	} catch (error) {
+		console.log('catch error: ', error);
+		console.log(error.message);
+		if (convIntId) {
+			await updateConvStatusModel({
+				convIntId: convIntId,
+				status: 'error',
+				userId: userId,
+			});
+		}
+
+		res.status(500).send(error.message);
+		return;
+	}
+	try {
 		for await (let uploadResult of uploadResults) {
 			const { fileUrl, buffer, originalFilename, fileSize } = uploadResult;
 			//insert document in mssql
@@ -93,8 +108,7 @@ async function createConversationV9(req, res) {
 
 		console.log('updated conv status');
 	} catch (error) {
-		console.log('catch error: ', error);
-		console.log(error.message);
+		console.log('error 2 : ', error);
 		if (convIntId) {
 			await updateConvStatusModel({
 				convIntId: convIntId,
@@ -102,8 +116,7 @@ async function createConversationV9(req, res) {
 				userId: userId,
 			});
 		}
-
-		res.status(500).send(error.message);
+		throw error;
 	}
 }
 function generateConvId() {
