@@ -26,6 +26,6 @@ module.exports = async function deleteBlob(fileUrl) {
 		await blockBlobClient.delete();
 	} catch (error) {
 		console.log('delete error: ', error);
-		throw error;
+		// throw error;
 	}
 };
