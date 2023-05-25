@@ -20,16 +20,13 @@ async function deleteConversationModel({ convIntId, userId }) {
 		}
 
 		// Delete Conversation
-		const queryResponse = await transaction
-			.request()
-			.input('conversation_id', convIntId)
+		await transaction.request().input('conversation_id', convIntId)
 			.query(`DELETE FROM Message WHERE conversation_id=@conversation_id;
 			DELETE FROM Paragraph WHERE conversation_id=@conversation_id;
 			DELETE FROM Document WHERE conversation_id=@conversation_id;
 			DELETE FROM Question WHERE conversation_id=@conversation_id;
 			DELETE FROM Conversation WHERE id=@conversation_id;
 			`);
-		console.log('query response: ', queryResponse);
 		await transaction.commit();
 		console.log('Conversation deleted successfully');
 		return true;
