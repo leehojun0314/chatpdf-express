@@ -16,6 +16,7 @@ async function createConversationV9(req, res) {
 	let convStringId = generateConvId();
 	console.log('conv string id : ', convStringId);
 	let userId = user.user_id;
+	let uploadResults;
 	try {
 		const { fields, files } = await useFormidable(req);
 		//check file extraction
@@ -30,7 +31,7 @@ async function createConversationV9(req, res) {
 		}
 
 		//upload blob
-		const uploadResults = await uploadBlob_v2(files);
+		uploadResults = await uploadBlob_v2(files);
 		console.log('upload complete');
 
 		//conversation 생성
