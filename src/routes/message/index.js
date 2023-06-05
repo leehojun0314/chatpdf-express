@@ -14,6 +14,7 @@ const getQuestions = require('./getQuestion');
 const sendMessageV5 = require('./sendMessage_v5');
 const getQuestionsV2 = require('./getQuestion_v2');
 const getQuestionsV3 = require('./getQuestion_v3');
+const sendMessageV6 = require('./sendMessage_v6');
 const router = express.Router();
 
 // router.get('/', authenticate, getMessages);
@@ -25,6 +26,7 @@ router.get('/v4', authenticate, getMessages_v4);
 // router.post('/v3', authenticate, sendMessageV3);
 router.post('/v4', authenticate, sendMessageV4);
 router.post('/v5', authenticate, sendMessageV5);
+router.post('/v6', authenticate, sendMessageV6);
 router.get('/salutation', authenticate, getSalutation);
 router.get('/questions', authenticate, getQuestions);
 router.get('/questions/v2', authenticate, getQuestionsV2);

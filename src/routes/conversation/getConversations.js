@@ -1,6 +1,5 @@
 const selectConversation = require('../../model/selectConversation_all');
 async function getConversations(req, res) {
-	console.log('req.user : ', req.user);
 	const userData = req.user;
 	try {
 		console.log('user id : ', userData.user_id);
