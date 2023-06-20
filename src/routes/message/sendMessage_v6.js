@@ -137,13 +137,9 @@ async function sendMessageV6(req, res) {
 						convIntId: convIntId,
 						userId: userId,
 					});
-					console.log('insert question res: ', insertQuestionRes);
-					console.log('insert answer res :', insertAnswerRes);
 					const questionId = insertQuestionRes.recordset[0].message_id;
 					const answerId = insertAnswerRes.recordset[0].message_id;
 
-					console.log('assistant message id : ', answerId);
-					console.log('question message id : ', questionId);
 					await insertDebate({
 						questionId,
 						answerId,

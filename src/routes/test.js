@@ -16,6 +16,27 @@ const { PineconeClient } = require('@pinecone-database/pinecone');
 require('dotenv').config();
 const pineconeClient = new PineconeClient();
 const { Configuration, OpenAIApi } = require('openai');
+const { encode, decode } = require('gpt-3-encoder');
+router.get('/checktoken', async (req, res) => {
+	try {
+		const str = '안녕하세요? 반갑습니다';
+		const encoded = encode(str);
+		console.log('Encoded this string looks like: ', encoded);
+
+		console.log('We can look at each token and what it represents');
+		let tokenCount = 0;
+		for (let token of encoded) {
+			console.log({ token, string: decode([token]) });
+			tokenCount++;
+		}
+		console.log('token count : ', tokenCount);
+		const decoded = decode(encoded);
+		console.log('We can decode it back into:\n', decoded);
+		res.send('hello');
+	} catch (error) {
+		res.status(500).send(error);
+	}
+});
 
 router.get('/gptAPItest', async (req, res) => {
 	try {

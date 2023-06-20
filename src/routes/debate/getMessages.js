@@ -13,12 +13,8 @@ async function getMessages(req, res) {
 			answerId,
 			userId,
 		});
-		console.log('select debate result: ', debateResult);
 		const debateId = debateResult.recordset[0].debate_id;
-		console.log('debate Id : ', debateId);
 		const debateMessageRes = await selectDebateMessage({ debateId, userId });
-		console.log('debateMessages: ', debateMessageRes);
-
 		res.send({
 			debate: debateResult.recordset[0],
 			messages: debateMessageRes.recordset,
