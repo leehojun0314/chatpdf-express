@@ -1,4 +1,5 @@
 require('dotenv').config('.env');
+const { encode, decode } = require('gpt-3-encoder');
 const jsonwebtoken = require('jsonwebtoken');
 
 const fileSizes = {
@@ -41,9 +42,42 @@ function createJWT(params) {
 	});
 	return jwtToken;
 }
+/**
+ * Calculate token from string
+ * @param {string} str content to be calculated
+ * @returns {number} number of tokens
+ */
+function calculateTokens(str) {
+	const encoded = encode(str);
+	let tokenCount = 0;
+	for (let token of encoded) {
+		tokenCount++;
+	}
+	return tokenCount;
+}
+
+function optimizingPrompt(prompts, exclusives, tokenLimit) {
+	let totalTokenCount = 0;
+	let exclusiveToken = calculateTokens(exclusives);
+	const copiedPrompts = JSON.parse(JSON.stringify(prompts));
+
+	for (let prompt of copiedPrompts) {
+		const content = prompt.content;
+		totalTokenCount += calculateTokens(content);
+	}
+	while (totalTokenCount > tokenLimit - exclusiveToken) {
+		const item = copiedPrompts.shift();
+		totalTokenCount -= calculateTokens(item.content);
+	}
+	console.log('total Token count : ', totalTokenCount);
+	return copiedPrompts;
+}
+
 module.exports = {
 	fileSizes,
 	checkFileSize,
 	optimizeText,
 	createJWT,
+	calculateTokens,
+	optimizingPrompt,
 };

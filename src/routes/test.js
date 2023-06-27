@@ -37,6 +37,16 @@ router.get('/checktoken', async (req, res) => {
 		res.status(500).send(error);
 	}
 });
+[
+	{
+		role: 'string',
+		content: 'string',
+	},
+	{
+		role: 'string',
+		content: 'string',
+	},
+];
 
 router.get('/gptAPItest', async (req, res) => {
 	try {

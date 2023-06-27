@@ -4,6 +4,8 @@ const generator = require('../../utils/generator');
 const insertDebateMessage = require('../../model/insertDebateMessage');
 const selectDebate = require('../../model/selectDebate');
 const selectConvIntId = require('../../model/selectConvIntId');
+const { optimizingPrompt } = require('../../utils/functions');
+const configs = require('../../../configs');
 require('dotenv').config();
 
 async function sendMessage(req, res) {
@@ -28,13 +30,21 @@ async function sendMessage(req, res) {
 		const debateMessagesRes = await selectDebateMessage({ debateId, userId });
 		console.log('debate message res: ', debateMessagesRes);
 		const debateMessages = debateMessagesRes.recordset;
+		console.log('debate messages: ', debateMessages);
 		const previousMessages = [];
 		const systemMessage = generator.systemMessage(debate.refer_content);
 		previousMessages.push(systemMessage);
 		previousMessages.push(generator.userMessage(debate.question_content));
 		previousMessages.push(generator.assistantMessage(debate.answer_content));
+		const optimizedHistory = optimizingPrompt(
+			debateMessages,
+			debate.refer_content +
+				debateMessages.question_content +
+				debate.answer_content,
+			configs.promptTokenLimit,
+		);
 		previousMessages.concat(
-			debateMessages.map((debateMessage) => {
+			optimizedHistory.map((debateMessage) => {
 				switch (debateMessage.sender) {
 					case 'user': {
 						return generator.userMessage(debateMessage.content);
@@ -48,6 +58,7 @@ async function sendMessage(req, res) {
 				}
 			}),
 		);
+		console.log('previous messages: ', previousMessages);
 		await sendToAi_acc_stream(
 			previousMessages,
 			message,
