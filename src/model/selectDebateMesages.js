@@ -1,14 +1,12 @@
 const getSql = require('../database/connection');
-function updateLastLogin({ userEmail, authType }) {
+function selectDebateMessage({ debateId, userId }) {
 	return new Promise((resolve, reject) => {
 		getSql()
 			.then((sqlPool) => {
 				sqlPool
 					.request()
-					.input('user_email', userEmail)
-					.input('auth_type', authType)
 					.query(
-						'UPDATE UserTable SET last_login = GETDATE() WHERE user_email = @user_email AND auth_type = @auth_type',
+						`SELECT * FROM Debate_Message WHERE debate_id = '${debateId}' AND user_id = ${userId} ORDER BY id ASC`,
 					)
 					.then((result) => {
 						resolve(result);
@@ -22,4 +20,4 @@ function updateLastLogin({ userEmail, authType }) {
 			});
 	});
 }
-module.exports = updateLastLogin;
+module.exports = selectDebateMessage;

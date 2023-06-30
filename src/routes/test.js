@@ -15,6 +15,107 @@ const { VectorDBQAChain } = require('langchain/chains');
 const { PineconeClient } = require('@pinecone-database/pinecone');
 require('dotenv').config();
 const pineconeClient = new PineconeClient();
+const { Configuration, OpenAIApi } = require('openai');
+const { encode, decode } = require('gpt-3-encoder');
+router.get('/checktoken', async (req, res) => {
+	try {
+		const str = '안녕하세요? 반갑습니다';
+		const encoded = encode(str);
+		console.log('Encoded this string looks like: ', encoded);
+
+		console.log('We can look at each token and what it represents');
+		let tokenCount = 0;
+		for (let token of encoded) {
+			console.log({ token, string: decode([token]) });
+			tokenCount++;
+		}
+		console.log('token count : ', tokenCount);
+		const decoded = decode(encoded);
+		console.log('We can decode it back into:\n', decoded);
+		res.send('hello');
+	} catch (error) {
+		res.status(500).send(error);
+	}
+});
+[
+	{
+		role: 'string',
+		content: 'string',
+	},
+	{
+		role: 'string',
+		content: 'string',
+	},
+];
+
+router.get('/gptAPItest', async (req, res) => {
+	try {
+		const configuration = new Configuration({
+			apiKey: process.env.OPENAI_API_KEY,
+			organization: process.env.OPENAI_ORGANIZATION,
+		});
+		const openai = new OpenAIApi(configuration);
+		const response = await openai.createCompletion({
+			model: 'text-davinci-003',
+			prompt: `당신은 api로써, 다음 대화를 보고, 사용자의 마지막 질문이 만약 지문을 참고해야 답변 할 수 있는 상황이면, 지문을 찾기 위해 알맞은 질문을 작성해주세요.
+			대화 : 
+			user: 1. PBL이란 무엇인가요?
+			assistant : PBL은 Problem Based Learning의 약어로, 실제적 문제 해결을 통해 학습자의 능동적 학습을 촉진시키기 위한 학습자 중심의 교수·학습 방법입니다. 학생들에게 실제적인 문제를 제시하여 학생들이 상호간에 공동으로 문제 해결 방안을 강구하고, 개별 학습과 협동학습을 통해 문제 해결안을 마련하는 교수·학습 방법입니다.
+
+			user : pbl 방식으로 수업을 진행하려고 하는데, 커리큘럼을 짜줄래?
+			
+			`,
+			// messages: [
+
+			// {
+			// 	role: 'user',
+			// 	content: '1. PBL이란 무엇인가요?',
+			// },
+			// {
+			// 	role: 'assistant',
+			// 	content:
+			// 		'PBL은 Problem Based Learning의 약어로, 실제적 문제 해결을 통해 학습자의 능동적 학습을 촉진시키기 위한 학습자 중심의 교수·학습 방법입니다. 학생들에게 실제적인 문제를 제시하여 학생들이 상호간에 공동으로 문제 해결 방안을 강구하고, 개별 학습과 협동학습을 통해 문제 해결안을 마련하는 교수·학습 방법입니다.',
+			// },
+			// {
+			// 	role: 'user',
+			// 	content:
+			// 		'pbl 방식으로 수업을 진행하려고 하는데, 커리큘럼을 짜줄래?',
+			// },
+			// {
+			// 	role: 'assistant',
+			// 	content: `제가 커리큘럼을 작성해 드리는 것은 불가능합니다. 그러나, PBL 수업 커리큘럼을 구성할 때는 다음과 같은 요소를 고려할 수 있습니다.
+
+			// 	1. 문제 제시: 예제, 시나리오, 실생활 문제 등을 활용하여 학생들이 스스로 문제를 파악할 수 있도록 도와주는 단계입니다.
+			// 	2. 문제 이해: 학생들이 문제에 대해 자세히 이해하고 불필요한 정보를 걸러내는 것을 돕는 것입니다.
+			// 	3. 학습 목표 도출: 학생들이 자신들이 학습하고자 하는 것에 대해 명확한 목표를 설정할 수 있도록 도와주는 단계입니다.
+			// 	4. 과제 수행 계획 수립: 과제를 수행하면서 어떤 절차를 따라야 하는지, 그리고 각자의 역할이 무엇인지 등을 명확하게 설정하는 단계입니다.
+			// 	5. 문제 해결 모색: 팀별로 문제 해결책을 모색하고 정보를 공유하는 단계입니다.
+			// 	6. 결과 정리: 개별과 팀별 결과물을 종합하여 가시적인 결과물을 도출하는 단계입니다.
+			// 	7. 발표 및 평가: 학생들이 문제 해결과정 및 결과물에 대해 발표하고, 평가하여 총체적인 학습을 달성하는 단계입니다.
+
+			// 	각각의 단계는 상호 연결되어 있으며, 수업 별로 상황에 맞게 조절될 수 있습니다.`,
+			// },
+			// {
+			// 	role: 'user',
+			// 	content: '발표 및 평가에 대해 더 자세히 설명해줄래?',
+			// },
+			// ],
+			temperature: 0.6,
+		});
+		openai.createFile;
+		// const choices = completion.data.choices;
+		// console.log('choices: ', choices);
+		// const answer = choices[0].message;
+		const choices = response.data.choices;
+		console.log('choices: ', choices);
+		const answer = choices[0].text;
+		res.send(answer);
+	} catch (error) {
+		console.log(error);
+		res.send(error.message);
+	}
+});
+
 router.get('/createPinecone', async (req, res) => {
 	console.log('apikey: ', process.env.PINECONE_API_KEY);
 	console.log('environment:', process.env.PINECONE_ENVIRONMENT);

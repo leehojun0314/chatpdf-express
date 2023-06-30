@@ -15,7 +15,7 @@ function insertMessage({ message, convIntId, sender, userId }) {
 					// VALUES (@message, @convIntId, @sender, @message_order, @user_id, GETDATE())`,
 					// 				)
 					.query(
-						`INSERT INTO Message (message, conversation_id, sender, user_id, created_time)
+						`INSERT INTO Message (message, conversation_id, sender, user_id, created_time) OUTPUT INSERTED.message_id
 VALUES (@message, @convIntId, @sender, @user_id, GETDATE())`,
 					)
 					.then((result) => {

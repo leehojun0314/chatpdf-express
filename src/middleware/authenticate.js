@@ -12,7 +12,6 @@ function authenticate(req, res, next) {
 	let decoded;
 	try {
 		decoded = jwt.verify(token, secretKey);
-		console.log('user: ', decoded.user_name);
 		const user = decoded;
 		selectUser({
 			email: user.user_email,
@@ -21,7 +20,6 @@ function authenticate(req, res, next) {
 			authId: user.auth_id,
 		})
 			.then((selectResult) => {
-				console.log('authenticate selectResult: ', selectResult);
 				if (selectResult.recordset.length) {
 					req.user = selectResult.recordset[0];
 					next();

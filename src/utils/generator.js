@@ -74,6 +74,12 @@ class MessageGenerator {
 			content: message,
 		};
 	}
+	assistantMessage(message) {
+		return {
+			role: 'assistant',
+			content: message,
+		};
+	}
 	presetQuestion(content) {
 		return {
 			role: 'user',

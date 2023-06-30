@@ -33,6 +33,7 @@ app.get('/', (req, res) => {
 
 app.use('/conversation', routes.conversation);
 app.use('/message', routes.message);
+app.use('/debate', routes.debate);
 app.use('/auth', routes.auth);
 app.get('/.well-known/ai-plugin.json', (req, res) => {
 	const jsonPath = path.join(__dirname, '..', '.well-known', 'ai-plugin.json');

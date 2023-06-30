@@ -20,8 +20,10 @@ async function deleteConversationModel({ convIntId, userId }) {
 		}
 
 		// Delete Conversation
-		await transaction.request().input('conversation_id', convIntId)
-			.query(`DELETE FROM Message WHERE conversation_id=@conversation_id;
+		await transaction.request().input('conversation_id', convIntId).query(`
+			DELETE FROM Debate_Message WHERE conversation_id=@conversation_id;
+			DELETE FROM Debate WHERE conversation_id=@conversation_id;
+			DELETE FROM Message WHERE conversation_id=@conversation_id;
 			DELETE FROM Paragraph WHERE conversation_id=@conversation_id;
 			DELETE FROM Document WHERE conversation_id=@conversation_id;
 			DELETE FROM Question WHERE conversation_id=@conversation_id;
