@@ -143,7 +143,7 @@ async function sendMessageV6(req, res) {
 					await insertDebate({
 						questionId,
 						answerId,
-						referContent: answer,
+						referContent: relatedContent,
 						convIntId,
 						userId,
 					});

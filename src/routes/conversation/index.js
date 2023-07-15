@@ -11,6 +11,7 @@ const createConversationV7 = require('./createConversation_v7');
 const createConversationV8 = require('./createConversation_v8');
 const createConversationV9 = require('./createConversation_v9');
 const checkConversationV2 = require('./checkConversation_v2');
+const addFiles = require('./addFile');
 const router = express.Router();
 
 router.get('/', authenticate, getConversations);
@@ -28,6 +29,7 @@ router.post('/v9', authenticate, createConversationV9);
 router.delete('/', authenticate, deleteConversation);
 router.patch('/last', authenticate, lastConversation);
 router.patch('/name', authenticate, changeConvName);
+router.patch('/add', authenticate, addFiles);
 
 router.get('/dtizen', authenticateDtizen, getConversations);
 router.get('/dtizen/check/v2', authenticateDtizen, checkConversationV2);

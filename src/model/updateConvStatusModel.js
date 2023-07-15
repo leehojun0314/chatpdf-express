@@ -1,7 +1,7 @@
 const getSql = require('../database/connection');
 /**
  *
- * @param {{convId : int, userId : int,status : 'created' | 'deleted' | 'analyzing' | 'error'}} param0
+ * @param {{convIntId : int, userId : int,status : 'created' | 'deleted' | 'analyzing' | 'error'}} param0
  * @returns
  */
 async function updateConvStatusModel({ convIntId, userId, status }) {
