@@ -35,6 +35,12 @@ router.patch('/name', authenticate, changeConvName);
 router.patch('/add', authenticate, addFiles);
 router.delete('/file', authenticate, deleteFiles);
 
+//dtizen
 router.get('/dtizen', authenticateDtizen, getConversations);
 router.get('/dtizen/check/v2', authenticateDtizen, checkConversationV2);
+router.post(
+	'/dtizen/createConversation',
+	authenticateDtizen,
+	createConversationV9,
+);
 module.exports = router;
