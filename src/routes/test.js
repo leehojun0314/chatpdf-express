@@ -135,7 +135,7 @@ router.get('/createPinecone', async (req, res) => {
 				pageContent: 'pinecone is a vector db',
 			}),
 			new Document({
-				metadata: { foo: 'bar' },
+				metadata: { foo: 'bar', baz: 'qux' },
 				pageContent: 'the quick brown fox jumped over the lazy dog',
 			}),
 			new Document({
@@ -240,7 +240,7 @@ router.get('/deleteVector', async (req, res) => {
 		const deleteRes = await pineconeIndex._delete({
 			deleteRequest: {
 				filter: {
-					docuId: { $eq: 34 },
+					baz: { $eq: 'qux' },
 				},
 			},
 		});

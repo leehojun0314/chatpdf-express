@@ -67,9 +67,15 @@ async function sendMessageV6(req, res) {
 		const filteredStoreResult = vectorStoreResult.filter(
 			(storeResult) => storeResult[1] > configs.vectorResultSimilarityScore,
 		);
-		const relatedParagraphs = filteredStoreResult.map((storeResult) => {
+		let relatedParagraphs = filteredStoreResult.map((storeResult) => {
 			return storeResult[0];
 		});
+		if (relatedParagraphs.length === 0) {
+			relatedParagraphs = vectorStoreResult.map((storeResult) => {
+				return storeResult[0];
+			});
+			relatedParagraphs.splice(2);
+		}
 		// console.log('relatedParagraphs : ', relatedParagraphs);
 		const selectedParagraphs = [];
 		let totalLength = 0;

@@ -1,7 +1,7 @@
 const { PineconeClient } = require('@pinecone-database/pinecone');
 require('dotenv').config();
 const pineconeClient = new PineconeClient();
-async function deleteParagraphPinecone({ convIntId }) {
+async function deleteParagraph_single({ convIntId, docuId }) {
 	try {
 		await pineconeClient.init({
 			apiKey: process.env.PINECONE_API_KEY,
@@ -11,14 +11,13 @@ async function deleteParagraphPinecone({ convIntId }) {
 		const deleteRes = await pineconeIndex._delete({
 			deleteRequest: {
 				filter: {
-					convIntId: { $eq: Number(convIntId) },
+					docuId: { $eq: Number(docuId) },
 				},
 			},
 		});
 		return deleteRes;
 	} catch (err) {
-		// throw err;
-		console.log('err: ', err);
+		throw err;
 	}
 }
-module.exports = deleteParagraphPinecone;
+module.exports = deleteParagraph_single;

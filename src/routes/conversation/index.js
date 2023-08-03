@@ -12,6 +12,7 @@ const createConversationV8 = require('./createConversation_v8');
 const createConversationV9 = require('./createConversation_v9');
 const checkConversationV2 = require('./checkConversation_v2');
 const addFiles = require('./addFile');
+const deleteFiles = require('./deleteFiles');
 const router = express.Router();
 
 router.get('/', authenticate, getConversations);
@@ -29,7 +30,10 @@ router.post('/v9', authenticate, createConversationV9);
 router.delete('/', authenticate, deleteConversation);
 router.patch('/last', authenticate, lastConversation);
 router.patch('/name', authenticate, changeConvName);
+
+//file control
 router.patch('/add', authenticate, addFiles);
+router.delete('/file', authenticate, deleteFiles);
 
 router.get('/dtizen', authenticateDtizen, getConversations);
 router.get('/dtizen/check/v2', authenticateDtizen, checkConversationV2);

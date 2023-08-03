@@ -1,6 +1,7 @@
 const getSql = require('../database/connection');
 
 function insertBatchParagraphs(batch, documentId, convIntId) {
+	console.log('document id before insert into db: ', documentId);
 	const values = batch
 		.map(
 			(p) =>
