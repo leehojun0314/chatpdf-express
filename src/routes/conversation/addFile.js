@@ -18,6 +18,7 @@ async function addFiles(req, res) {
 		fields = formidableRes.fields;
 		files = formidableRes.files;
 		convStringId = fields.convStringId;
+		console.log('add files :', files);
 		if (!convStringId) {
 			throw new Error('No conversation id is given');
 		}
