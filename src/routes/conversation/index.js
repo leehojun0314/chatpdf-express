@@ -32,7 +32,7 @@ router.patch('/last', authenticate, lastConversation);
 router.patch('/name', authenticate, changeConvName);
 
 //file control
-router.patch('/add', authenticate, addFiles);
+router.post('/add', authenticate, addFiles);
 router.delete('/file', authenticate, deleteFiles);
 
 //dtizen
