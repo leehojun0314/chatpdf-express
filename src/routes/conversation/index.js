@@ -13,6 +13,7 @@ const createConversationV9 = require('./createConversation_v9');
 const checkConversationV2 = require('./checkConversation_v2');
 const addFiles = require('./addFile');
 const deleteFiles = require('./deleteFiles');
+const addFiles_v2 = require('./addFile_v2');
 const router = express.Router();
 
 router.get('/', authenticate, getConversations);
@@ -33,6 +34,7 @@ router.patch('/name', authenticate, changeConvName);
 
 //file control
 router.post('/add', authenticate, addFiles);
+router.post('/add/v2', authenticate, addFiles_v2);
 router.delete('/file', authenticate, deleteFiles);
 
 //dtizen

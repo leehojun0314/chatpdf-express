@@ -10,7 +10,8 @@ async function deleteFiles(req, res) {
 	let convStringId, filesToDelete, convIntId;
 	convStringId = req.body?.convStringId;
 	filesToDelete = req.body?.deleteFiles;
-	console.log('files to delete: ', filesToDelete);
+	res.setHeader('Content-Type', 'application/json');
+	res.setHeader('X-Accel-Buffering', 'no');
 	try {
 		if (!convStringId) {
 			throw new Error('No conversation id is given');
@@ -40,49 +41,30 @@ async function deleteFiles(req, res) {
 			status: 'analyzing',
 			userId: userId,
 		});
-
-		const promiseArr = [];
-		for (let fileToDelete of filesToDelete) {
-			const promiseEl = new Promise((resolve, reject) => {
-				console.log('file to delete: ', fileToDelete);
-				//delete blob
-				const fileUrl = fileToDelete.document_url;
-				deleteBlob(fileUrl)
-					.then((deleteBlobRes) => {
-						console.log('deleteBlobRes: ', deleteBlobRes);
-						return deleteParagraph_single({
-							convIntId,
-							docuId: fileToDelete.document_id,
-						});
-					})
-					.then((deleteParaRes) => {
-						console.log('delete para res: ', deleteParaRes);
-						return deleteDocument({
-							docuId: fileToDelete.document_id,
-							convIntId: convIntId,
-						});
-					})
-					.then((dbDeleteRes) => {
-						console.log('db delete Res: ', dbDeleteRes);
-						resolve(true);
-					})
-					.catch((err) => {
-						console.log('err: ', err);
-						reject();
-					});
-			});
-			promiseArr.push(promiseEl);
+		let fileIndex = 0;
+		for await (let fileToDelete of filesToDelete) {
+			res.write(
+				JSON.stringify({
+					message: `Deleting ${fileToDelete.document_name}`,
+					status: 'delete',
+					progress: `${Math.floor(
+						(fileIndex / filesToDelete.length) * 100,
+					)}`,
+				}) + '#',
+			);
+			await processFile(fileToDelete, convIntId);
+			fileIndex++;
 		}
-		const promiseRes = await Promise.all(promiseArr);
-		console.log('promise all response : ', promiseRes);
 		await updateConvStatusModel({
 			convIntId,
 			status: 'created',
 			userId: userId,
 		});
-		res.status(201).send({
-			message: 'file deleted',
-		});
+		res.write(JSON.stringify({ message: 'All files have been deleted' }));
+		res.end();
+		// res.status(201).send({
+		// 	message: 'file deleted',
+		// });
 	} catch (err) {
 		console.log('error: ', err);
 		// await updateConvStatusModel({
@@ -95,29 +77,28 @@ async function deleteFiles(req, res) {
 			status: 'created',
 			userId: userId,
 		});
-		res.status(500).send(err);
+		// res.status(500).send(err);
+		res.write(JSON.stringify({ message: err }));
+		res.end();
 	}
 }
-function deleteProcess(fileToDelete, convIntId) {
-	return async () => {
-		console.log('file to delete: ', fileToDelete);
-		//delete blob
-		const fileUrl = fileToDelete.document_url;
-		await deleteBlob(fileUrl);
+async function processFile(fileToDelete, convIntId) {
+	console.log('file to delete: ', fileToDelete);
+	const fileUrl = fileToDelete.document_url;
+	const deleteBlobRes = await deleteBlob(fileUrl);
+	console.log('deleteBlobRes: ', deleteBlobRes);
 
-		//delete from vector store
-		const pineconeRes = await deleteParagraph_single({
-			convIntId,
-			docuId: fileToDelete.document_id,
-		});
-		console.log('pinecone Res: ', pineconeRes);
+	const deleteParaRes = await deleteParagraph_single({
+		convIntId,
+		docuId: fileToDelete.document_id,
+	});
+	console.log('delete para res: ', deleteParaRes);
 
-		//delete from database
-		const dbDeleteRes = await deleteDocument({
-			docuId: fileToDelete.document_id,
-			convIntId: convIntId,
-		});
-		console.log('db delete res: ', dbDeleteRes);
-	};
+	const dbDeleteRes = await deleteDocument({
+		docuId: fileToDelete.document_id,
+		convIntId: convIntId,
+	});
+	console.log('db delete Res: ', dbDeleteRes);
 }
+
 module.exports = deleteFiles;
