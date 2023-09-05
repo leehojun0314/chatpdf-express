@@ -32,6 +32,7 @@
 		"node-hwp": "^0.1.0-alpha",
 		"openai": "^3.2.1",
 		"pdf-parse": "^1.1.1",
+		"solapi": "^5.2.4",
 		"uuid": "^9.0.0",
 		"weaviate-ts-client": "^1.1.0"
 	}
