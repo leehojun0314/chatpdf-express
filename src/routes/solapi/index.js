@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const authenticate = require('../../middleware/authenticate');
+const authenticateSolapi = require('../../middleware/authenticateSolapi');
 const sendSolapiMessage = require('./sendSolapiMessage');
-router.post('/sendMessages', sendSolapiMessage);
+router.post('/sendMessages', authenticateSolapi, sendSolapiMessage);
 
 module.exports = router;
