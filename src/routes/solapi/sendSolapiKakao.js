@@ -6,13 +6,24 @@ const messageService = new SolapiMessageService(
 	process.env.solapiAPISECRET,
 );
 
-async function sendSolapiMessage(req, res) {
-	const { text, to, from, country } = req.body;
+async function SendSolapiKakao(req, res) {
+	const { templateId, variables, to, from } = req.body;
+	let parsedTo, parsedVariables;
+
 	try {
+		if (!templateId) {
+			throw new Error('Invalid template id');
+		}
+		if (!variables) {
+			throw new Error('Invalid variables');
+		} else {
+			parsedVariables = JSON.parse(variables);
+		}
 		if (!to) {
 			throw new Error('Invalid to array');
 		} else {
 			parsedTo = JSON.parse(to);
+			console.log('parsed to : ', parsedTo);
 			if (!Array.isArray(parsedTo)) {
 				throw new Error('Parameter to is not an array');
 			}
@@ -22,12 +33,6 @@ async function sendSolapiMessage(req, res) {
 		}
 		if (!from) {
 			throw new Error('Invalid from number');
-		}
-		if (!text.length) {
-			throw new Error('Empty text content');
-		}
-		if (!country) {
-			throw new Error('Invalid country');
 		}
 	} catch (error) {
 		console.log('error: ', error.message);
@@ -40,9 +45,12 @@ async function sendSolapiMessage(req, res) {
 		destinationArr = parsedTo.map((element) => {
 			return {
 				to: element,
-				from,
-				text,
-				country,
+				from: from,
+				kakaoOptions: {
+					pfId: process.env.solapiPFID,
+					templateId: templateId,
+					variables: parsedVariables,
+				},
 			};
 		});
 		const messageRes = await messageService.send(destinationArr);
@@ -53,4 +61,4 @@ async function sendSolapiMessage(req, res) {
 		res.status(500).send(error.message);
 	}
 }
-module.exports = sendSolapiMessage;
+module.exports = SendSolapiKakao;
