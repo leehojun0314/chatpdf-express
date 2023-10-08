@@ -84,9 +84,10 @@ async function deleteFiles(req, res) {
 }
 async function processFile(fileToDelete, convIntId) {
 	console.log('file to delete: ', fileToDelete);
-	const fileUrl = fileToDelete.document_url;
-	const deleteBlobRes = await deleteBlob(fileUrl);
-	console.log('deleteBlobRes: ', deleteBlobRes);
+	//not uploading file to Ncloud
+	// const fileUrl = fileToDelete.document_url;
+	// const deleteBlobRes = await deleteBlob(fileUrl);
+	// console.log('deleteBlobRes: ', deleteBlobRes);
 
 	const deleteParaRes = await deleteParagraph_single({
 		convIntId,

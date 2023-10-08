@@ -14,6 +14,7 @@ const checkConversationV2 = require('./checkConversation_v2');
 const addFiles = require('./addFile');
 const deleteFiles = require('./deleteFiles');
 const addFiles_v2 = require('./addFile_v2');
+const createConversationV10 = require('./createConversation_v10');
 const router = express.Router();
 
 router.get('/', authenticate, getConversations);
@@ -28,6 +29,7 @@ router.get('/check/v2', authenticate, checkConversationV2);
 router.post('/v7', authenticate, createConversationV7);
 router.post('/v8', authenticate, createConversationV8);
 router.post('/v9', authenticate, createConversationV9);
+router.post('/v10', authenticate, createConversationV10);
 router.delete('/', authenticate, deleteConversation);
 router.patch('/last', authenticate, lastConversation);
 router.patch('/name', authenticate, changeConvName);

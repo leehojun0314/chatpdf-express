@@ -64,17 +64,21 @@ async function addFiles_v2(req, res) {
 		}
 
 		//upload blob
-		let uploadResults = await uploadBlob_v2(files);
+		// let uploadResults = await uploadBlob_v2(files);
 		console.log('uploaded files: ', files);
 		let fileIndex = 0;
-		for await (let uploadResult of uploadResults) {
-			const { fileUrl, buffer, originalFilename, fileSize } = uploadResult;
+		for await (let file of Object.values(files)) {
+			// const { fileUrl, buffer, originalFilename, fileSize } = uploadResult;
+			const fileUrl = '';
+			const buffer = await fs.promises.readFile(file.filepath);
+			const originalFilename = file.originalFilename;
+			const fileSize = file.size;
 			let stringBeforeSent =
 				JSON.stringify({
 					message: `Uploading file: ${originalFilename}`,
 					status: 'uploading',
 					progress: `${Math.floor(
-						(fileIndex / uploadResults.length) * 100,
+						(fileIndex / Object.values(files).length) * 100,
 					)}`,
 				}) + '#';
 			console.log('string before sent: ', stringBeforeSent);

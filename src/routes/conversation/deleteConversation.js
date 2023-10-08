@@ -18,11 +18,12 @@ async function deleteConversation(req, res) {
 		//select all documents and get file Urls
 		const documents = await selectDocuments({ convIntId });
 		console.log('documents: ', documents);
-		for (docu of documents) {
-			const fileUrl = docu.document_url;
-			//delete from azure storage
-			await deleteBlob(fileUrl);
-		}
+		//not uploading file to Ncloud
+		// for (docu of documents) {
+		// 	const fileUrl = docu.document_url;
+		// 	//delete from azure storage
+		// 	await deleteBlob(fileUrl);
+		// }
 		//delete from vector store
 		const pineconeRes = await deleteParagraphPinecone({ convIntId });
 		console.log('pinecone delete res: ', pineconeRes);
