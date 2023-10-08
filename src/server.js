@@ -7,6 +7,17 @@ const fs = require('fs');
 const path = require('path');
 const routes = require('./routes');
 const configs = require('../configs');
+// const https = require('https');
+
+//https 설정
+// const privateKey = fs.readFileSync('generated-private-key.txt', 'utf8');
+// const certificate = fs.readFileSync('f06861e0b5fab11a.crt', 'utf8');
+// const ca = fs.readFileSync('gd_bundle-g2-g1.crt', 'utf8');
+// const credentials = {
+// 	key: privateKey,
+// 	cert: certificate,
+// 	ca: ca,
+// };
 app.use(
 	cors({
 		origin: function (origin, callback) {
@@ -61,9 +72,13 @@ app.get('/.well-known/openapi.yaml', (req, res) => {
 app.use('/test', routes.test);
 
 function startServer() {
-	const server = app.listen(port, () => {
+	app.listen(port, () => {
 		console.log(`Server is running at ${port} port`);
 	});
+	// const httpsServer = https.createServer(credentials, app);
+	// httpsServer.listen(port, () => {
+	// 	console.log('https server running on port ', port);
+	// });
 	process.on('uncaughtException', (error) => {
 		console.log('uncaught exception 발생 : ', error);
 		// server.close(() => {
