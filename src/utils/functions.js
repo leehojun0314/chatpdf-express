@@ -60,16 +60,25 @@ function optimizingPrompt(prompts, exclusives, tokenLimit) {
 	let totalTokenCount = 0;
 	let exclusiveToken = calculateTokens(exclusives);
 	const copiedPrompts = JSON.parse(JSON.stringify(prompts));
-
-	for (let prompt of copiedPrompts) {
-		const content = prompt.content;
-		totalTokenCount += calculateTokens(content);
+	console.log('promts: ', prompts);
+	console.log('copied promts: ', copiedPrompts.length);
+	if (copiedPrompts.length) {
+		for (let prompt of copiedPrompts) {
+			const content = prompt.content;
+			totalTokenCount += calculateTokens(content);
+		}
 	}
+
 	while (totalTokenCount > tokenLimit - exclusiveToken) {
 		const item = copiedPrompts.shift();
-		totalTokenCount -= calculateTokens(item.content);
+		if (item?.content) {
+			totalTokenCount -= calculateTokens(item.content);
+		} else {
+			break;
+		}
 	}
 	console.log('total Token count : ', totalTokenCount);
+
 	return copiedPrompts;
 }
 
