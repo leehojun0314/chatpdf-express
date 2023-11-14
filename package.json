@@ -30,7 +30,7 @@
 		"mssql": "^9.1.1",
 		"natural": "^6.3.0",
 		"node-hwp": "^0.1.0-alpha",
-		"openai": "^3.2.1",
+		"openai": "^4.17.5",
 		"pdf-parse": "^1.1.1",
 		"solapi": "^5.2.4",
 		"uuid": "^9.0.0",

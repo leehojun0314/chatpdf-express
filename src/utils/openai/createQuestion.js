@@ -1,11 +1,10 @@
-const { Configuration, OpenAIApi } = require('openai');
+const { default: OpenAI } = require('openai');
 const MessageGenerator = require('../generator');
 require('dotenv').config();
-const configuration = new Configuration({
+const openai = new OpenAI({
 	apiKey: process.env.OPENAI_API_KEY,
 	organization: process.env.OPENAI_ORGANIZATION,
 });
-const openai = new OpenAIApi(configuration);
 //volatility의 약자. 휘발성 메세지. 이전 메세지 기억못함
 async function createQuestion(content) {
 	if (!configuration.apiKey) {

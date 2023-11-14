@@ -1,8 +1,6 @@
 const { PineconeStore } = require('langchain/vectorstores/pinecone');
 const { OpenAIEmbeddings } = require('langchain/embeddings/openai');
 const { Document } = require('langchain/document');
-const { OpenAI } = require('langchain/llms/openai');
-const { VectorDBQAChain } = require('langchain/chains');
 const { PineconeClient } = require('@pinecone-database/pinecone');
 require('dotenv').config();
 async function upsertParagraph_v2({ paragraphs, convIntId, docuId }) {

@@ -1,11 +1,10 @@
-const { Configuration, OpenAIApi } = require('openai');
+const { default: OpenAI } = require('openai');
 const MessageGenerator = require('../generator');
 require('dotenv').config();
-const configuration = new Configuration({
+const openai = new OpenAI({
 	apiKey: process.env.OPENAI_API_KEY,
 	organization: process.env.OPENAI_ORGANIZATION,
 });
-const openai = new OpenAIApi(configuration);
 //accumulate의 약자. 누적성 메세지. 이전 메세지 기억함
 async function sendToAi_acc_stream(
 	previousMessages = [],
