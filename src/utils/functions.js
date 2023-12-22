@@ -60,8 +60,6 @@ function optimizingPrompt(prompts, exclusives, tokenLimit) {
 	let totalTokenCount = 0;
 	let exclusiveToken = calculateTokens(exclusives);
 	const copiedPrompts = JSON.parse(JSON.stringify(prompts));
-	console.log('promts: ', prompts);
-	console.log('copied promts: ', copiedPrompts.length);
 	if (copiedPrompts.length) {
 		for (let prompt of copiedPrompts) {
 			const content = prompt.content;
@@ -77,7 +75,6 @@ function optimizingPrompt(prompts, exclusives, tokenLimit) {
 			break;
 		}
 	}
-	console.log('total Token count : ', totalTokenCount);
 
 	return copiedPrompts;
 }

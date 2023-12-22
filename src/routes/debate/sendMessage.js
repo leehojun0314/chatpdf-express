@@ -38,9 +38,7 @@ async function sendMessage(req, res) {
 		previousMessages.push(generator.assistantMessage(debate.answer_content));
 		const optimizedHistory = optimizingPrompt(
 			debateMessages,
-			debate.refer_content +
-				debateMessages.question_content +
-				debate.answer_content,
+			debate.refer_content + debate.question_content + debate.answer_content,
 			configs.promptTokenLimit,
 		);
 		previousMessages.concat(
