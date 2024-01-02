@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 9000;
 const fs = require('fs');
 const path = require('path');
 const routes = require('./routes');
@@ -42,9 +42,9 @@ app.get('/', (req, res) => {
 	res.send('hello world');
 });
 
-app.use('/conversation', routes.conversation);
-app.use('/message', routes.message);
-app.use('/debate', routes.debate);
+// app.use('/conversation', routes.conversation);
+// app.use('/message', routes.message);
+// app.use('/debate', routes.debate);
 app.use('/auth', routes.auth);
 app.use('/solapi', routes.solapi);
 app.get('/.well-known/ai-plugin.json', (req, res) => {
@@ -69,7 +69,7 @@ app.get('/.well-known/openapi.yaml', (req, res) => {
 		}
 	});
 });
-app.use('/test', routes.test);
+// app.use('/test', routes.test);
 
 function startServer() {
 	app.listen(port, () => {
