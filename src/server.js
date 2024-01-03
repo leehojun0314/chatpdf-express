@@ -47,6 +47,7 @@ app.get('/', (req, res) => {
 // app.use('/debate', routes.debate);
 app.use('/auth', routes.auth);
 app.use('/solapi', routes.solapi);
+app.use('/firebase', routes.firebase);
 app.get('/.well-known/ai-plugin.json', (req, res) => {
 	const jsonPath = path.join(__dirname, '..', '.well-known', 'ai-plugin.json');
 	fs.readFile(jsonPath, 'utf-8', (err, data) => {
