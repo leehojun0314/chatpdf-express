@@ -1,4 +1,3 @@
-const { database } = require('firebase-admin');
 const sql = require('mssql');
 async function setToken(req, res) {
 	console.log('body: ', req.body);
@@ -13,8 +12,6 @@ async function setToken(req, res) {
 
 		(await getSql())
 			.request()
-			.input('fcm', FCMToken)
-
 			.query(
 				`UPDATE membership SET a_fcm = '${FCMToken}' WHERE a_token = '${loginToken}'`,
 			);
