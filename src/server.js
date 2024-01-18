@@ -42,8 +42,8 @@ app.get('/', (req, res) => {
 	res.send('hello world');
 });
 
-// app.use('/conversation', routes.conversation);
-// app.use('/message', routes.message);
+app.use('/conversation', routes.conversation);
+app.use('/message', routes.message);
 // app.use('/debate', routes.debate);
 app.use('/auth', routes.auth);
 app.use('/solapi', routes.solapi);
