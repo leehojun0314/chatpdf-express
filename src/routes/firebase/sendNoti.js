@@ -5,6 +5,7 @@ admin.initializeApp({
 });
 async function sendNoti(req, res) {
 	const { FCMTokens, notiBody, notiTitle } = req.body;
+	console.log('send noti: ', req.body);
 	try {
 		if (!FCMTokens) {
 			throw new Error('Invalid tokens');
