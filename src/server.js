@@ -18,22 +18,26 @@ const configs = require('../configs');
 // 	cert: certificate,
 // 	ca: ca,
 // };
+// app.use(
+//   cors({
+//     origin: function (origin, callback) {
+//       console.log('request from origin : ', origin);
+//       if (configs.allowedOrigins.indexOf(origin) !== -1 || !origin) {
+//         callback(null, true);
+//       } else {
+//         console.log('not allowed origin : ', origin);
+//         // callback(new Error('Not allowed by CORS'));
+//         return false;
+//       }
+//     },
+//     credentials: true,
+//   }),
+// );
 app.use(
   cors({
-    origin: function (origin, callback) {
-      console.log('request from origin : ', origin);
-      if (configs.allowedOrigins.indexOf(origin) !== -1 || !origin) {
-        callback(null, true);
-      } else {
-        console.log('not allowed origin : ', origin);
-        // callback(new Error('Not allowed by CORS'));
-        return false;
-      }
-    },
-    credentials: true,
+    origin: true,
   }),
 );
-
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 // 라우트 사용
