@@ -33,11 +33,7 @@ const configs = require('../configs');
 //     credentials: true,
 //   }),
 // );
-app.use(
-  cors({
-    origin: true,
-  }),
-);
+app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 // 라우트 사용
