@@ -38,7 +38,22 @@ app.use((req, res, next) => {
   console.log('request headers: ', req.headers);
   next();
 });
-app.use(cors());
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      console.log('request from origin : ', origin);
+      return true;
+      // if (configs.allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      //   callback(null, true);
+      // } else {
+      //   console.log('not allowed origin : ', origin);
+      //   // callback(new Error('Not allowed by CORS'));
+      //   return false;
+      // }
+    },
+    credentials: true,
+  }),
+);
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 // 라우트 사용
