@@ -69,28 +69,28 @@ app.use('/message', routes.message);
 app.use('/auth', routes.auth);
 app.use('/solapi', routes.solapi);
 app.use('/firebase', routes.firebase);
-app.get('/.well-known/ai-plugin.json', (req, res) => {
-  const jsonPath = path.join(__dirname, '..', '.well-known', 'ai-plugin.json');
-  fs.readFile(jsonPath, 'utf-8', (err, data) => {
-    if (err) {
-      res.status(404).send('Not found');
-    } else {
-      res.setHeader('Content-Type', 'application/json');
-      res.send(data);
-    }
-  });
-});
-app.get('/.well-known/openapi.yaml', (req, res) => {
-  const jsonPath = path.join(__dirname, '..', '.well-known', 'openapi.yaml');
-  fs.readFile(jsonPath, 'utf-8', (err, data) => {
-    if (err) {
-      res.status(404).send('Not found');
-    } else {
-      res.setHeader('Content-Type', 'application/json');
-      res.send(data);
-    }
-  });
-});
+// app.get('/.well-known/ai-plugin.json', (req, res) => {
+//   const jsonPath = path.join(__dirname, '..', '.well-known', 'ai-plugin.json');
+//   fs.readFile(jsonPath, 'utf-8', (err, data) => {
+//     if (err) {
+//       res.status(404).send('Not found');
+//     } else {
+//       res.setHeader('Content-Type', 'application/json');
+//       res.send(data);
+//     }
+//   });
+// });
+// app.get('/.well-known/openapi.yaml', (req, res) => {
+//   const jsonPath = path.join(__dirname, '..', '.well-known', 'openapi.yaml');
+//   fs.readFile(jsonPath, 'utf-8', (err, data) => {
+//     if (err) {
+//       res.status(404).send('Not found');
+//     } else {
+//       res.setHeader('Content-Type', 'application/json');
+//       res.send(data);
+//     }
+//   });
+// });
 // app.use('/test', routes.test);
 
 function startServer() {
