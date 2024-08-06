@@ -60,7 +60,7 @@ app.use(express.json());
 // '/' 경로에 대한 라우터를 indexRoutes로 설정
 
 app.get('/', (req, res) => {
-  res.send('hello world');
+  res.send('hello world from ncloud test server');
 });
 
 app.use('/conversation', routes.conversation);
