@@ -33,6 +33,10 @@ const configs = require('../configs');
 //     credentials: true,
 //   }),
 // );
+app.use((req, res, next) => {
+  console.log('request from origin : ', req.headers.origin);
+  next();
+});
 app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
