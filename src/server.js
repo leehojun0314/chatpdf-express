@@ -35,6 +35,7 @@ const configs = require('../configs');
 // );
 app.use((req, res, next) => {
   console.log('request from origin : ', req.headers.origin);
+  console.log('request headers: ', req.headers);
   next();
 });
 app.use(cors());
