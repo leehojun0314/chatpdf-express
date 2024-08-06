@@ -54,7 +54,7 @@ app.use(
     credentials: true,
   }),
 );
-app.use(express.urlencoded({ extended: false }));
+// app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 // 라우트 사용
 // '/' 경로에 대한 라우터를 indexRoutes로 설정
