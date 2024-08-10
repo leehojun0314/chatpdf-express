@@ -1,11 +1,13 @@
 const admin = require('firebase-admin');
 const { config } = require('dotenv');
 config();
-const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT;
-const serviceAccountObj = JSON.parse(serviceAccount);
-console.log('service account: ', serviceAccountObj);
+// const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT;
+// const serviceAccountObj = JSON.parse(serviceAccount);
+// console.log('service account: ', serviceAccountObj);
+const serviceAccount = require('../../../dtizen-ai-firebase-adminsdk.json');
+// console.log('service account: ', serviceAccountObj);
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccountObj),
+  credential: admin.credential.cert(serviceAccount),
 });
 async function sendNoti(req, res) {
   const { FCMTokens, notiBody, notiTitle } = req.body;
