@@ -13,7 +13,9 @@ async function checkConversationV2(req, res) {
       convIntId,
       userId,
     });
+    console.log('selected conv: ', selectedConv);
     const documents = await selectDocument({ convIntId });
+
     res.send({ selectedConv, documents });
   } catch (error) {
     console.log('error: ', error);
